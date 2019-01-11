@@ -21,3 +21,6 @@
 - [Spark Streaming](https://spark.apache.org/docs/latest/streaming-programming-guide.html)
 - [TensorFrames](https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/5669198905533692/3647723071348946/3983381308530741/latest.html)
 
+## Collected resources (non verified)
+- [Creating Multi-language Pipelines with Apache Spark or Avoid Having to Rewrite spaCy into Java](https://blog.dominodatalab.com/creating-multi-language-pipelines-apache-spark-avoid-rewrite-spacy-java/)
+- [Apache Spark — Tips and Tricks for better performance](https://hackernoon.com/apache-spark-tips-and-tricks-for-better-performance-cf2397cac11)
