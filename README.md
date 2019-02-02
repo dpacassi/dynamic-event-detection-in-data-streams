@@ -24,3 +24,4 @@
 ## Collected resources (non verified)
 - [Creating Multi-language Pipelines with Apache Spark or Avoid Having to Rewrite spaCy into Java](https://blog.dominodatalab.com/creating-multi-language-pipelines-apache-spark-avoid-rewrite-spacy-java/)
 - [Apache Spark — Tips and Tricks for better performance](https://hackernoon.com/apache-spark-tips-and-tricks-for-better-performance-cf2397cac11)
+- [Apache Spark with Docker](https://github.com/gettyimages/docker-spark)
