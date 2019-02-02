@@ -1,0 +1,40 @@
+
+% !TEX encoding = UTF-8 Unicode
+% !program = pdflatex
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[a4paper,top=30mm,right=20mm,bottom=25mm,left=20mm,head=35mm,foot=15mm]{geometry}
+\usepackage{cite}
+\usepackage{fancyhdr}
+\usepackage[parfill]{parskip}
+
+% language
+\usepackage[ngerman]{babel}
+
+% images
+\usepackage[font=small,skip=6pt]{caption}
+\usepackage{float,graphicx,grffile,wrapfig}
+\graphicspath{ {images/} }
+
+% variable definitions
+\providecommand{\documenttitle}{Dynamische Eventerkennung in Datenströmen}
+\providecommand{\documentauthors}{
+  David Pacassi Torrico,
+  Daniel Milenkovic
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\documenttitle}
+\rhead{\nouppercase{\leftmark}}
+\rfoot{Seite \thepage}
+
+\begin{document}
+
+\include{cover}
+\tableofcontents\newpage
+\include{introduction}
+
+% \bibliography{citations}
+
+\end{document}
