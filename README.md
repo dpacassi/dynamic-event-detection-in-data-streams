@@ -11,11 +11,6 @@
 > 
 > Ziel dieser Arbeit ist es eine Methodik zu entwickeln wie die genannten Aspekte auf geeigneten Datenströmen umgesetzt werden können. 
 
-## TODO
-- Abklärung Teilnahme am [Studierendenkongress](https://www.studierendenkongress.ch/praesentierende-r)?
-  - Wir dürften/können mitmachen obwohl Arbeit dann noch nicht fertig ist
-  - evtl. gut für Feedback?
-
 ## Vorarbeit
 - [Spark Data Frames](https://spark.apache.org/docs/latest/sql-getting-started.html)
 - [Spark Streaming](https://spark.apache.org/docs/latest/streaming-programming-guide.html)
@@ -25,3 +20,4 @@
 - [Creating Multi-language Pipelines with Apache Spark or Avoid Having to Rewrite spaCy into Java](https://blog.dominodatalab.com/creating-multi-language-pipelines-apache-spark-avoid-rewrite-spacy-java/)
 - [Apache Spark — Tips and Tricks for better performance](https://hackernoon.com/apache-spark-tips-and-tricks-for-better-performance-cf2397cac11)
 - [Apache Spark with Docker](https://github.com/gettyimages/docker-spark)
+- [Zürich Apache Spark Meetup](https://www.meetup.com/spark-zurich/)
