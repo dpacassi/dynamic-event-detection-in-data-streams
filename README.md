@@ -21,3 +21,6 @@
 - [Apache Spark — Tips and Tricks for better performance](https://hackernoon.com/apache-spark-tips-and-tricks-for-better-performance-cf2397cac11)
 - [Apache Spark with Docker](https://github.com/gettyimages/docker-spark)
 - [Zürich Apache Spark Meetup](https://www.meetup.com/spark-zurich/)
+
+## Social Media Monitoring
+- [Brandwatch](https://www.previon.ch/leistungen/social-media-monitoring/twint-brandwatch-referenz)
