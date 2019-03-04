@@ -1,2 +1,2 @@
 python-twitter
-pyspark
+neo4j

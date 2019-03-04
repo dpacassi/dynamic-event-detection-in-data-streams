@@ -6,8 +6,8 @@ services:
     volumes: 
       - ./neo4j/data:/data
     ports:
-      - 7474:7474
-      - 7687:7687
+      - 7474:7474 # admin interface
+      - 7687:7687 # bolt
     # For development only!
     environment:
       NEO4J_AUTH: none 
