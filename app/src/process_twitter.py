@@ -7,7 +7,8 @@ api = TwitterApi()
 topicsWithTweets = api.getTrendsWithTweets(api.SWITZERLAND, limit=2)
 
 for topic, tweets in topicsWithTweets.items():
-    db.createEntity('Topic', {'name': topic})
+    topicEntity = db.createEntity('Topic', {'name': topic})
 
     for tweet in tweets:
-        db.createEntity('Tweet', {'created_at': tweet['created_at']})
+        tweetEntity = db.createEntity('Tweet', {'name': tweet['user']['name'], 'created_at': tweet['created_at']})
+        db.createRelationship(tweetEntity, "talks_about", topicEntity)
