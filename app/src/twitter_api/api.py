@@ -20,9 +20,6 @@ class TwitterApi:
         if limit:
             trendingTopics = trendingTopics[:limit]
 
-        trendingTopicsWithTweets = {}
         for topic in trendingTopics:
             tweets = self.api.GetSearch(term=topic.name)
-            trendingTopicsWithTweets[topic.name] = [t.AsDict() for t in tweets]
-
-        return trendingTopicsWithTweets
+            yield topic.name, [t.AsDict() for t in tweets]

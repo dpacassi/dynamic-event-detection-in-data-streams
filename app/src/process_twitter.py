@@ -6,7 +6,7 @@ api = TwitterApi()
 
 topicsWithTweets = api.getTrendsWithTweets(api.SWITZERLAND, limit=2)
 
-for topic, tweets in topicsWithTweets.items():
+for topic, tweets in topicsWithTweets:
     topicEntity = db.createEntity('Topic', {'name': topic})
 
     for tweet in tweets:
