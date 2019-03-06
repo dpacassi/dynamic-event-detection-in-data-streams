@@ -22,4 +22,4 @@ class TwitterApi:
 
         for topic in trendingTopics:
             tweets = self.api.GetSearch(term=topic.name)
-            yield topic.name, [t.AsDict() for t in tweets]
+            yield topic, [t.AsDict() for t in tweets]

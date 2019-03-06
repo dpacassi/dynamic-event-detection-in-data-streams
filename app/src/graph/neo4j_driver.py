@@ -13,6 +13,9 @@ class Neo4jDriver:
         with self.driver.session() as session:
 
             if properties:
+                # We use string concatenation instead of parameters because MERGE does not work with parameters.
+                # The reason for using MERGE instead of CREATE is the prevention of duplicates.
+                # This solution is bad practice and will be refactored later on.
                 propertyString = self._convertToPropertyString(properties)
                 result = session.run(
                     "MERGE (a:{}{{ {} }}) RETURN a".format(entityName, propertyString))
@@ -35,4 +38,8 @@ class Neo4jDriver:
             return result
 
     def _convertToPropertyString(self, properties):
-        return ",".join(['{}:"{}"'.format(key, value) for key, value in properties.items()])
+        return ",".join(['{}:"{}"'.format(key, self._escapeCharacters(value)) for key, value in properties.items()])
+
+    def _escapeCharacters(self, rawString):
+        escapeChars = ['_', '\\', '"']
+        return ''.join(['\\' + c if c in escapeChars else c for c in rawString])
