@@ -10,4 +10,13 @@ services:
       - 7687:7687 # bolt
     # For development only!
     environment:
-      NEO4J_AUTH: none 
+      NEO4J_AUTH: none
+
+  twitter:
+    build: ./src
+    volumes:
+      - ./src:/usr/local/src/app
+    command: python runner.py twitter 60
+    restart: on-failure
+    links:
+      - neo4j

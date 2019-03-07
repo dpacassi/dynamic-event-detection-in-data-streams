@@ -4,7 +4,7 @@ from .entity import Entity
 
 
 class Neo4jDriver:
-    uri = "bolt://localhost:7687"
+    uri = "bolt://neo4j:7687"
 
     def __init__(self):
         self.driver = GraphDatabase.driver(self.uri, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
@@ -41,5 +41,5 @@ class Neo4jDriver:
         return ",".join(['{}:"{}"'.format(key, self._escapeCharacters(value)) for key, value in properties.items()])
 
     def _escapeCharacters(self, rawString):
-        escapeChars = ['_', '\\', '"']
+        escapeChars = ['\\', '"']
         return ''.join(['\\' + c if c in escapeChars else c for c in rawString])
