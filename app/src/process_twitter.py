@@ -8,20 +8,28 @@ class ProcessTwitter:
         self.api = TwitterApi()
 
     def run(self, limit=None):
-        topicsWithTweets = self.api.getTrendsWithTweets(self.api.SWITZERLAND, limit)
+        topicsWithTweets = self.api.getTrendsWithTweets(
+            self.api.SWITZERLAND, ["en", "de"], limit
+        )
+        countryEntity = self.db.createEntity("Country", {"name": "Switzerland"})
+
         for topic, tweets in topicsWithTweets:
             topicEntity = self.db.createEntity("Topic", {"name": topic.name})
-            # topicEntity = db.createEntity('Topic', {'name': topic.name, 'created_at': topic.timestamp})
-
+            self.db.createRelationship(topicEntity, "is_relevant_in", countryEntity)
             for tweet in tweets:
                 tweetEntity = self.db.createEntity(
                     "Tweet",
-                    {"name": tweet["user"]["name"], "created_at": tweet["created_at"]},
+                    {
+                        "text": tweet["text"],
+                        "created_at": tweet["created_at"],
+                        "lang": tweet["lang"],
+                    },
                 )
+
+                if "name" in tweet["user"]:
+                    userEntity = self.db.createEntity(
+                        "User", {"name": tweet["user"]["name"]}
+                    )
+                    self.db.createRelationship(tweetEntity, "belongs_to", userEntity)
+
                 self.db.createRelationship(tweetEntity, "talks_about", topicEntity)
-
-
-# Execute directly for development/debugging reasons.
-if __name__ == "__main__":
-    processor = ProcessTwitter()
-    processor.run(limit=2)

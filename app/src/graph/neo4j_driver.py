@@ -1,12 +1,14 @@
+import os
+
 from neo4j import GraphDatabase
 from .secrets import NEO4J_USERNAME, NEO4J_PASSWORD
 from .entity import Entity
 
 
 class Neo4jDriver:
-    uri = "bolt://neo4j:7687"
 
     def __init__(self):
+        self.uri = os.getenv('NEO4J_URI', "bolt://localhost:7687")
         self.driver = GraphDatabase.driver(self.uri, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 
     def createEntity(self, entityName, properties={}):
