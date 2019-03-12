@@ -54,7 +54,7 @@ Both define REST endpoints which return the data in a JSON structure.
 - publishedAt (e.g. `2019-03-12T10:56:03Z`, ISO-8601)
 - content (limited to 260 characters)
 
-Also check the [newsapi.org response example](api-data/newsapi.org.json).
+Also check the [newsapi.org response example](response-examples/newsapi.org.json).
 
 ### Top headlines (Switzerland)
 - https://newsapi.org/v2/top-headlines?apiKey=API_KEY&country=ch&pageSize=100
