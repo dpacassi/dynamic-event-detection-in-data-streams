@@ -21,5 +21,8 @@
 ### Proposed API
 Amazon Comprehend. Check [features](https://aws.amazon.com/comprehend/features/) and [pricing](https://aws.amazon.com/comprehend/pricing/).
 
-### Proposed custom solution
-[NLP/N-Grams/TF IDF](https://medium.com/analytics-vidhya/automated-keyword-extraction-from-articles-using-nlp-bfd864f41b34)
+### Proposed custom solutions
+- [NLP/N-Grams/TF IDF](https://medium.com/analytics-vidhya/automated-keyword-extraction-from-articles-using-nlp-bfd864f41b34)
+- [github.com/boudinfl/pke](https://github.com/boudinfl/pke)
+- [github.com/csurfer/rake-nltk](https://github.com/csurfer/rake-nltk)
+- [github.com/aneesha/RAKE](https://github.com/aneesha/RAKE)
