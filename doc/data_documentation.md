@@ -54,7 +54,7 @@ Both define REST endpoints which return the data in a JSON structure.
 - publishedAt (e.g. `2019-03-12T10:56:03Z`, ISO-8601)
 - content (limited to 260 characters)
 
-Also check the [newsapi.org response example](response-examples/newsapi.org.json).
+Also check the [response example](response-examples/newsapi.org.json).
 
 ### Top headlines (Switzerland)
 - https://newsapi.org/v2/top-headlines?apiKey=API_KEY&country=ch&pageSize=100
@@ -70,3 +70,34 @@ Also check the [newsapi.org response example](response-examples/newsapi.org.json
 - https://newsapi.org/v2/everything?apiKey=API_KEY&q=E&language=de&from=2019-03-12&pageSize=100
   - Returns around 250 results for the current day
   - (in average 10+ new results per hour)
+
+## Twitter
+
+### trends/place
+Returns the top 50 trending topics for a specific `WOEID`, if trending information is available for it.
+The `where on earth identifier` of Switzerland is `23424957`.
+
+**Important:** The information is cached for 5 minutes. Requesting more frequently than that will not return any more data, and will count against rate limit usage.
+
+#### Data fields
+- name (e.g. `#Brexit`)
+- query (e.g. `%23Brexit`)
+- timestamp (e.g. `2019-03-12T20:58:23Z`)
+- tweet_volume (e.g. `186592`, for the last 24 hours [if available])
+- url (e.g. `http://twitter.com/search?q=%23Brexit`)
+
+Also check the [response example](response-examples/twitter.com-trends-place.json).
+
+### search/tweets
+Returns a collection of relevant Tweets matching a specified query.
+
+#### Data fields
+- created_at (e.g. `Mon Mar 11 19:43:55 +0000 2019`)
+- id (e.g. `1105192649596829696`)
+- lang (e.g. `de`)
+- favorite_count (e.g. `325`)
+- retweet_count (e.g. `220`)
+- text (e.g. `Die großzügigsten Sponsoren der #Brexit -Kampagne waren schwerreiche Unternehmer und Hedgefonds-Manager, doch zahle… https://t.co/DmpEZUaVch`)
+- hashtags (list of strings)
+
+Also check the [response example](response-examples/twitter.com-search-tweets.json).

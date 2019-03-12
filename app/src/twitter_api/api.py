@@ -11,6 +11,7 @@ class TwitterApi:
 
     GLOBAL = 1
     SWITZERLAND = 23424957
+    API_MAX_COUNT = 100
 
     def __init__(self):
         self.api = twitter.Api(
@@ -30,5 +31,5 @@ class TwitterApi:
         for topic in trendingTopics:
             tweets = []
             for lang in languages:
-                tweets.extend(self.api.GetSearch(term=topic.name, lang=lang))
+                tweets.extend(self.api.GetSearch(term=topic.name, lang=lang, count=100))
             yield topic, [t.AsDict() for t in tweets]
