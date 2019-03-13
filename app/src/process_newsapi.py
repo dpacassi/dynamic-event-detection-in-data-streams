@@ -14,24 +14,41 @@ class ProcessNewsApi:
         countryEntity = self.db.createEntity("Country", {"name": "Switzerland"})
 
         for headline in headlines:
-            organisationEntity = self.db.createEntity(
-                "Organisation",
-                {
-                    "name": headline["source"]["name"].lower(),
-                },
-            )
+            if headline["source"]["name"]:
+                organisationEntity = self.db.createEntity(
+                    "Organisation",
+                    {
+                        "name": headline["source"]["name"].lower(),
+                    },
+                )
+
+
+            newsObject = {}
+
+            if headline["author"]:
+                newsObject["author"] = headline["author"]
+
+            if headline["title"]:
+                newsObject["title"] = headline["title"]
+
+            if headline["description"]:
+                newsObject["description"] = headline["description"]
+
+            if headline["url"]:
+                newsObject["url"] = headline["url"]
+
+            if headline["urlToImage"]:
+                newsObject["urlToImage"] = headline["urlToImage"]
+
+            if headline["publishedAt"]:
+                newsObject["publishedAt"] = headline["publishedAt"]
+
+            if headline["content"]:
+                newsObject["content"] = headline["content"]
 
             newsEntity = self.db.createEntity(
                 "News",
-                {
-                    "author": headline["author"],
-                    "title": headline["title"],
-                    "description": headline["description"],
-                    "url": headline["url"],
-                    "urlToImage": headline["urlToImage"],
-                    "publishedAt": headline["publishedAt"],
-                    "content": headline["content"],
-                },
+                newsObject,
             )
 
             self.db.createRelationship(newsEntity, "is_relevant_in", countryEntity)
