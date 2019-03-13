@@ -1,3 +1,4 @@
 python-twitter
 neo4j
 pattern
+newsapi-python

@@ -3,13 +3,14 @@ import time
 import argparse
 
 from process_twitter import ProcessTwitter
+from process_newsapi import ProcessNewsApi
 
 
 def mainLoop(source, limitRuns=None, timeToSleep=60):
     if source == "twitter":
         processor = ProcessTwitter()
-    # elif source == 'newsapi':
-    #    processor = ProcessNewsapi()
+    elif source == 'newsapi':
+        processor = ProcessNewsApi()
     else:
         print("No implementation found for {}".format(source), file=sys.stderr)
         return 1

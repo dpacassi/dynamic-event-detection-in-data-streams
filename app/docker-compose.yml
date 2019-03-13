@@ -20,5 +20,16 @@ services:
     restart: on-failure
     links:
       - neo4j
-    environment: 
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+
+  newsapi:
+    build: ./src
+    volumes:
+      - ./src:/usr/local/src/app
+    command: python runner.py newsapi -t 600
+    restart: on-failure
+    links:
+      - neo4j
+    environment:
       NEO4J_URI: bolt://neo4j:7687
