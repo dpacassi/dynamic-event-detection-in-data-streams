@@ -1,6 +1,8 @@
 from graph.db import Db
 from twitter_api.api import TwitterApi
 
+from pattern.text import keywords as findKeywords
+
 
 class ProcessTwitter:
     def __init__(self):
@@ -25,6 +27,13 @@ class ProcessTwitter:
                         "lang": tweet["lang"],
                     },
                 )
+
+                keywords = findKeywords(tweet["text"], language=tweet["lang"])
+                for keyword in keywords:
+                    keywordEntity = self.db.createEntity(
+                        "Keyword", {"name": keyword}
+                    )
+                    self.db.createRelationship(tweetEntity, "mentions", keywordEntity)
 
                 if "name" in tweet["user"]:
                     userEntity = self.db.createEntity(
