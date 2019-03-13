@@ -1,9 +1,9 @@
-FROM python:3
+FROM python:3.6
 
 WORKDIR /usr/local/src/app
 
 # mariadb client needed for pattern package
-RUN sudo apt-get install libmariadbclient-dev
+RUN apt-get install libmariadbclient-dev
 
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
