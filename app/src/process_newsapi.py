@@ -22,7 +22,6 @@ class ProcessNewsApi:
                     },
                 )
 
-
             newsObject = {}
 
             if headline["author"]:
