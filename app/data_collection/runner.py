@@ -6,7 +6,7 @@ from process_twitter import ProcessTwitter
 from process_newsapi import ProcessNewsApi
 
 
-def mainLoop(source, limitRuns=None, timeToSleep=60):
+def main_loop(source, limitRuns=None, timeToSleep=60):
     if source == "twitter":
         processor = ProcessTwitter()
     elif source == 'newsapi':
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        mainLoop(args.source, args.l, args.t)
+        main_loop(args.source, args.l, args.t)
     except KeyboardInterrupt:
         print("Quit on users behalf.")
         sys.exit(0)
