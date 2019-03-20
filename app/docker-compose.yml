@@ -13,9 +13,9 @@ services:
       NEO4J_AUTH: none
 
   twitter:
-    build: ./src
+    build: ./data_collection
     volumes:
-      - ./src:/usr/local/src/app
+      - ./data_collection:/usr/local/src/data_collection
     command: python runner.py twitter
     restart: on-failure
     links:
@@ -24,9 +24,9 @@ services:
       NEO4J_URI: bolt://neo4j:7687
 
   newsapi:
-    build: ./src
+    build: ./data_collection
     volumes:
-      - ./src:/usr/local/src/app
+      - ./data_collection:/usr/local/src/data_collection
     command: python runner.py newsapi -t 600
     restart: on-failure
     links:
