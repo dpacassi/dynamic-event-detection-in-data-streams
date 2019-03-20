@@ -2,3 +2,4 @@ python-twitter
 neo4j
 pattern
 newsapi-python
+azure-cognitiveservices-search-newssearch
