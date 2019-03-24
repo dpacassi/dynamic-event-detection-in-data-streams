@@ -1,9 +1,11 @@
 import pandas
 import numpy as np
 import matplotlib.pyplot as plt
+import collections
 
 from preprocessing import get_tfidf_matrix
-from clustering import apply_dbscan
+from sklearn.metrics import accuracy_score
+from clustering import apply_dbscan, apply_meanshift
 
 
 def main():
@@ -12,38 +14,54 @@ def main():
     test_data = load_test_data(nrows=1000)
 
     print("Create tfidf matrix.")
-    tfidf_matrix = get_tfidf_matrix(test_data['TITLE'])
-    dense_tfidf_matrix = tfidf_matrix.todense()
+    tfidf_matrix, features = get_tfidf_matrix(test_data['TITLE'])
+    # dense_tfidf_matrix = tfidf_matrix.todense()
 
-    print("Apply dbscan clustering.")
-    labels, core_samples_mask = apply_dbscan(dense_tfidf_matrix)
+    print("Cluster data.")
+    # labels, core_samples_mask = apply_dbscan(dense_tfidf_matrix)
+    labels = apply_dbscan(tfidf_matrix)
 
-    print("Render plot.")
-    plot_cluster(dense_tfidf_matrix, labels, core_samples_mask)
+    print("Generate Report.")
+    print('------------------------------')
+
+    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+    n_noise = list(labels).count(-1)
+
+    actual_clusters = len(set(test_data['STORY']))
+    difference = abs(actual_clusters - n_clusters)
+
+    grouped_indices = collections.defaultdict(list)
+    for index, value in enumerate(labels):
+        if value >= 0:
+            grouped_indices[value].append(index)
+
+    for key, indices in grouped_indices.items():
+        print('Group %d: \n' % key)
+        print(indices)
+        for index in indices:
+            print(test_data['ID'][index])
+            print(test_data['TITLE'][index])
+            print(get_features_from_matrix(tfidf_matrix[index].todense(), features))
+        print('------------------------------')
+
+    print('Actual number of clusters: %d' % actual_clusters)
+    print('Estimated number of clusters: %d' % n_clusters)
+    print('Estimated number of noise points: %d' % n_noise)
+    print('Difference: %f' % difference)
+
+
+def get_features_from_matrix(matrix, features):
+    actual_features = []
+    for index, value in enumerate(matrix.A1):
+        if value > 0:
+            actual_features.append(features[index])
+
+    return actual_features
 
 
 def load_test_data(nrows=None):
     filepath = 'test_data/uci-news-aggregator.csv'
     return pandas.read_csv(filepath, nrows=nrows)
-
-
-def plot_cluster(original_data, labels, core_samples_mask):
-    unique_labels = set(labels)
-    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
-    for k, col in zip(unique_labels, colors):
-        if k == -1:
-            # Black used for noise.
-            col = [0, 0, 0, 1]
-
-        class_member_mask = (labels == k)
-
-        xy = original_data[class_member_mask & core_samples_mask] 
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col), markeredgecolor='k', markersize=14)
-
-        xy = original_data[class_member_mask & ~core_samples_mask]
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col), markeredgecolor='k', markersize=6)
-
-    plt.show()
 
 
 if __name__ == "__main__":
