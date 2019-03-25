@@ -79,6 +79,8 @@ def generate_report(labels, test_data, tfidf_matrix, features, show_details=True
     print("Estimated number of clusters: %d" % n_clusters)
     print("Estimated number of noise points: %d" % n_noise)
 
+    # The following scores have to be considered with a grain of salt, since the author of
+    # this incredible beautiful code doesn't fully understand if the labels can be compared in this way... 
     print("Completeness: %0.3f" % completeness_score(labels_true, labels))
     print("V-measure: %0.3f" % v_measure_score(labels_true, labels))
 
