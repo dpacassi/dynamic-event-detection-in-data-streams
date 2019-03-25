@@ -7,10 +7,14 @@ To detect events of a certain significance and to find common denominators, we u
 ## Evaluation
 
 
-### TODOs
+## Problems
 
+tfidf works fine offline but not online. Maybe consider HashingVectorizer or CountVectorizer.
+
+## TODos
 * cite papers
 * find working approach
+* use sklearn pipelines
 
 ## Approaches
 
