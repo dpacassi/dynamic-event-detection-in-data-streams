@@ -5,9 +5,16 @@ import collections
 
 from sklearn.metrics import accuracy_score, completeness_score, v_measure_score
 
-from preprocessing import get_tfidf_matrix, get_hash_matrix, get_count_matrix
+from preprocessing import (
+    extract_entities,
+    extract_tokens,
+    get_tfidf_matrix,
+    get_hash_matrix,
+    get_count_matrix,
+)
 from clustering import (
     apply_dbscan,
+    apply_optics,
     apply_meanshift,
     apply_affinity_propagation,
     apply_birch,
@@ -19,21 +26,43 @@ def main():
     print("Load test data.")
     test_data = load_test_data(nrows=1000)
 
-    print("Create tfidf matrix.")
-    tfidf_matrix, features = get_tfidf_matrix(test_data["TITLE"])
-    hash_matrix, features = get_hash_matrix(test_data["TITLE"])
-    count_matrix, features = get_count_matrix(test_data["TITLE"])
+    print("Create data matrices.")
+    text = test_data["TITLE"]
+
+    tfidf_matrix, features = get_tfidf_matrix(text)
+    hash_matrix, features = get_hash_matrix(text)
+
+    raw_count_matrix, features = get_count_matrix(text)
+    entity_count_matrix, features = get_count_matrix(text, extract_entities)
+    token_count_matrix, features = get_count_matrix(text, extract_tokens)
 
     print("Cluster data.")
 
     print("------------------------------")
     print("DBSCAN:")
-    print("Using HashVectorizer")
-    run_clustering_algorithm(apply_dbscan, test_data, hash_matrix, features)
-    print("\nUsing CountVectorizer")
-    run_clustering_algorithm(apply_dbscan, test_data, count_matrix, features)
-    print("\nUsing TfidfVectorizer")
-    run_clustering_algorithm(apply_dbscan, test_data, tfidf_matrix, features)
+    run_algorithm_with_different_vectorizer(
+        apply_dbscan,
+        test_data,
+        features,
+        hash_matrix,
+        raw_count_matrix,
+        entity_count_matrix,
+        token_count_matrix,
+        tfidf_matrix
+    )
+
+    print("------------------------------")
+    print("OPTICS:")
+    run_algorithm_with_different_vectorizer(
+        apply_optics,
+        test_data,
+        features,
+        hash_matrix=None,
+        raw_count_matrix=None,
+        entity_count_matrix=None,
+        token_count_matrix=token_count_matrix.toarray(),
+        tfidf_matrix=None
+    )
 
     print("------------------------------")
     print("Affinity Propagation:")
@@ -48,6 +77,37 @@ def main():
     # print('------------------------------')
     # print("Meanshift:")
     # run_clustering_algorithm(apply_meanshift, test_data, tfidf_matrix.todense(), features, False)
+
+
+def run_algorithm_with_different_vectorizer(
+    algorithm,
+    test_data,
+    features,
+    hash_matrix,
+    raw_count_matrix,
+    entity_count_matrix,
+    token_count_matrix,
+    tfidf_matrix
+):
+    if hash_matrix is not None:
+        print("Using HashVectorizer")
+        run_clustering_algorithm(algorithm, test_data, hash_matrix, features)
+
+    if raw_count_matrix is not None:
+        print("\nUsing CountVectorizer with raw data")
+        run_clustering_algorithm(algorithm, test_data, raw_count_matrix, features)
+
+    if entity_count_matrix is not None:
+        print("\nUsing CountVectorizer with entities")
+        run_clustering_algorithm(algorithm, test_data, entity_count_matrix, features)
+
+    if token_count_matrix is not None:
+        print("\nUsing CountVectorizer with tokens")
+        run_clustering_algorithm(algorithm, test_data, token_count_matrix, features)
+
+    if tfidf_matrix is not None:
+        print("\nUsing TfidfVectorizer")
+        run_clustering_algorithm(algorithm, test_data, tfidf_matrix, features)
 
 
 def run_clustering_algorithm(

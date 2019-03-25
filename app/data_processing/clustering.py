@@ -1,12 +1,17 @@
 import numpy as np
 
-from sklearn.cluster import DBSCAN, Birch, MeanShift, AffinityPropagation
+from sklearn.cluster import DBSCAN, Birch, MeanShift, AffinityPropagation, OPTICS
 
 
 def apply_dbscan(x):
     # https://scikit-learn.org/stable/modules/clustering.html#dbscan
     # https://scikit-learn.org/stable/auto_examples/cluster/plot_dbscan.html#sphx-glr-auto-examples-cluster-plot-dbscan-py
     return DBSCAN(eps=0.2, min_samples=2).fit_predict(x)
+
+
+def apply_optics(x):
+    # https://scikit-learn.org/dev/modules/generated/sklearn.cluster.OPTICS.html
+    return OPTICS(eps=0.2, min_samples=2).fit_predict(x)
 
 
 def apply_affinity_propagation(x):

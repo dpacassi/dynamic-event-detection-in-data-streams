@@ -32,6 +32,8 @@ Find papers referencing useful clustering methodologies for our use case.
 
 * So far not very accurate (but the training data is very rough...)
 
+### Optics
+
 ### Affinity Propagation
 
 ### Birch
