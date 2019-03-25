@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import collections
 
-from preprocessing import get_tfidf_matrix
 from sklearn.metrics import accuracy_score, completeness_score, v_measure_score
+
+from preprocessing import get_tfidf_matrix, get_hash_matrix, get_count_matrix
 from clustering import (
     apply_dbscan,
     apply_meanshift,
@@ -20,16 +21,25 @@ def main():
 
     print("Create tfidf matrix.")
     tfidf_matrix, features = get_tfidf_matrix(test_data["TITLE"])
+    hash_matrix, features = get_hash_matrix(test_data["TITLE"])
+    count_matrix, features = get_count_matrix(test_data["TITLE"])
 
     print("Cluster data.")
 
     print("------------------------------")
     print("DBSCAN:")
+    print("Using HashVectorizer")
+    run_clustering_algorithm(apply_dbscan, test_data, hash_matrix, features)
+    print("\nUsing CountVectorizer")
+    run_clustering_algorithm(apply_dbscan, test_data, count_matrix, features)
+    print("\nUsing TfidfVectorizer")
     run_clustering_algorithm(apply_dbscan, test_data, tfidf_matrix, features)
 
     print("------------------------------")
     print("Affinity Propagation:")
-    run_clustering_algorithm(apply_affinity_propagation, test_data, tfidf_matrix, features)
+    run_clustering_algorithm(
+        apply_affinity_propagation, test_data, tfidf_matrix, features
+    )
 
     print("------------------------------")
     print("Birch:")
@@ -40,7 +50,9 @@ def main():
     # run_clustering_algorithm(apply_meanshift, test_data, tfidf_matrix.todense(), features, False)
 
 
-def run_clustering_algorithm(algorithm, test_data, tfidf_matrix, features, show_details=False):
+def run_clustering_algorithm(
+    algorithm, test_data, tfidf_matrix, features, show_details=False
+):
     labels = algorithm(tfidf_matrix)
     generate_report(labels, test_data, tfidf_matrix, features, show_details)
 
@@ -80,7 +92,7 @@ def generate_report(labels, test_data, tfidf_matrix, features, show_details=True
     print("Estimated number of noise points: %d" % n_noise)
 
     # The following scores have to be considered with a grain of salt, since the author of
-    # this incredible beautiful code doesn't fully understand it yet... 
+    # this incredible beautiful code doesn't fully understand it yet...
     print("Completeness: %0.3f" % completeness_score(labels_true, labels))
     print("V-measure: %0.3f" % v_measure_score(labels_true, labels))
 
