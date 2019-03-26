@@ -24,6 +24,9 @@ with connection.cursor() as cursor:
 
     for row in rows:
         news_article = Article(row["url"])
+        news_language = None
+        news_keywords = None
+        news_text = None
 
         try:
             news_article.download()
@@ -31,12 +34,14 @@ with connection.cursor() as cursor:
             news_article.nlp()
             news_language = news_article.meta_lang
             news_keywords = ",".join(news_article.keywords)
+            news_text = news_article.text
 
             if not news_language:
                 news_language = None
-
-            cursor.execute(update_sql, (news_keywords, news_keywords, news_article.text, row["id"]))
         except:
-            cursor.execute(update_sql, (None, None, None, row["id"]))
+            news_language = None
+            news_keywords = None
+            news_text = None
 
-connection.commit()
+        cursor.execute(update_sql, (news_language, news_keywords, news_text, row["id"]))
+        connection.commit()
