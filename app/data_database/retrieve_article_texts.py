@@ -29,8 +29,13 @@ with connection.cursor() as cursor:
             news_article.download()
             news_article.parse()
             news_article.nlp()
-            keywords = ",".join(news_article.keywords)
-            cursor.execute(update_sql, (news_article.meta_lang, keywords, news_article.text, row["id"]))
+            news_language = news_article.meta_lang
+            news_keywords = ",".join(news_article.keywords)
+
+            if not news_language:
+                news_language = None
+
+            cursor.execute(update_sql, (news_keywords, news_keywords, news_article.text, row["id"]))
         except:
             cursor.execute(update_sql, (None, None, None, row["id"]))
 
