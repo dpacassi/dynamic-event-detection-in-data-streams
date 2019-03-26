@@ -15,6 +15,8 @@ tfidf works fine offline but not online. Maybe consider HashingVectorizer or Cou
 * cite papers
 * find working approach
 * use sklearn pipelines
+* look into stemming for preprocessing
+* consensus clustering with a consensus matrix
 
 ## Approaches
 
@@ -31,6 +33,11 @@ Find papers referencing useful clustering methodologies for our use case.
 **Cons**
 
 * So far not very accurate (but the training data is very rough...)
+
+
+#### Relevant Papers
+
+http://homepages.vub.ac.be/~ndeligia/pubs/TwitterDataClusteringVisual.pdf
 
 ### Optics
 

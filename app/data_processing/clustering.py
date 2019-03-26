@@ -6,7 +6,7 @@ from sklearn.cluster import DBSCAN, Birch, MeanShift, AffinityPropagation, OPTIC
 def apply_dbscan(x):
     # https://scikit-learn.org/stable/modules/clustering.html#dbscan
     # https://scikit-learn.org/stable/auto_examples/cluster/plot_dbscan.html#sphx-glr-auto-examples-cluster-plot-dbscan-py
-    return DBSCAN(eps=0.2, min_samples=2).fit_predict(x)
+    return DBSCAN(eps=0.2, min_samples=3).fit_predict(x)
 
 
 def apply_optics(x):
