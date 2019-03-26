@@ -1,16 +1,3 @@
-'''
-from newspaper import Article
-
-url = 'http://fox13now.com/2013/12/30/new-year-new-laws-obamacare-pot-guns-and-drones/'
-article = Article(url)
-
-article.download()
-article.parse()
-article.nlp()
-
-print(article.meta_lang)
-'''
-
 import os
 import csv
 import pymysql
@@ -20,14 +7,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 connection = pymysql.connect(
-  host=os.environ['MYSQL_HOSTNAME'],
-  port=int(os.environ['MYSQL_PORT']),
-  user=os.environ['MYSQL_USER'],
-  passwd=os.environ['MYSQL_PASSWORD'],
-  database=os.environ['MYSQL_DATABASE'],
-  charset='utf8mb4',
-  cursorclass=pymysql.cursors.DictCursor
+    host=os.environ['MYSQL_HOSTNAME'],
+    port=int(os.environ['MYSQL_PORT']),
+    user=os.environ['MYSQL_USER'],
+    passwd=os.environ['MYSQL_PASSWORD'],
+    database=os.environ['MYSQL_DATABASE'],
+    charset='utf8mb4',
+    cursorclass=pymysql.cursors.DictCursor
 )
+
 sql = "INSERT INTO news_article (id, title, url, publisher, category, story, hostname, date, newspaper_processed, newspaper_meta_language, newspaper_keywords, newspaper_text) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 data = []
 
