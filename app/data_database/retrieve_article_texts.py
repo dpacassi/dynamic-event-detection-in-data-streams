@@ -15,7 +15,7 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-get_sql = "SELECT * FROM news_article WHERE newspaper_processed = 0 ORDER BY id ASC LIMIT 1"
+get_sql = "SELECT * FROM news_article WHERE newspaper_processed = 0 ORDER BY id ASC LIMIT 10"
 update_sql = "UPDATE news_article SET newspaper_processed = 1, newspaper_meta_language = %s, newspaper_keywords = %s, newspaper_text = %s WHERE id = ?"
 
 with connection.cursor() as cursor:
@@ -24,11 +24,14 @@ with connection.cursor() as cursor:
 
     for row in rows:
         news_article = Article(row["url"])
-        news_article.download()
-        news_article.parse()
-        news_article.nlp()
-        keywords = None
 
-        cursor.execute(update_sql, (news_article.meta_lang, keywords, news_article.text, row["id"]))
+        try:
+            news_article.download()
+            news_article.parse()
+            news_article.nlp()
+            keywords = ",".join(news_article.keywords)
+            cursor.execute(update_sql, (news_article.meta_lang, keywords, news_article.text, row["id"]))
+        except:
+            cursor.execute(update_sql, (None, None, None, row["id"]))
 
 connection.commit()
