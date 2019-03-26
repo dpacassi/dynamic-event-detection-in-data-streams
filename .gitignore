@@ -3,3 +3,4 @@ secrets.py
 __pycache__
 app/neo4j/data/*
 !app/neo4j/data/.gitkeep
+.env
