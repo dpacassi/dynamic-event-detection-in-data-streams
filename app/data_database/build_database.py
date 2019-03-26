@@ -38,7 +38,7 @@ with open('data/uci-news-aggregator.csv', 'r') as csv_file:
     next(csv_reader, None)
 
     for row in csv_reader:
-        data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], datetime.fromtimestamp(int(row[7])/1000), 1, None, None, None))
+        data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], datetime.fromtimestamp(int(row[7])/1000), 0, None, None, None))
 
 with connection.cursor() as cursor:
     cursor.executemany(sql, data)
