@@ -14,11 +14,17 @@ from preprocessing import (
 )
 from clustering import (
     apply_dbscan,
+    apply_hdbscan,
     apply_optics,
     apply_meanshift,
     apply_affinity_propagation,
     apply_birch,
 )
+
+
+id_column = "id"
+content_column = "newspaper_text"
+story_column = "story"
 
 
 def main():
@@ -27,83 +33,96 @@ def main():
     test_data = load_test_data(nrows=1000)
 
     print("Create data matrices.")
-    text = test_data["TITLE"]
+    text = test_data[content_column]
 
-    tfidf_matrix, features = get_tfidf_matrix(text)
-    hash_matrix, features = get_hash_matrix(text)
+    # tfidf_matrix, features = get_tfidf_matrix(text)
+    # count_matrix, features = get_count_matrix(text)
 
-    raw_count_matrix, features = get_count_matrix(text)
-    entity_count_matrix, features = get_count_matrix(text, extract_entities)
-    token_count_matrix, features = get_count_matrix(text, extract_tokens)
+    raw_hash_matrix, features = get_hash_matrix(text)
+    entity_hash_matrix, features = get_hash_matrix(text, extract_entities)
+    # token_hash_matrix, features = get_hash_matrix(text, extract_tokens)
 
     print("Cluster data.")
 
     print("------------------------------")
     print("DBSCAN:")
-    run_algorithm_with_different_vectorizer(
+    run_algorithm_with_different_vectorizers(
         apply_dbscan,
         test_data,
         features,
-        hash_matrix,
-        raw_count_matrix,
-        entity_count_matrix,
-        token_count_matrix,
-        tfidf_matrix
-    )
-
-    print("------------------------------")
-    print("OPTICS:")
-    run_algorithm_with_different_vectorizer(
-        apply_optics,
-        test_data,
-        features,
-        hash_matrix=None,
-        raw_count_matrix=None,
-        entity_count_matrix=None,
-        token_count_matrix=token_count_matrix.toarray(),
+        count_matrix=None,
+        raw_hash_matrix=raw_hash_matrix,
+        entity_hash_matrix=entity_hash_matrix,
+        token_hash_matrix=None,
         tfidf_matrix=None
     )
 
     print("------------------------------")
-    print("Affinity Propagation:")
-    run_clustering_algorithm(
-        apply_affinity_propagation, test_data, tfidf_matrix, features
+    print("HDBSCAN:")
+    run_algorithm_with_different_vectorizers(
+        apply_hdbscan,
+        test_data,
+        features,
+        count_matrix=None,
+        raw_hash_matrix=raw_hash_matrix,
+        entity_hash_matrix=entity_hash_matrix,
+        token_hash_matrix=None,
+        tfidf_matrix=None
     )
 
-    print("------------------------------")
-    print("Birch:")
-    run_clustering_algorithm(apply_birch, test_data, tfidf_matrix, features)
+    # print("------------------------------")
+    # print("OPTICS:")
+    # run_algorithm_with_different_vectorizer(
+    #     apply_optics,
+    #     test_data,
+    #     features,
+    #     None,
+    #     None,
+    #     None,
+    #     token_hash_matrix.toarray(),
+    #     None
+    # )
+
+    # print("------------------------------")
+    # print("Affinity Propagation:")
+    # run_clustering_algorithm(
+    #     apply_affinity_propagation, test_data, tfidf_matrix, features
+    # )
+
+    # print("------------------------------")
+    # print("Birch:")
+    # run_clustering_algorithm(apply_birch, test_data, tfidf_matrix, features)
 
     # print('------------------------------')
     # print("Meanshift:")
     # run_clustering_algorithm(apply_meanshift, test_data, tfidf_matrix.todense(), features, False)
 
 
-def run_algorithm_with_different_vectorizer(
+def run_algorithm_with_different_vectorizers(
     algorithm,
     test_data,
     features,
-    hash_matrix,
-    raw_count_matrix,
-    entity_count_matrix,
-    token_count_matrix,
+    count_matrix,
+    raw_hash_matrix,
+    entity_hash_matrix,
+    token_hash_matrix,
     tfidf_matrix
 ):
-    if hash_matrix is not None:
-        print("Using HashVectorizer")
-        run_clustering_algorithm(algorithm, test_data, hash_matrix, features)
+    if count_matrix is not None:
+        print("Using CountVectorizer")
+        run_clustering_algorithm(algorithm, test_data, count_matrix, features)
 
-    if raw_count_matrix is not None:
-        print("\nUsing CountVectorizer with raw data")
-        run_clustering_algorithm(algorithm, test_data, raw_count_matrix, features)
+    if raw_hash_matrix is not None:
+        print("\nUsing HashVectorizer with raw data")
+        run_clustering_algorithm(algorithm, test_data, raw_hash_matrix, features)
 
-    if entity_count_matrix is not None:
-        print("\nUsing CountVectorizer with entities")
-        run_clustering_algorithm(algorithm, test_data, entity_count_matrix, features)
+    if entity_hash_matrix is not None:
+        print("\nUsing HashVectorizer with entities")
+        run_clustering_algorithm(algorithm, test_data, entity_hash_matrix, features)
 
-    if token_count_matrix is not None:
-        print("\nUsing CountVectorizer with tokens")
-        run_clustering_algorithm(algorithm, test_data, token_count_matrix, features)
+    if token_hash_matrix is not None:
+        print("\nUsing HashVectorizer with tokens")
+        run_clustering_algorithm(algorithm, test_data, token_hash_matrix, features)
 
     if tfidf_matrix is not None:
         print("\nUsing TfidfVectorizer")
@@ -121,7 +140,7 @@ def generate_report(labels, test_data, tfidf_matrix, features, show_details=True
     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
     n_noise = list(labels).count(-1)
 
-    cluster_set = set(test_data["STORY"])
+    cluster_set = set(test_data[story_column])
     actual_clusters = len(cluster_set)
 
     cluster_dict = {}
@@ -129,7 +148,7 @@ def generate_report(labels, test_data, tfidf_matrix, features, show_details=True
         cluster_dict[cluster] = index
 
     labels_true = []
-    for story in test_data["STORY"].values:
+    for story in test_data[story_column].values:
         labels_true.append(cluster_dict[story])
 
     grouped_indices = collections.defaultdict(list)
@@ -142,8 +161,8 @@ def generate_report(labels, test_data, tfidf_matrix, features, show_details=True
             print("Group %d: \n" % key)
             print(indices)
             for index in indices:
-                print(test_data["ID"][index])
-                print(test_data["TITLE"][index])
+                print(test_data[id_column][index])
+                print(test_data[content_column][index])
                 print(get_features_from_matrix(tfidf_matrix[index].todense(), features))
             print("------------------------------")
 
@@ -151,8 +170,6 @@ def generate_report(labels, test_data, tfidf_matrix, features, show_details=True
     print("Estimated number of clusters: %d" % n_clusters)
     print("Estimated number of noise points: %d" % n_noise)
 
-    # The following scores have to be considered with a grain of salt, since the author of
-    # this incredible beautiful code doesn't fully understand it yet...
     print("Completeness: %0.3f" % completeness_score(labels_true, labels))
     print("V-measure: %0.3f" % v_measure_score(labels_true, labels))
 
@@ -167,8 +184,12 @@ def get_features_from_matrix(matrix, features):
 
 
 def load_test_data(nrows=None):
-    filepath = "test_data/uci-news-aggregator.csv"
-    return pandas.read_csv(filepath, nrows=nrows)
+    # filepath = "test_data/uci-news-aggregator.csv"
+    # filepath = "test_data/export.csv"
+    filepath = "test_data/clean_news.csv"
+
+    test_data = pandas.read_csv(filepath, nrows=nrows)
+    return test_data[test_data[content_column].notnull()]
 
 
 if __name__ == "__main__":

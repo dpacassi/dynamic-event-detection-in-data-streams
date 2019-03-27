@@ -4,3 +4,5 @@ __pycache__
 app/neo4j/data/*
 !app/neo4j/data/.gitkeep
 .env
+export.csv
+clean_news.csv

@@ -25,7 +25,7 @@ def get_tfidf_matrix(data, tokenizer=None):
 def get_hash_matrix(data, tokenizer=None):
     # https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.HashingVectorizer.html
     vectorizer = HashingVectorizer(
-        analyzer="word", stop_words="english", tokenizer=tokenizer
+        analyzer="word", stop_words="english", tokenizer=tokenizer, n_features=2**18
     )
     matrix = vectorizer.fit_transform(data)
 
