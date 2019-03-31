@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import collections
 
 from sklearn.metrics import accuracy_score, completeness_score, v_measure_score
+from sklearn.decomposition import LatentDirichletAllocation
 
 from preprocessing import (
     extract_entities,
@@ -21,9 +22,11 @@ from clustering import (
     apply_birch,
 )
 
+from sklearn.metrics.pairwise import cosine_distances, cosine_similarity, euclidean_distances
 
 id_column = "id"
 content_column = "newspaper_text"
+headline_column = "title"
 story_column = "story"
 
 
@@ -35,40 +38,77 @@ def main():
     print("Create data matrices.")
     text = test_data[content_column]
 
-    # tfidf_matrix, features = get_tfidf_matrix(text)
-    # count_matrix, features = get_count_matrix(text)
+    tfidf_matrix, _ = get_tfidf_matrix(text)
+    count_matrix, features = get_count_matrix(text)
 
-    raw_hash_matrix, features = get_hash_matrix(text)
-    entity_hash_matrix, features = get_hash_matrix(text, extract_entities)
+    raw_hash_matrix, _ = get_hash_matrix(text)
+    # entity_hash_matrix, features = get_hash_matrix(text, extract_entities)
     # token_hash_matrix, features = get_hash_matrix(text, extract_tokens)
+
+#    distances = cosine_distances(raw_hash_matrix)
 
     print("Cluster data.")
 
-    print("------------------------------")
-    print("DBSCAN:")
-    run_algorithm_with_different_vectorizers(
-        apply_dbscan,
-        test_data,
-        features,
-        count_matrix=None,
-        raw_hash_matrix=raw_hash_matrix,
-        entity_hash_matrix=entity_hash_matrix,
-        token_hash_matrix=None,
-        tfidf_matrix=None
-    )
+    # print("------------------------------")
+    # print("DBSCAN:")
+    # run_algorithm_with_different_vectorizers(
+    #     apply_dbscan,
+    #     test_data,
+    #     features,
+    #     count_matrix=None,
+    #     raw_hash_matrix=distances,
+    #     entity_hash_matrix=raw_hash_matrix,
+    #     token_hash_matrix=None,
+    #     tfidf_matrix=None
+    # )
 
-    print("------------------------------")
-    print("HDBSCAN:")
-    run_algorithm_with_different_vectorizers(
-        apply_hdbscan,
-        test_data,
-        features,
-        count_matrix=None,
-        raw_hash_matrix=raw_hash_matrix,
-        entity_hash_matrix=entity_hash_matrix,
-        token_hash_matrix=None,
-        tfidf_matrix=None
-    )
+    # print("------------------------------")
+    # print("HDBSCAN:")
+    # run_algorithm_with_different_vectorizers(
+    #     apply_hdbscan,
+    #     test_data,
+    #     features,
+    #     count_matrix=None,
+    #     raw_hash_matrix=distances,
+    #     entity_hash_matrix=raw_hash_matrix,
+    #     token_hash_matrix=None,
+    #     tfidf_matrix=None
+    # )
+
+    # Use hdbscan to estimate number of clusters and use the estimation for the LDA model.
+    # Inspired by https://www.multisensorproject.eu/wp-content/uploads/2016/11/2016_GIALAMPOUKIDIS_et_al_MLDM2016_camera_ready_forRG.pdf
+    labels = apply_hdbscan(count_matrix)
+    n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
+
+    print("Estimated %d Topics using hdbscan." % n_estimated_topics)
+    model = LatentDirichletAllocation(n_components=n_estimated_topics).fit(count_matrix)
+    # generate_report(result, test_data, raw_hash_matrix, [], True)
+    n_top_words = 20
+    for topic_idx, topic in enumerate(model.components_):
+        message = "Topic #%d: " % topic_idx
+        message += " ".join([features[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
+        print(message)
+    print()
+
+    document_matrix = model.transform(count_matrix)
+
+    # There must be a better way...
+    documents_by_topic = collections.defaultdict(list)
+    for row, document in enumerate(document_matrix):
+        max_topic_distribution_value = 0
+        max_topic_distribution_index = 0
+        for index, topic_distribution in enumerate(document):
+            if topic_distribution > max_topic_distribution_value:
+                max_topic_distribution_value = topic_distribution
+                max_topic_distribution_index = index
+
+        documents_by_topic[max_topic_distribution_index].append(test_data[headline_column][row])
+
+    for topic, news in documents_by_topic.items():
+        print('Topic: %s' % topic)
+        for headline in news:
+            print(headline)
+        print("------------------------------")
 
     # print("------------------------------")
     # print("OPTICS:")
@@ -194,3 +234,4 @@ def load_test_data(nrows=None):
 
 if __name__ == "__main__":
     main()
+Geroldchuchi
