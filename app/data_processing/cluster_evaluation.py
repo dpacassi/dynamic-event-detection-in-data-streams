@@ -4,7 +4,7 @@ import spacy
 
 from hdbscan import HDBSCAN
 
-from gensim.matutils import softcossim, cossim
+from gensim.matutils import softcossim
 from gensim import corpora
 import gensim.downloader as api
 from gensim.utils import simple_preprocess
@@ -86,7 +86,7 @@ class ClusterEvaluation:
         )
         document_matrix = model.transform(self.data_matrix)
 
-        lda_labels = utils.get_labels_and_documents_from_distribution_matrix(
+        lda_labels, documents_by_topic = utils.get_labels_and_documents_from_distribution_matrix(
             document_matrix, self.full_dataset
         )
         return lda_labels, n_estimated_topics
@@ -104,6 +104,7 @@ class ClusterEvaluation:
         nlp = spacy.load("en_core_web_sm")
 
         # Extract entities per document with spacy
+        # Maybe try different entity extractors? for example MITIE
         def extract_entities(data):
             # https://spacy.io/usage/linguistic-features#named-entities
             doc = nlp(data)
@@ -223,7 +224,7 @@ class ClusterEvaluation:
             )
         )
 
-        # Causes MemoryError and is veeery slow with the current implementation.
+        # Causes a MemoryError and is veeery slow with the current implementation.
         # labels, n_estimated_topics = self.hdbscan_soft_cossim()
         # results.append(
         #     utils.Result(
@@ -244,7 +245,7 @@ if __name__ == "__main__":
     story_column = "story"
 
     # Todo: Timing and different sample sets
-    dataset = utils.load_test_data(content_column=content_column, nrows=10)
+    dataset = utils.load_test_data(content_column=content_column, nrows=1000)
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
 
     results = ClusterEvaluation(dataset[content_column], dataset).run()
