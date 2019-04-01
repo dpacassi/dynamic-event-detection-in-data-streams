@@ -46,7 +46,10 @@ class ClusterEvaluation:
         return labels, n_estimated_topics
 
     # Result:
-    # Describe it a bit...
+    # First 1000 news articles with 27 clusters:
+    # Estimated number of clusters: 46
+    # Completeness: 0.644
+    # NMI score: 0.627
 
     ############################
 
@@ -65,7 +68,13 @@ class ClusterEvaluation:
     # Result:
     # The problem with the sklearn implementation of optics is, that it does not work with sparse arrays.
     # Since our word vectors can be quite large, while containing mostly zeros sparse matrices are
-    # required for efficient calculations.
+    # required for efficient calculations. Additionally it can be observed that the score is much lower
+    # than hdbscan. This is why we use hdbscan for the following clustering tasks.
+    #
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 21
+    # Completeness: 0.304
+    # NMI score: 0.100
 
     ############################
 
@@ -92,7 +101,10 @@ class ClusterEvaluation:
         return lda_labels, n_estimated_topics
 
     # Result:
-    # Describe it a bit...
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 46
+    # Completeness: 0.563
+    # NMI score: 0.619
 
     ############################
 
@@ -129,7 +141,10 @@ class ClusterEvaluation:
         return labels, n_estimated_topics
 
     # Result:
-    # Describe it a bit...
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 63
+    # Completeness: 0.339
+    # NMI score: 0.311
 
     ############################
 
@@ -145,6 +160,12 @@ class ClusterEvaluation:
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         return labels, n_estimated_topics
+
+    # Result:
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 79
+    # Completeness: 0.577
+    # NMI score: 0.632
 
     ############################
 
@@ -195,7 +216,7 @@ class ClusterEvaluation:
         return labels, n_estimated_topics
 
     # Result:
-    # Describe it a bit...
+    # So far not runnable due to memory restrictions.
 
     ############################
 
