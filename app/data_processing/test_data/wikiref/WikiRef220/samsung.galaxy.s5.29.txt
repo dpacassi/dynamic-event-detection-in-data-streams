@@ -1,0 +1,22 @@
+Google Has Strangled The Innovation Out Of The Samsung Galaxy S5's TouchWiz UI
+
+Samsung took to the stage at MWC this evening to introduce their next flagship smartphone. The Samsung Galaxy S5 will launch worldwide on April 11, and the South Korean company showed off the new hardware in Barcelona. The S5 hardware sports biometrics, fitness sensors, and waterproofing, along with a faster processor and improved screen when compared to the S4. What hasn’t changed is the user interface. Even if Samsung had wanted to bring a new paradigm to the platform, a recent agreement with Google forced the S5 to remain closely aligned to stock Android.
+
+The South Korean company has spent many years pushing TouchWiz, their own UI layer, onto the 200 million Galaxy S units sold, minimizing the moments where Google is visible to the customer and delivering an experience they believe is suitable for their user base. The problematic distance between Android and TouchWiz came to a head at this year’s CES with the announcement of the Samsung Galaxy Note Pro and Tab Pro, both sporting the new Magazine UX. A few days later Google and Samsung had signed a new global patent deal which included a number of restrictions on Samsung’s UI layer for Android.
+
+So it was with keen interest that I was watching the Galaxy S5 presentation this afternoon to see Samsung’s approach to the user interface after that agreement.
+
+Samsung Galaxy S5 (image: Samsung press)
+
+In Samsung’s words, the UI has been “refined to provide a clean and uncluttered look.” While the basic navigation is retained from the Galaxy S4, this more open and simple look is far closer to Google’s vision of a mobile UI than it is Samsung’s. The Galaxy S5 could easily have brought on board components of the Magazine UX to the 5.1 inch HD screen, it could have considered new presentational elements and paradigms that are proving a success on other handsets and mobile platforms, and it could have iterated on the user feedback of TouchWiz to create a newer and faster experience.
+
+Instead, Samsung has remained with a grid-based metaphor which forces users to go into an app, return to the home screen, and open another app. That does not sit well with the introduction of always connected peripherals (including the Gear 2 smartwatch and Gear Fit body tracker), a focus on photography, and improved connectivity to share more moments from life as quickly as possible,
+
+The Galaxy S5 does its best to stand out in hardware, but the majority of hardware is hidden behind the screen and the UI. Unfortunately Samsung has not been able to bring that same innovation to TouchWiz. As part of the aforementioned patent deal, Samsung agreed to “tone down TouchWiz, refocus on core Android apps over its own customisations, and cancel more radical customisations such as the magazine UX” (Forbes’ Gordon Kelly has more on this). The biggest loser in this is surely the Galaxy S5.
+
+It’s unlikely that we will know the pressure Google placed Samsung under to bias the TouchWiz, and therefore the Galaxy S5, towards a stock Android look but I would have expected the UI on the S5 to have received just as much additional detail and improved functionality as the hardware inside the flagship smartphone has. Instead I see a device that on first glance is a very slightly bigger Galaxy S4 with a new wallpaper.
+
+Samsung has been forced to pass over an opportunity to really differentiate their handset in the public’s eye through software. While the S5 is likely to sell upwards of 40 million devices over the next twelve months, the smartphone looks almost identical to the S4, more than a passing resemblance to the S3, and will struggle to stand out against a sea of almost identical interfaces on competing Android devices.
+
+While the South Korean company has the lion’s share of Android sales, the ability to customise the user interface and how their smartphone actually works has been taken away from them. Samsung has found the limit of innovation in Android, Google has spoken, and as a result the Galaxy S5's software is a shadow of what it could have been.
+

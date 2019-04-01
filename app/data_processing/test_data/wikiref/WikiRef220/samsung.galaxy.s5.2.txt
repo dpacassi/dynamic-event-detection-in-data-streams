@@ -1,0 +1,327 @@
+Samsung Galaxy S5 camera review
+
+Connect smartphone reviews are written with the needs of photographers in mind. We focus on camera features, performance and image quality.
+
+The S5 is the latest model in Samsung's line of Galaxy S flagship smartphones and replaces last year's Galaxy S4. The new model's camera comes with a slightly larger 1/2.6-inch CMOS BSI sensor and an increased pixel-count of 16MP (up from the S4's 13MP) but the maximum aperture remains unchanged at F2.2. Like its phablet sibling the Galaxy Note III, the S5 offers 4K video capture but has to make do without an optical image stabilization system.
+
+Samsung also claims to have improved AF speeds by implementing a phase-detection system, similar to what's being used in digital SLRs. Other new imaging features include real-time HDR processing , a new camera user interface and the Selective Focus feature that allows you to blur the background by taking two pictures at different focus settings and merging them, similar to Background Defocus on the Sony Xperia Z2 or Nokia's Refocus app.
+
+In terms of design, with its rounded corners, metal band around the edges and the faux-leather back, the S5 looks like a cross between Galaxy S4 and Note III. However, the new model is also dust and water resistant with an IP67 rating, which means you can keep snapping in adverse weather conditions. As you would expect from a Galaxy S device the non-camera components are top-notch, too. Android 4.4.2 is powered by a Qualcomm quad-core 2.5 GHz Snapdragon S801 processor and 2GB of RAM. Images can be stored on 16 or 32GB of internal memory or microSD-card and the 1080p Super AMOLED screen measures a generous 5.1 inches. Read on to find out if and how all the high-end specifications translate into mobile photography performance.
+Key Photographic / Video Specifications
+
+    1/2.6-inch 16MP BSI CMOS sensor
+    F2.2
+    31mm focal length (35mm equivalent)
+    4K video recording
+    2MP front camera
+    Slow motion video
+    Electronic image stabilization
+
+Other Specifications
+
+    Qualcomm Snapdragon S801 2.5GHz quad-core processor
+    2GB RAM
+    16/32GB internal memory, microSD slot up to 64GB
+    Android 4.4.2 (Kitkat)
+    5.1-inch Super AMOLED screen (1920 x 1080)
+    Dust and water resistant (IP67) 
+    NFC
+    Pulse meter
+    2800mAh Battery 
+
+Our 11-page review
+
+We've considered every aspect of the Samsung Galaxy S5, with the photographer in mind. We examined the user interface of the native camera app and its special features. We experimented with the camera's performance when taking stills and video, and had a play with the device's many special feature modes. Click any of the links below for more information of specific functions and continue to our conclusion for a final summary of our findings.
+
+In terms of hardware the Samsung Galaxy S5 offers some of the best you can find in a 2014 flagship smartphone.  The device is powered by one of Qualcomm's currently most powerful SoCs, a 2.5 GHz Snapdragon S801 quad-core unit. The S5 offers 2GB of RAM and users can pick between versions with 16 or 32 GB of storage. If you need more space for your images there is a microSD card slot, too.
+
+The Android 4.4.2 OS is controlled via a 5.1-inch 1080p Super AMOLED touchscreen that offers very good viewing angles and brightness. Compared to the predecessor the screen has grown slightly but comes at the same 1080p resolution. A couple of recent high-end devices, the Oppo Find 7 and LG G3, haven overtaken their Samsung rival in this respect by offering qHD screens with the staggering resolution of 2560 x 1440 pixels. Also worth mentioning are the fingerprint sensor and microUSB 3.0 port.
+
+The Galaxy S5 does not disappoint in terms of camera hardware either. The 1/2.6-inch CMOS BSI sensor has not quite the same dimensions as the 1/2.3-inch sensors in most consumer level compact cameras or Sony's Xperia Z1 and Z2 but is larger than the tiny 1/3-inch sensors used in most smartphones including the S5's predecessors. At F2.2 the maximum aperture remains unchanged though and the new model still does not come with an optical image stabilization system. In terms of AF Samsung uses a new approach (at least among smartphone makers) by adding phase detection sensors to the usual contrast detect system.
+
+With its rounded corners, metal band around the edges and the faux-leather back, the S5 looks pretty much like a smaller version of the Galaxy Note III phablet and as such a little bland. The S5 does not have the minimalist look nor the premium feel of metal and glass dominated devices, such as the HTC One M8 or Sony's Xperia Z models but still gives you the impression of being a solid device. It's also water- and dust resistant with an IP67 rating, which allows you to take photos in the rain or on the beach without having to worry about your expensive device.
+
+Like most current high-end Android phones the S5 is quite large and if you have smaller hands probably too large for one-handed operation. Nevertheless when using the device as a camera and holding it with two hands it feels natural and thanks to their positioning there is very little danger of obscuring lens or flash with a finger.
+
+The S5 is one of the few Android phones that still offers a physical home button. We prefer the on-screen versions of the competition but this is arguably a matter of personal taste. Additionally you get the power button on the right and volume rockers on the left side of the device but no dedicated two-way shutter button.
+
+The Galaxy S5 does not have a physical shutter button to open the camera app, so you have to tap on the camera icon or you can activate a camera short-cut on the lock-screen via the settings menu. The latter is not quite as quick as the shutter-button solution on the Sony Xperia Z devices or the Nokia Lumias but still gives you easy access to the camera.
+
+The camera app opens swiftly and once inside things are pretty straightforward. You press the shutter button on the right to capture an image and tap on the screen to focus. If that's one step too many for you, 'tap to take pics' can be activated in the settings menu.  
+
+Exposure is not linked to the focus point, so you cannot influence the brightness of an image by focusing on a specifically dark or bright area of the preview image. That wouldn't be much of a problem if the S5' exposure compensation option would not be buried deep in the menu. However, you have to enter the gear menu and then scroll down all the way to the bottom before you'll find the option. This process is more long winded than you'd wish but you can obtain better control over exposure on the Galaxy S5 by installing a third-party camera app, such as Camera FV-5 or Google's own Camera app.
+
+It seems the S5 camera app wants to offer anything you could possibly do with a smartphone camera in one single app. However, despite the large number shooting modes and options, the control structure is quite well thought-out and pretty intuitive. There is a column of four shortcuts on the left side of the screen and you can pull any of the option tiles in the settings menu to one of the shortcut slots to customize your UI. The default shortcuts are front/rear camera switch, selective focus, HDR mode and the menu.  You can also change the order of items within the settings menu. Here you've got access to ISO, video mode and digital image stabilization among other parameters.  
+
+The Mode button below the virtual shutter button gives you access to the S5's special shooting modes that we'll talk more about on the features pages in this review. Overall Samsung's newly redesigned camera app offers a lot of features and functions and is well structured, but those who want exposure compensation or a simpler approach to smartphone picture taking might want to look for alternatives in the Google Play Store.
+
+Features
+
+The Galaxy S5's camera app comes with many features and functions that we've already seen on the Galaxy S4, so in this section we have focused on the most important and new ones. To make the S4's already very busy user interface not feel even more cluttered Samsung has decided to remove a few of the old modes, such as Animated Photo, Sports Shot and Sound & Shot, and make them available as optional downloads for those who really want or need them. 
+
+Some modes, such as the new Selective Focus, can be found in the menu, others are accessible through the mode button. Read on to find out how they performed in our test.
+Rich Tone (HDR Mode)
+
+The Galaxy S5's HDR mode works in a similar way as on most other devices. The camera takes three frames at varying exposures in quick succession and combines them into one 'High Dynamic Range' image. The S5's 1/2.6-inch sensor is a little larger than the tiny 1/3-chips on most smartphones but its dynamic range is, compared to most dedicated cameras, still limited, so this feature can be a life saver when shooting high contrast scenes.
+
+Overall the S5's HDR mode is one of the best we've seen so far and there is a strong case to be made for leaving it on all the time. There are no parameters to play with but the S5 Rich Tone mode produces very natural results with additional highlight and shadow detail, adapting its intensity to the scene automatically. In the first sample below Rich Tone recovers some detail in the sky and lifts the shadows just a touch, without giving the scene an artificial look.
+
+In the sample below the impact on highlight detail is only minor but the dark shadows inside the abandoned building are lifted moderately to reveal additional shadow detail. Shadow noise is well-controlled and the end results still look natural.
+
+
+When looking at the full-size image you can see that there is no ghosting on the cyclist in the scene and generally subjects that are moving at moderate speed are dealt with very well. We hardly came across any ghosting or blurring in the many HDR images we shot for this review.
+
+The intensity of the effect appears to be adapted automatically depending on the scene. In the sample image below the strong back light caused the camera to meter for the sky and underexpose the lawn and building in the lower half of the frame. Rich Tone detects this underexposure and lifts the shadows quite extremely. Nevertheless the end results is more than usable, with decent detail and noise levels.
+
+Panorama
+
+The panorama app seems to be working in a very similar way to the Galaxy S4's and the results are equally impressive. Image size varies between shots but landscape panos tend to be around 20,000 pixels wide and around 3000 pixels tall. Vertical panoramas aren't as wide but, as you'd expect, a little taller. In any case they offer more image detail than most other panorama modes we have seen.
+
+Stitching and exposure are typically fine too, but occasionally you'll find some ghosting on moving subjects, or, like in the first sample below, a subject that appears twice in the scene. That said, overall the S5's panorama mode is dealing well with motion in the scene and its image output is suitable for large format printing. You can shoot both in landscape or portrait orientation and if you don't want or need to capture a full 360-degree panorama, you can press the shutter button any time to stop. The app will then create a panorama with the images you have recorded up to that point.
+
+Dual Shot and front camera
+
+The Galaxy S4 was the first smartphone capable of recording images from its front- and rear cameras simultaneously and of course its successor comes with the same feature. Dual Shot mode allows you to capture images with both cameras at the same time and create a picture-in-picture effect with a variety of frames to surround your front-facing camera capture.
+
+Like on the S4 the default is a stamp frame that creates a postcard effect when combined with a scenic vista. The size of the inserted image and frame is adjustable, in the sample below we are showing the maximum dimension. 
+
+The front camera offers a fairly standard 1080p Full-HD resolution which is in line with most of the competition but cannot keep up with the 5MP and 8MP equivalents in the HTC One M8 and Huawei Ascend P7 respectively. As you would expect the image quality is far inferior to the rear camera module, with a lot of detail blurring through noise reduction and noise in low light, but it's good enough for the occasional selfie or Dual Shot image in decent light.
+Night Mode
+
+The Galaxy S5's Night Mode avoids intrusive noise by blending a quick burst of frames into one image and averaging out the noise. The mode works in a very similar way to what we've seen on previous models but it appears this latest version has slightly improved at dealing with moving subjects. The latter can still create artifacts but at least on slow moving subjects, such as walking persons, ghosting is hardly noticeable. Nevertheless it is still recommendable to avoid any camera shake while capturing the burst. 
+
+While on the S4 with its maximum ISO of 1000 one of the mode's main advantages was the ability to still achieve a decent exposure in very low light, on the Galaxy S5 with its higher maximum ISO of 2000 this is less of an issue. You still get the benefit of cleaner images though, just keep in mind that you pay for the cleanliness with a total lack of fine detail and a slight image softness, as can be seen in the crops below.
+
+Features cont.
+Selective Focus
+
+It appears on the current generation of smartphone cameras some kind of fake narrow-depth-of-field effect is a must-have feature. Nokia started it all with the Refocus app, Sony's Xperia Z2 has Selective Focus and HTC even opted for a hardware solution with the Duo Cam. However, even if you have an older or lower-spec phone you don't have to live without this kind of effect as it is now also available in the latest version of the Google Camera App that can be downloaded free of charge on the Google Play Store and runs on most devices.
+
+So far none of those variations of the same thing, even the HTC hardware solution, have been able to convince us. Rather than creating a smooth fall-off in sharpness they introduce a very abrupt transition and the foreground/background separation tends to lack precision, giving the images an artificial look. Sadly the Samsung version, also called Selective Focus, is no different . The mode takes a series of images at different focus settings and then lets you choose a focus point after capture and save your preferred image. According to instructions you should not be any farther from the subject than 1.5 feet and the background should be at least three times that distance from the subject.
+
+In reality the mode simply doesn't work most of the time, even if you stick to the recommended subject/background distances. I tried the feature with living subjects and static scenes but almost always my efforts were followed by a 'Subject not detected' message which means the effect could not be applied.
+
+The sample above is one of the few that actually let me choose the focus point. As you can see I was able to set the focus on the Nowitzki action figure in the foreground and the garden scenery in the background. However, the image would not let me select the Pan Focus option. All in all most users won't be too bothered by the limited functionality of the mode but given it is there, Samsung should make sure it improves its operation with a software update at some point.
+Virtual Tour
+
+Virtual Tour is another new feature and lets you create an interactive virtual tour by combining several still shots using pans, zooms and fades to create smooth transitions. The app also guides you in terms of framing of those shots. The end result can be viewed in an interactive Google Streetview-like fashion in the gallery or can be saved as a video.
+
+You'll have to have a specific use case for this feature but it's a good way of virtually showing you around a home, office or other space. Below you can enjoy a video that was taken at my parent's house, showing the route from the terrace into my first floor temporary office space.
+
+As you can see the transitions and stitching are far from perfect but in certain circumstances that don't require professional grade quality the feature could be useful and preferable to a standard video.
+Filter effects
+
+There is a plethora of filter apps available on the Google Play Store but for those who want the feature out of the box Samsung includes a range of effects in the default camera app. There are twelve filters in total and most of the effects we've seen before on previous Samsung devices. The list of filters can be customized, so you don't always have to scroll through the entire list if you only tend to use a few of the available effects.
+
+The filters are all pretty standard fare and don't offer any control over the strength of the effect. They have the advantage of live preview and are fun to play with but most users will likely find third-party editing apps, such as Pixlr Express or Snapseed, that give you more control, more useful. Then of course there is also Instagram and its various clones.
+
+Shot & More
+
+The Shot & More mode combines the Best Photo, Best Face, Drama Shot and Eraser features we already know from the Galaxy S4 and adds Panning Shot to the mix, to make for a less cluttered user interface. In Shot & More mode the camera takes a burst of shots and then offers a variety of options, depending on the moving subjects that have been captured during the burst.
+
+Best Shot suggests the best image from your burst but also allows you to pick your favorite manually. Best Face does the same for images with human subjects, putting a focus on open eyes and smiles. Drama shot allows you to create an action composite image and Eraser to delete unwanted objects that moved through the scene while you were capturing the burst. Finally, Panning Shot identifies moving subjects and allows you to apply a blur effect to the rest of the image, giving it a fake panning effect. 
+
+Overall the Shot & More features have a rather gimmicky character and the results are never quite predictable. They are fun to play and experiment with for a while but most mobile photographers won't use them on an ongoing basis.
+
+Gallery App
+
+The Samsung Galaxy S5's Gallery App is more comprehensive than most default Gallery apps. It comes with a good selection of editing options, including selection tools for selective editing of image areas. There are a few new filter options, including some light streak effects, but overall the app is similar to what we've seen on previous Samsung devices.
+
+The app offers all the standard editing options such as rotation, cropping and a range of color and tonal modifications, but you also get a number of filter effects, frames and the option to draw on the images or put "stickers" on them. You can also share images to social networks, other devices or other apps. 
+
+Overall the gallery app offers a lot to play with and is well worth a closer look if you haven't found your favorite editing app in the Google Play Store yet. 
+
+Image Quality and Performance
+
+With its cutting edge hardware and latest Android version the Galaxy S5's performance is impressive all around. Apps open up quickly, scrolling and swiping is very smooth and processing tasks, for example in editing apps, take very little time. In our test only the gallery app seemed a bit sluggish at times but Samsung has fixed that with a firmware update, so make sure you have the latest software version running if your gallery seems a little slow. 
+
+With Burst Shot activated in the settings the camera captures 30 shots in approximately two seconds. While this is quite an impressive number, as usual you don't have any control over shutter speed, so in low light you will inevitably end up with motion blur due to a slow shutter. This makes the mode pretty much unsuitable for the capture of indoor action.
+
+The performance of the new phase detect AF system is reasonably fast in good light but not noticeably quicker than the competition with more conventional systems. However, in low light the S5 AF is one of the best, with fast and reliable performance even in very dim conditions. We found very few focus errors in our hundreds of samples shot while working on this review. 
+
+It's also worth mentioning that the S5's battery performance is quite impressive, taking us easily through the day, even with heavy use. However, not only does the battery last long, it also charges quicker than most other devices we have used. So even if you do run out of juice on the Samsung, it'll take little time with the charger plugged in for you to get going again.
+
+With its 16MP 1/2.6-inch BSI CMOS sensor the Galaxy S5 offers one of the most intriguing camera specs among current smartphones. Read on to find out how the high pixel count and slightly larger than usual sensor translate into real-life image quality.
+Daylight, Low ISO
+
+In good light the Samsung Galaxy S5 produces some of the best image output we have seen from a smartphone. Despite some blurring of fine low-contrast detail the S5 captures excellent detail with just the right amount of sharpening. At a 100% view the images look crisp without being oversharpened. 
+
+Some grain can be seen in shadow areas or areas of plain color but it's all within well acceptable smartphone levels and at low ISOs noise reduction is less intrusive than on most other mobile devices. The high pixel count makes the Samsung's images more vulnerable to lens imperfections though and you'll find some softness towards the edges of the frame.
+
+The images are free of artifacts, chromatic aberrations are well-controlled by the JPEG-engine and we could not find any moiré patterns in our samples. Colors tend to be a touch saturated and images are usually well exposed, although the HDR mode can be a useful tool in high-contrast scenes.
+
+The samples below show how much detail is captured by the Galaxy S5 camera. There is some smearing of detail in the distant foliage but overall the levels of detail are excellent for a smartphone. In the right image you can see some of the edge softness mentioned above. 
+
+Both images below show again good detail but on the left the S5's relatively strong saturation leads to an unnaturally warm rendering of skin tone. In the right image you can see that in bright and contrasty conditions the Samsung is, like most smartphone, prone to highlight clipping.
+
+These are two more samples to demonstrate the level of detail captured by the S5 camera. For flower shots, like the image on the right, captured in Macro mode, the high saturation works better than for portraits.
+
+Low Light, High ISO
+
+In lower light the Samsung Galaxy S5 again performs well. Good color is maintained across the ISO range and well-balanced noise reduction means that, while grain is visible at all sensitivities, it never becomes too intrusive or turns into ugly looking "noise-blotches". Traces of chroma noise are visible at large magnifications from early on but overall color noise is again well-controlled across the ISO range. The S5's high megapixel count also means that when images are down-sampled for web use or social sharing noise is averaged out, making even the ISO 2000 exposures usable for those purposes. 
+
+Like on most smartphones the S5 uses very slow shutter speeds in low light to keep the ISO down. Without an optical image stabilization system this often leads to a slight softness through camera shake. If you need a 100% sharp low light shot it is therefore always recommendable to shoot a batch of images to increase your chances of having at least one good one. 
+
+For the indoor portrait below the S5 only has to raise the ISO to 200 but increased noise levels are noticeable in the shadow areas if you view at 100%. Overall the image is still pretty clean though. The bigger problem is the slight overall softness caused by camera shake and the relatively slow shutter speed. In situations like this we would prefer the camera to opt for a slightly higher ISO and accept a touch more noise in return for a shake-free image. The ISO 320 image on the right shows some loss of detail at 100% but looks clean with pleasant colors when viewed at only slightly smaller sizes.
+
+Shadow noise and blurring of detail through noise reduction becomes more obvious as the ISO increases but again you have to zoom pretty far into the images below before those imperfections become too intrusive. The camera used a shutter speed of 1/17 sec for both images which poses a high risk of camera shake. Both pictures are the sharpest out of a series including various slightly blurry exposures.
+
+Compared to the output of many other smartphones the Galaxy S5's output still looks decent at the highest ISOs. There is a lot of grain but still some fine detail left. Edge sharpness is still good and chroma noise well under control. Color is maintained very well.
+
+For the image on the left the camera selected an unusually high shutter speed of 1/100 sec which freezes the motion of the moving subjects but also pushes the ISO to 1250. Nevertheless the image is still more than usable on the web or in social media. The same is true for the right image for the capture of which the S5 pushed ISO to its highest setting, ISO 2000.
+
+Flash
+
+Tiny LED flash units mean that flash use on smartphone cameras is generally best avoided. Low output power often leads to noisy images and blurry subjects. The Samsung Galaxy S5 is no exception but still performs at least slightly better than many competing devices. 
+
+Its LED flash provides enough power to keep the ISO relatively low, even in very low light, and by doing so can reduce image noise and maintain more detail than many competitors. As you can see in the samples below skin tones are rendered a little warm but that's arguably preferable to the cool color casts you'll get from some other devices. Red-eye effect is very well controlled as well.
+
+As with most smartphones the only control over flash exposure you have is to switch it on, off or into Auto mode. The shutter speed of 1/30 sec is not going to freeze any fast motion but should help you get reasonably sharp images in most circumstances. 
+
+Summary
+
+The Galaxy S5 is Samsung's latest flagship smartphone and successor to the Galaxy S4. It comes with a 16MP BSI CMOS sensor, an F2.2 maximum aperture, 4K video capture and phase detection AF, but has to make do without an optical image stabilization system.
+
+Android 4.4 is powered by the latest generation Qualcomm quad-core 2.5 GHz Snapdragon S801 processor and 2GB of RAM. The Super AMOLED screen measures 5.1 inches and comes with the same 1080p resolution as the S4. You can choose between 16GB or 32GB versions and storage can be expanded via a microSD slot. 
+
+With a DxOMark Mobile score of 79 the Samsung Galaxy S5 shares the number one spot in the DxOMark smartphone rankings with the Sony Xperia Z2, placing itself in front of the Nokia 808 and the Sony Xperia Z1. 
+
+The DxOMark team reports that the Galaxy S5 images show 'good auto-exposure, pleasant, rich and realistic colors, good white balance, low noise levels in low light conditions and good sharpness and details in the center of the frame.' The testers found 'almost no color fringing or ringing' and liked the 'good image quality with flash.'
+
+On the downside there is 'a noticeable loss of detail in low light conditions and non-uniform sharpness across the image field.' The team also found the AF not to be always accurate in Auto Mode.
+
+In video mode the Galaxy S5 produces the 'best mobile video tested to date', with 'good autofocus and good textures.' On the downside there are 'visible color non-uniformities in some light conditions.'
+
+Still Photography
+Color, Exposure and Contrast
+
+The DxOMark team found that the Samsung Galaxy S5 images show 'good auto-exposure even in difficult outdoor situations, pleasant, rich and realistic colors in all light conditions and overall good white balance.'
+
+However, the testers also found that 'in high dynamic range scenes, images can be slightly burnt out' and 'with some indoor tungsten lighting a slight color shading can be noticed.'
+
+Overall DxOMark awarded the Samsung Galaxy S5 scores of:
+
+    4.5 out of 5 for Exposure
+    4.5 out of 5 for White Balance accuracy
+    4.0 out of 5 for Color shading in low light*
+    4.0 out of 5 for Color shading in bright light*
+    3.0 out of 5 for Color Rendering in low light
+    4.5 out of 5 for Color Rendering in bright light
+
+*Color Shading is the nasty habit cellphone cameras have of rendering different areas of the frame with different color shifts, resulting in pictures with, for example, pinkish centers and greenish corners.
+Noise and Details
+
+DxOMark's engineers reported the that when shooting with the Galaxy S5 'a lot of detail is visible across the frame' with 'low noise levels in low light conditions'. The testers found the S5's noise and detail levels to be 'better than the Galaxy S4'. On the downside there is a 'noticeable loss of details in low light conditions.'
+Texture Acutance
+
+Texture acutance is a way of measuring the ability of a camera to capture images that preserve fine details, particularly the kind of low contrast detail that can be blurred away by noise reduction or obliterated by excessive sharpening (such as fine foliage, hair or fur).
+
+Sharpness is an important part of the quality of an image, but while it's easy to look at an image and decide visually whether it's sharp or not, the objective measurement of sharpness is less straightforward.
+
+An image can be defined as 'sharp' if edges are sharp and if fine details are visible. In-camera processing means that it's possible to have one of these (sharp edges) but not the other (fine details). Conventional MTF measurements tell us how sharp an edge is, but have drawbacks when it comes to measuring fine detail preservation. Image processing algorithms can detect edges and enhance their sharpness, but they can also find homogeneous areas and smooth them out to reduce noise.
+
+Texture acutance, on the other hand, can qualify sharpness in terms of preservation of fine details, without being fooled by edge enhancement algorithms.
+	
+
+A dead leaf pattern is designed to measure texture acutance. It's obtained by drawing random shapes that occlude each other in the plane, like dead leaves falling from a tree. The statistics of this model follow the distribution statistics in natural images.
+	
+
+In this example from a DSLR without edge enhancement, sharpness seems equal on edge and on texture. Many details are visible in the texture.
+	
+
+In this second example, edges have been digitally enhanced, and the edge looks over sharp, with visible processing halos ('ringing'). On the texture part, many details have disappeared.
+
+At first sight, the images from these two cameras may appear equally sharp. A sharpness measurement on edges will indeed confirm this impression, and will even show that the second camera is sharper. But a closer examination of low contrasted textures shows that the first camera has better preservation of fine details than the second. The purpose of the texture acutance measurement is to qualify this difference.
+Note: Acutance is a single value metric calculated from a MTF result. Acutance is used to assess the sharpness of an image as viewed by the human visual system, and is dependent on the viewing conditions (size of image, size of screen or print, viewing distance). Only the values of texture acutance are given here. The measurements are expressed as a percentage of the theoretical maximum for the chosen viewing condition. The higher the score, the more details can be seen in an image. 
+ 
+For all DxOMark Mobile data presented on connect.dpreview.com we're only showing 8MP equivalent values, which gives us a level playing field for comparison between smartphone cameras with different megapixel values by normalizing all to 8MP (suitable for fairly large prints). DxOMark also offers this data for lower resolution use-cases (web and onscreen). For more information on DxOMark's testing methodology and acutance measurements please visit the website at www.dxomark.com.
+
+Flash
+
+DxOMark scored the Samsung Galaxy S5 82/100 overall for its flash performance which is three points less than the Sony Xperia Z2.
+Pros: 
+
+    Good detail preservation, accurate white balance and color 
+
+Cons:
+
+    Some white balance errors in mixed light 
+    No red eye correction
+
+Overall DxOMark Mobile Score for Photo: 79 / 100
+Video Capture
+
+DxOMark engineers put phone cameras through a similarly grueling set of video tests, and you can read their full findings on the DxOMark website here. Bottom line: DxOMark found the Samsung Galaxy S5's overall video performance to be the best of all devices tested so far, with nice textures and good AF. Only in some light conditions the Samsung can struggle with color reproduction. 
+Pros: 
+
+    Best mobile video tested to date
+    Well balanced video mode, without any major flaws
+    Good autofocus
+    Good texture
+
+Cons: 
+
+    Visible color non-uniformities in some light conditions
+
+In our brightly lit studio scene the Samsung Galaxy S5 can take advantage of its 16MP sensor and resolves more detail than most of the competition. This is true for high-contrast detail as it can be found in the resolution charts in our test scene as well as low-contrast in the feathers and fabrics.
+
+Well-balanced sharpening means that edges look crisp without any halos or other sharpening artifacts and low levels of noise reduction at base ISO ensure less blurring of fine detail than the competition and pleasant rendering of low-contrast areas in the frame. The image is also pretty clean, with very little noise in areas of plain color and no artifacts, but a touch of lens softness is noticeable towards the edges of the frame. 
+
+In our low light studio tests the Samsung Galaxy S5 opts for a relatively high ISO 1250 to achieve a slightly brighter exposure than some of the competition but thanks to a well-balanced approach to noise reduction edge detail is still very well maintained. At such high sensitivities fine low-contrast detail suffers noticeably but but can still more than keep up with the competition.
+
+There is visible grain in the image but it's not blurred into unsightly 'blotches' by noise reduction and overall the S5 output looks cleaner and more artifact-free than most of the competition's low-light samples. Color is also maintained well and chroma noise is very well controlled. Downsizing the Samsung images for web-use and social sharing will average noise out further and make even images shot at the highest sensitivities usable.  
+
+Conclusion
+Conclusion - The Good
+
+    Excellent image detail in bright light
+    Good balance between detail and noise reduction across ISO range
+    No chromatic aberrations, purple fringing, moiré or other artifacts
+    Good color maintained up to the highest ISO settings
+    Decent flash performance
+    Good video quality, 4k, HDR and slow motion modes
+    Responsive performance
+    Comprehensive camera feature set
+    Good HDR mode
+    Panorama mode produces very large and detailed images
+    Comprehensive editing options in gallery app
+    Partly customizable camera UI
+    microSD slot offers expandable storage for images and video
+    Removable battery with fast charging
+    Water- and dust-resistant body (IP67)
+
+Conclusion - The Bad
+
+    Some image softness towards the edges of the frame
+    Exposure compensation buried in menu
+    No optical image stabilization and slow shutter speeds mean danger of camera shake in low light
+    Fairly strong saturation can lead to unnatural skin tones in portraits
+    Selective Focus feature pretty much unusable
+
+Overall Conclusion
+
+Opinions might be split about the Galaxy S5's design and choice of body materials but looking at the pros and cons list above it's clear that Samsung's latest flagship smartphone has a lot to offer to mobile photographers. 
+
+The camera's 1/2.6-inch BSI CMOS sensor captures excellent image quality with very good detail in bright light and well-balanced noise reduction across the ISO range. The only major points of criticism are a total lack of control over exposure in the default camera app and the the slow shutter speeds in low light which, without optical image stabilization, can result in slightly soft images. That said, at least the former issue can be solved easily by installing a third party alternative. 
+
+Feature lovers will appreciate both the camera and gallery apps which are packed with shooting modes and editing functions. Many of them are of a rather gimmicky nature but the arguably most used ones, such as HDR and panorama mode, deliver excellent results.
+
+Movie mode offers good image quality and features, too. Throw excellent battery life, fast charging and a water- and dust proof body into the mix and you got yourself a device that most mobile photographers will have a lot of fun with. 
+Features & Operation
+
+The Samsung Galaxy S5 comes with high-end hardware all around and is therefore very responsive in general operation and performs most tasks swiftly without delays. Initially the gallery app felt a little sluggish but Samsung has fixed this with a software update, so if picture browsing and editing is a little slower than it should be on your S5 make sure you have the latest software installed.
+
+The camera app offers one of the most comprehensive feature sets with an abundance of modes and functions that'll take you a good while to explore. If that's still not enough you can download and install more shooting modes from the Samsung App Store. Some of the features have a slightly gimmicky character or, like the new Selective Focus, simply don't work very well but the two special modes that arguably matter most to many users, HDR and Panorama mode, work very efficiently and produce great results.
+
+The sheer number of options can make the camera app appear a little overwhelming and one by many users frequently used option, exposure compensation is buried in the menu and difficult to get to. You cannot link exposure to the focus point either. So, to capture that low- or high-key image with ease or simply have some more creative freedom you'll have to install a third-party camera app like FV-5 or Google's own camera app.
+Image Quality
+
+In good light the Samsung Galaxy S5 camera captures some of the best detail we have seen on a mobile device. As usual on smartphone cameras there are traces of noise in areas of plain color and some blurring of fine low-contrast detail but overall the Samsung's image output is excellent, with good exposure, well-balanced sharpening and no artifacts, such as moiré patterns or chromatic aberrations. The only minor points of criticism are a touch of lens softness towards the edges of the frame and a pretty strong saturation that can result in slightly unnatural skin tones. 
+
+In lower light the Samsung Galaxy S5 again performs well but the lack of an optical image stabilization and slow shutter speeds mean that some low light image suffer from a slight softness due to camera shake. If you need a 100% sharp low light shot it is therefore recommendable to shoot a batch of images to make sure you have at least one good one. 
+
+Other than that low light images show good color across the ISO range. Traces of chroma noise are visible at large magnifications but overall color noise is very well under control. The grainy kind of noise increases as you go up the ISO scale but never becomes too intrusive and even images taken at the highest sensitivity, ISO 2000, are suitable for web use and sharing in social media. The Galaxy S5 high pixel count means that when images are downsampled for web use or social sharing noise is averaged out.
+The Final Word
+
+The Samsung Galaxy S5 combines a very comprehensive imaging feature set with the best image quality we have seen on an Android device so far. The camera on Samsung's flagship smartphone could be further improved with an optical image stabilization system but even without OIS the S5 is an easy recommendation to any mobile photographer using Google's mobile OS.
+

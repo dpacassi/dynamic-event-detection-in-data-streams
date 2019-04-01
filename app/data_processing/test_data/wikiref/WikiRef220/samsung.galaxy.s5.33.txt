@@ -1,0 +1,10 @@
+Big carriers remove Samsung’s ‘Download Booster’ from the Galaxy S5
+
+Samsung loves to pack its phones with tons of software features, but one that customers won't get to see almost anywhere in the US is the new "Download Booster," which combines a user's Wi-Fi and LTE connection to speed up downloads. US carriers aren't overly fond of anything that might increase customers' data usage unless they can charge extra for it, so three out of the four major carriers have removed Download Booster from their devices.
+
+Between reports from Android Police and FierceWirelessTech, we have confirmation that AT&T, Sprint, and Verizon have all shipped the S5 without the feature. AT&T was quoted by FierceWirelessTech as saying, "We are evaluating Samsung's download booster feature. We thoroughly test new software, features, and functionality to ensure that it meets our standards for a quality user experience."
+
+We've seen many carriers step in to disable features they don't like. The most common example is putting a paywall in between a user and the mobile hotspot feature built into most mobile OSes or disabling video chat over the cellular connection. Still, it's been a while since we've seen an ISP exert such a high amount of control over the devices they sell.
+
+Even if the feature were available, we're not sure how useful it would be. If you are one of the few holdouts on a truly unlimited data plan, the download booster is probably right up your alley. But with a 20Mbps LTE connection and a 2GB monthly data limit, it's possible to blow through your monthly allowance in 15 minutes. So most of us carefully track our mobile data use—if a Wi-Fi connection is available, we'd gladly save our mobile bytes and download slightly slower over Wi-Fi only. Either way, the carriers get what they want.
+

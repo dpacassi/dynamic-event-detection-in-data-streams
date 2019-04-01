@@ -1,0 +1,70 @@
+Samsung Galaxy S 5 Review
+
+ Platform Power
+
+The Galaxy S 5 includes Samsung's hallmark removable back cover and battery. The GS5 uses a 10.78Wh (2800mAh @ 3.85V) battery. The modest increase in battery capacity over the Galaxy S 4 is only a small part of the story. With the GS5, Samsung significantly improved the overall platform power story compared to the Galaxy S 4 (even more so than HTC's M7/M8 transition).
+
+The move to a Snapdragon 801 SoC brings with it all of the performance and power efficiency benefits of the design and its updated 28nm HPm manufacturing process. The connectivity side sees a big improvement in power efficiency thanks to the use of Qualcomm's QFE1100 envelope tracker. Samsung also significantly reduced display power consumption on the GS5 compared to the GS4, which is likely the result of higher quantum efficiency (more brightness for less power), and panel self refresh. The result is a device that's bigger, faster and at the same time, far more power efficient than its predecessor. To me the biggest benefit of having a removable back cover and removable battery is the ability to quickly instrument the device to measure power consumption. I did just that with the Galaxy S 5 (T-Mobile) and GS4 (AT&T) to help characterize the improvement in total device power. All of the numbers below are taken with both displays calibrated to 200 nits.
+
+ The GS4's display in particular was horribly inefficient, particularly at higher brightness values. The GS5 addresses that problem and appears to shoot for a sub-3W operating envelope in most situations. It is absolutely possible to get the device to draw more power than that however. Running a Speedtest while connected to T-Mobile's LTE network (with the display at minimum brightness), I measured an average power draw of 4.38W. With the display running at full brightness I measured 5.18W platform power draw while capturing 1080p video, and a whopping 6.54W while capturing 4K video. Assuming no thermal throttling, you could run through the GS5's battery in 1.64 hours by simply recording 4K video with the display set to max brightness.
+
+I characterized the GS5's display power as well for those of you who are interested. Note that all of this data was gathered with both cellular and WiFi connected, but all background sync tasks disabled. I'm not reporting absolute minimums here but rather an average over a short idle period.
+Galaxy S 5 Device Power vs. Display Brightness
+  	Minimum Brightness 	200 nits 	Max Brightness 	Max Brightness (w/ Boost)
+Idle at Home Screen 	456.2mW 	591.2mW 	754.4mW 	1274.9mW
+Idle Displaying White 	453.2mW 	  	1517.4mW 	2148.0mW
+
+You can see the impact content has on the AMOLED power draw by comparing the home/white rows. The GS5 display has a boost mode that kicks in when the ambient light sensor detects over 30,000 lux. The power penalty from running in this mode is pretty substantial as you'd expect. At worst, the GS5 will pull over 2W at idle while running in this max brightness boost mode. As is always the case, your display brightness has a big impact on battery life. If you run at max brightness you can conceivably run through your battery in 7 hours without doing anything at all. Run the display at 200 nits however (~60% on the GS5) and you can easily triple that battery life.
+Ultra Power Saving Mode
+
+The Galaxy S 5 has two low power modes that can be manually triggered: power saving and ultra power saving. The former offers the usual control over the CPU governor, limiting max frequency to 1.5GHz but keeping all four cores plugged in. You can also force the display into grayscale mode and choose to block background data.
+
+Ultra power saving mode is the big new feature of the Galaxy S 5. In this mode all running apps are forced to quit, the display switches to grayscale mode, max brightness is clamped to 87 nits and the display refresh rate is reduced from 60Hz to 30Hz. When the screen turns off, ultra power saving mode turns off mobile data.WiFi and BT are also disabled upon entry (although you can manually re-enable them). Also in UPSM, Samsung disables two of the Krait 400 cores and caps the remaining two at 1.5GHz.
+
+You can only run a handful of apps in ultra power saving mode, including Samsung's own browser (Phone, Messages, Internet, Calculator, ChatON, Clock, Google+, Memo and Voice Recorder).
+
+Samsung claims that with only 10% left on your battery, switching into ultra power saving mode can give you up to 24 hours of standby time. To vet the claim I measured device power consumption while in UPSM. Just as before, this is total device power consumption measured at the battery.
+Galaxy S 5 Ultra Power Saving Mode
+  	Sleep 	Idle (Home Screen) 	SunSpider
+Ultra Power Saving Mode 	16.8 mW 	421 mW 	1231.2 mW
+Normal Mode (min brightness) 	21.5 mW 	  	2461.5 mW
+
+Assuming a full battery can deliver 10.78Wh and a battery drained to 10% of that capacity only has 1.078Wh, if the GS5 consumes 16.8mW asleep with the display off on average I'd expect just over 64 hours of standby battery life - well above Samsung's claim of 24 hours. In reality, if you look at the power draw curve while sleeping the GS5 will wake up periodically and draw 200 - 300mW for a second or two. My guess is that's where the 24 hours of estimated time comes in.
+
+Now keep in mind that if you're actively using the device you'll see substantially higher power consumption. Running SunSpider in UPSM cuts platform power in less than half compared to normal mode with the display set to minimum brightness, so there's definitely a tangible benefit to UPSM even under active use. In the same 10% scenario from above, running a heavy web browser workload would kill your battery in 26 minutes normally or 52 minutes in ultra power saving mode. It's not a silver bullet but sometimes another 30 minutes of battery life is all you need.
+Battery Life
+
+I put the Galaxy S 5 through our standard suite of battery life tests. As always, all of our battery life tests are run with the display set to 200 nits. We've documented our workloads in the past so I won't go through them again here. We're also working on populating our BaseMark OS II and GFXBench 3.0 battery life results so those charts may look a bit incomplete for now.
+
+The Galaxy S 5, like the new HTC One, sees a tremendous improvement in battery life thanks to the Snapdragon 801 platform. The move to an updated 28nm HPm process has a tangible impact on battery life compared to recent Snapdragon 800 designs. The increase in battery life compared to the Galaxy S 4 is incredible.
+
+We're also seeing a slight advantage to low power LTE battery life compared to WiFi in our test. Ultimately what this tells me is Snapdragon 801 is now fast enough to make our battery life test more display bound than anything else. It looks like it's time to build something new.
+
+The Galaxy S 5 falls behind the new HTC One by a little bit, especially if you consider the smaller capacity battery. I suspect this has more to do with display power consumption than anything else.
+
+Web Browsing Battery Life (4G LTE)
+
+Web Browsing Battery Life (WiFi)
+
+More often than not, when you’re faced with faster compute you end up doing more. To see what the other extreme of battery life looks like (where we aren't bound by display power) I turned to two canned tests: BaseMark OS II and GFXBench 3.0.
+
+I ran both of these tests under the same controlled conditions we always use, with all displays calibrated to 200 nits. BaseMark OS II runs through a bunch of CPU and storage benchmarks (basically the same tests used for the BaseMark OS II system and memory tests), as fast as possible, until the battery dies.
+
+I like this benchmark as it gives us an indication of worst case battery life if you’re absolutely hammering the CPU (and storage) relentlessly.
+
+BaseMark OS II Battery Life
+
+GFXBench 3.0 Battery Life
+
+While the M8 outlasted the Galaxy S 5 in our web browsing tests, the GS5 pulls ahead in our two compute bound tests. To better understand why, let's look at what happens to the GS5's performance over time during the GFXBench 3.0 test:
+
+GFXBench 3.0 Battery Performance
+
+While the M8's thermal chassis is able to dissipate heat nicely and keep the SoC running closer to full clocks, the GS5's plastic body acts as more of an insulator and forces GPU clocks down over the duration of the test. The result is a reduction in performance, but an increase in battery life. The Galaxy S 5 won't let you run the battery down as fast as you could due to thermal limitations of the chassis.
+Charge Time
+
+Samsung includes a 5.3V/2A charger in the GS5's box along with a USB 3.0 cable. You can still charge the GS5 using a USB 2.0 cable as well. Despite an increase in battery capacity, the GS5 can attain a full charge in less than 2 hours. Combining excellent battery life with a very short charge time, the Galaxy S 5 is a solid performer for anyone who is on the go.
+
+Charge Time
+
+

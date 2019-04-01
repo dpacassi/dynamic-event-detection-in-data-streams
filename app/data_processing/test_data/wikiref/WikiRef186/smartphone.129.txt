@@ -1,0 +1,30 @@
+What Makes a Smartphone a Superphone?
+
+At the MobileBeat conference today, Samsung's CSO Omar Khan talked about what he calls "the year of the superphone."
+
+Since the iPhone made its debut in 2007, we've seen incredible strides in mobile hardware and software. It's getting to the point that we hesitate to call these micro-computers "phones." Their capabilities now go far beyond what we'd expect from simple telephony, and are beginning to touch the horizon of "the future" — that mystical era in which technology will solve all our problems.
+
+Of course, Khan was eager to talk about the Galaxy S, a new Android device Samsung is bringing to market, but he also got into some of the general qualifications that distinguish the superphone from the smartphone.
+
+A smartphone, of course, has hardware features such as a touchscreen and some kind of QWERTY keyboard. It has native applications and web browsing; most have and make innovative use of cameras, both still and video.
+
+What, then, makes a smartphone a superphone?
+
+Google coined the "superphone" nomenclature at the launch of the Nexus One. Khan said these devices are "optimized from a silicon perspective, a hardware perspective and a software perspective.”
+
+In general terms, a superphone has more deep access to hardware capabilities, and the hardware is a step above what you'd see in a smartphone. Screens are larger — in excess of four inches, in some cases. The superphone has an impressive camera, generally between five and eight megapixels, that lends itself to high-quality photo and video capturing. It has multiple microphones for noise cancellation, both for calls and video recording.
+
+And Khan also said 2010 is "the year of the gigahertz processor." Newer best-in-class mobiles that feature 1Ghz processors include the Galaxy, the Evo, the Incredible, the Droid X and the iPhone 4.
+
+In addition to better hardware, superphones have better software. The operating system iterations — including Android Froyo and iOS from Apple — are adding "superfeatures" such as true multitasking and are allowing for what Khan called “signature experiences –- a fine marriage of hardware and software."
+
+This union of hardware and software means that the better displays will allow for high-quality video and gaming experiences — not just social and casual gaming, but games that appeal to the hardcore gamer as well. And accelerometers, cameras and GPS systems built into superphones allow for amazing location-based service and augmented reality applications.
+
+In general, social applications on superphones are more integrated, and web browsing with open-source Webkit browsers is more advanced and much faster.
+
+"It's the power of a netbook in the palm of your hand," Khan concluded. "What users expect is the same experience they have on their netbooks or PCs in an uncompromised fashion."
+
+Of course, mobile apps have been a driving and enriching force in the evolution of the superphone. The Apple/Android arms race has led to a staggering 220,000 apps in the App Store and 70,000 in the Android Market. Year over year, we're using our mobiles more and more to access news, social networks and even video content. In fact, the most popular apps are accessed every day by around 60% of their users.
+
+So, what comes after the superphone? We can joke about the "superduperphone" or the "überphone," but the acceleration of technology is mind-boggling to say the least. Will human innovation be able to keep pace with machine capabilities? Will we see more applications that are truly useful to individuals and society, or will the space continue to see waves of novelty or "trash" apps?
+

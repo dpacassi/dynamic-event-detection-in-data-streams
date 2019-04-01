@@ -1,0 +1,75 @@
+Samsung Unveils New Products from its System LSI Business at Mobile World Congress
+
+Samsung Electronics announced a broad range of cutting-edge products – two Exynos application processors, two CMOS image sensors, an NFC IC and a Wi-Fi chipset for use in advanced smartphones and tablets. These new products will be demonstrated in Samsung’s booth, Hall 2, Booth 2G40 at the Mobile World Congress, Fira Gran Via, Barcelona, Spain, February 24-27. 
+
+Samsung’s new Exynos 5422, an advanced Exynos 5 Octa product for premium mobile devices, is designed to support the ever-increasing needs of high-resolution displays and complicated computation without sacrificing battery life. This new processor is equipped with eight cores—four big cores (ARM® Cortex®- A15™ up to 2.1 GHz) for heavy loads and four small cores (ARM® Cortex®- A7™ up to 1.5 GHz) for lighter jobs—that deliver up to 34 percent higher performance than in previous Exynos Octa models. Due to Samsung’s further optimized big.LITTLE™ HMP (Heterogeneous Multi Processing) technology, any combination of up to eight cores is engineered to provide optimum performance for any given task.
+
+ 
+
+To support high-resolution displays requiring a higher rate of data calculation and bandwidth, such as WQHD (2560 x 1440) and WQXGA (2560 x 1600), Samsung has adopted new solutions with proprietary mobile image compression (MIC) and adaptive hibernation technology. With MIC, display data is compressed into half to minimize memory bandwidth requirement and uses only four MIPI lanes.
+
+ 
+
+To further reduce power requirements, an adaptive hibernation algorithm detects non-moving parts of dynamic images and freezes the data transfer. Both technologies are implemented in conjunction with Samsung’s mobile display driver IC (S6E3HA0 for WQHD and S6E3FA2 for FHD respectively), and save power consumption by up to 10 percent compared with conventional technologies.
+
+ 
+
+Samsung’s new Exynos 5422 also delivers an outstanding multimedia experience through advanced Multi Format Codec (MFC) that supports 4K UHD resolution. These multimedia enhancements enable users to enjoy life-like multimedia experience by creating and uploading richer mobile contents with greater ease.
+
+ 
+
+Exynos 5422 is developed using Samsung’s advanced 28 nanometer (nm) fabrication process node and supports HMP feature, saving overall power consumption by up to 10 percent with improved performance compared to mobile application processors fabricated with the 32nm process. Samples of the processor are available now and scheduled for mass production in the first quarter of 2014.
+
+ Another addition to the Exynos portfolio, Exynos 5 Hexa (Exynos 5260) is designed to bring optimal performance and power efficiency required in the increasing mid- to high-end mobile market. The new Exynos 5 Hexa processor is powered by six CPU cores; two 1.7GHz ARM® Cortex®-A15 cores and four 1.3GHz ARM® Cortex®-A7 cores. Along with Exynos 5 Octa products, it adopts big.LITTLE HMP to provide the right mixture of cores for various tasks, resulting in up to 42 percent improved performance when compared with the previous Exynos 5 Dual products.
+
+ 
+
+Equipped with an embedded Display Port (eDP) interface and memory bandwidth supporting up to 12.8GB/s, the Exynos 5260 also supports WQXGA (2560 x 1600) display resolution. For excellent video experience, it is integrated with a video codec that enables Full HD (1080p) playback at up to 60 frames-per-second (fps) with encoding and decoding of various standards, such as H.264, MPEG4 and VP8. Exynos 5260 is currently in mass production.
+
+
+ 
+16Mp and 13Mp ISOCELL CMOS Image Sensors for High-Quality Viewing Experience
+
+ 
+
+Samsung’s new CMOS image sensor technology, ISOCELL, substantially increases light sensitivity and effectively controls the collection of electrons, resulting in higher color fidelity even in poor lighting conditions. By incorporating ISOCELL, the image sensor will have 30 percent decrease in crosstalk; 30 percent increase in full well capacity; and 20 percent wider chief ray angle. Using the new technology with 1.12µm ISOCELL pixels, Samsung is introducing two new CMOS image sensors —16 and 13Mpixel.
+
+  The 16Mpixel ISOCELL imager provides a wider, clearer viewing experience to mobile device users by implementing a 16:9 aspect ratio, allowing for full-size, high-resolution images and video to be displayed on screen without field-of-view (FOV) loss. This high-speed sensor captures full FOV 16:9 full HD (1080p) video at 60fps, and for the first time in the industry, enables continuous shooting of all 16Mpixels at 30fps. Samples of the 16Mpixel ISOCELL CIS are available now and scheduled for mass production in the first quarter of 2014.
+
+
+Samsung’s new 13Mpixel ISOCELL CIS features Smart Wide Dynamic Range (WDR) technology, which allows users to capture images at 30fps. With a mosaic pattern of multiple exposures, images are then processed with an advanced algorithm for wider dynamic range. This enables users to capture details clearly in both bright and dark areas even in high contrast lighting conditions. This Smart WDR feature is based on Samsung’s advanced 65nm stacked process, where the pixel array is attached right on top of the logic circuit. Samsung’s 13Mpixel product is sampling now and is scheduled for mass production in the second quarter of 2014.
+ 
+
+ 
+
+3rd Generation NFC Chip Solution for Expanding Mobile Payment Ecosystem
+
+ 
+
+Samsung introduces its 3rd generation near field communications (NFC) chip solution. This is the industry’s first NFC IC using 45nm embedded flash process, which enables easy and secure firmware updates as well as low power consumption.
+
+ 
+
+This new NFC solution offers handset designers more flexibility by adopting the industry’s smallest antenna with enhanced radio frequency performance. This was made possible by Samsung’s proprietary Smart Antenna technology, which optimizes impedances of both receiving and emitting parts respectively to improve sensitivity and power efficiency. The NFC chip solution is currently being sampled to customers and is scheduled for mass production in the second quarter of 2014.
+
+ 
+
+Wi-Fi Solution with Low Power Consumption for IoT Applications
+ 
+
+Samsung offers its first wireless connectivity solution, S5N2120, for the growing Internet of Things (IoT) market. This solution supports IEEE 802.11 b/g/n Wi-Fi 2.4 GHz, and has an extremely small footprint, which is essential for a wide array of applications.
+
+ 
+
+This solution features an integrated micro control unit (MCU) with a power amplifier, power management, audio codec and direct microphone functions. With this MCU, OEM customers can easily reconfigure their existing designs to add Wi-Fi connectivity functions. This allows for a shorter development lead-time and less engineering resources are required.
+
+ 
+
+This flexibility along with excellent performance and a small footprint is optimal for battery-constrained applications such as Wi-Fi speakers, headsets, remote controls, digital & sports cameras, smart heating/cooling meters, sensors and other types of IoT or M2M applications. Samsung’s new Wi-Fi connectivity solution, S5N2120, is currently sampling and scheduled for mass production in the second quarter of 2014.
+ 
+
+ 
+
+*All functionality features, specifications, and other product information provided in this document including, but not limited to, the benefits, design, pricing, components, performance, availability, and capabilities of the product are subject to change without notice or obligation.
+
+

@@ -1,0 +1,43 @@
+Samsung Galaxy S5: Camera Hardware Explained
+
+Samsung Galaxy S5: Camera Hardware
+
+The Samsung Galaxy S5 has a 16-megapixel sensor and f/2.2 lens with a equivalent focal length of 31mm. The Galaxy S4 has a 13-megapixel sensor with an f/2.2 lens, and initially the new model seems like a pretty uninspired upgrade. This continues when we look at the size of the camera sensors.
+
+The Galaxy S5 sensor is bigger than the S4's – ½.6 inches to the S4's 1/3.06 inches. However, all this means is the new phone can get to a higher resolution without reducing the size of the sensor pixels. Both the S4 and S5 have 1.12 micron sensor pixels. That's pretty small, and the size of these pixels has a big hand in low-light performance.
+
+Don't care about the Galaxy S5's camera hardware? Skip straight to S5 camera image quality.
+
+ISOCELL sensor
+
+This sensor is much more of a step forward than you might initially assume, though – both technically and politically. The Galaxy S3 and Galaxy S4 both used Sony camera sensors, but the Galaxy S5 uses a new Samsung-made sensor featuring ISOCELL tech.
+
+Samsung offers loads of highly technical information about ISOCELL on its website, but it revolves around a new sensor architecture that creates a physical barrier between sensor pixels to lower crosstalk. This will let the Galaxy S5 use higher ISO sensitivity settings without introducing too much image noise. Samsung's claim is that crosstalk is down by 30 per cent. We are not CCD engineers at TrustedReviews, but it appears to make good tech sense.
+
+There's another innovation in the Galaxy S5, too. It is the first phone to use phase detection focusing as well as contrast detection.
+Hybrid Auto Focus
+
+Contrast detection is used by all other mobile phone camera AF systems, and it analyses the contrast in areas of an image to attain a solid focus. In-focus objects will always offer higher contrast than the smushy out-of-focus ones. It's a system that's blissfully easy to explain in a basic manner, and most high-end phones now offer excellent contrast detection systems – the iPhone 5S's is a particularly notable star.
+
+Phase detection is a good deal more complicated, mostly because it requires separate hardware and is implemented in various ways in different kinds of cameras. Traditionally in DSLRs a slightly translucent mirror is used to divert some of the light away from the image sensor to a separate PDAF (phase detection autofocus) module.
+
+However, with the Galaxy S5 we get a mirror-free on-sensor phase detection autofocus system. As a concept this is nothing brand new, having been used in a smattering of compact, bridge and compact system cameras since 2010. The first camera to use this technology was the FujiFilm FinePix F300EXR.
+What is Phase Detect autofocus?
+
+To understand phase detection you have to look into the basics physics of the camera system a bit. The light that reaches the Galaxy S5's image sensor is passed through a series of six plastic lens elements, and they are curved. When the focusing element isn't in the right place, the light from the extreme left and right (or top/bottom) ends of the front lens element will not reach a point of convergence on the sensor.
+
+What phase detection does is to separate out the light received from these extreme ends of the lens and compares them to see how out of whack – or out of phase – they are. Although Samsung hasn't explained this in official documentation yet, the PDAF layer that sits in front of the image sensor will feature a series of microlenses that separate out this specific 'left' and 'right' information for comparison.
+
+The focusing element is then simply moved until the information from the two ends of the lens is correct, signalling the image is in focus.
+
+The most obvious question – why is phase detection better than contrast detection? If you've looked into the Galaxy S5's autofocus yourself, you'll probably have heard the frustrating generic 'it's faster and more accurate'. However, the systems both have their limitations.
+
+The issue with contrast detection is that the system has to go slightly beyond the point of focus and then 'track back' in order to know that it was indeed the point of highest contrast. If you have a good phone, you may not even have noticed this 'back and forth' focusing. But it does happen, and it is what slows contrast detection down a little bit.
+
+Contrast detection also has trouble in finding focus on objects – you guessed it – that don't have much contrast to speak of. However, in our experience dedicated camera contrast detect systems have much more notable issues with this than top phones. It maybe down to phones having to make up for their tiny lenses and tiny sensors with clever software.
+
+An issue with on-sensor phase detection is that it relies on specific microlenses that sit above the sensor. So the points of focus available to the system are limited.
+
+Handily (sarcasm), Samsung has not confirmed how many phase detection focus points there are, or any specific details of how the PDAF system works. But hopefully we've given you an overview of the matter.
+
+On the next page we'll see how it works in action.

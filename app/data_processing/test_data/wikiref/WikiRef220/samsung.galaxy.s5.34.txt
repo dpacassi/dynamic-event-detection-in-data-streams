@@ -1,0 +1,15 @@
+Your move Apple: Samsung opens up its fingerprint scanner to all apps
+
+Samsung's going to let developers use the Galaxy S5's fingerprint scanner in their own apps, which means you could be waving goodbye to your passwords for good.
+
+The fingerprint-friendly Pass API was released as part of the S5's development kit, which also includes all the information devs need to create apps for the Gear 2 and Gear Fit.
+
+The fingerprint scanner was already more useful than most, allowing you to control certain parts of the phone with your biometric data, and more apps being able to access the info will certainly attract consumers.
+Pass out
+
+"With Pass, you can provide reinforced security, since you can identify whether the current user actually is the authentic owner of the device," the document explains.
+
+PayPal is the first to make use of the open API; its app lets you use your phone and fingerprint scanner combo to pay for things in participating stores.
+
+Unlike Samsung, Apple's TouchID has stayed tightly guarded so you can only use it to unlock your iPhone 5S and authorise payments in Apple's own products like iBooks, iTunes and the App Store. 
+

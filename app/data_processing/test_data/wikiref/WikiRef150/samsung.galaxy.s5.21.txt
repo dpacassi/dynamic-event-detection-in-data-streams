@@ -1,0 +1,62 @@
+Samsung Galaxy S5 (octa-core)
+
+Also known as Samsung Galaxy S5 SM-G900H
+Network 	Technology 	
+GSM / HSPA
+Launch 	Announced 	2014, March
+Status 	Available. Released 2014, April
+Body 	Dimensions 	142 x 72.5 x 8.1 mm (5.59 x 2.85 x 0.32 in)
+Weight 	145 g (5.11 oz)
+SIM 	Micro-SIM
+ 	- Fingerprint sensor (PayPal certified)
+- IP67 certified - dust and water resistant
+- Water resistant up to 1 meter and 30 minutes
+Display 	Type 	Super AMOLED capacitive touchscreen, 16M colors
+Size 	5.1 inches (~69.6% screen-to-body ratio)
+Resolution 	1080 x 1920 pixels (~432 ppi pixel density)
+Multitouch 	Yes
+Protection 	Corning Gorilla Glass 3
+ 	- TouchWiz UI
+Platform 	OS 	Android OS, v4.4.2 (KitKat)
+Chipset 	Exynos 5 Octa 5422
+CPU 	Quad-core 1.9 GHz Cortex-A15 & quad-core 1.3 GHz Cortex-A7
+GPU 	Mali-T628 MP6
+Memory 	Card slot 	microSD, up to 128 GB
+Internal 	16/32 GB, 2 GB RAM
+Camera 	Primary 	16 MP, 5312 x 2988 pixels, phase detection autofocus, LED flash
+Features 	1/2.6'' sensor size, 1.12 µm pixel size, Dual Shot, Simultaneous HD video and image recording, geo-tagging, touch focus, face/smile detection, HDR
+Video 	2160p@30fps, 1080p@60fps, HDR, dual-video rec.
+Secondary 	2 MP, 1080p@30fps, dual video call
+Sound 	Alert types 	Vibration; MP3, WAV ringtones
+Loudspeaker 	Yes
+3.5mm jack 	Yes
+Comms 	WLAN 	Wi-Fi 802.11 a/b/g/n/ac, dual-band, Wi-Fi Direct, hotspot
+Bluetooth 	v4.0, A2DP, EDR, LE, apt-X
+GPS 	Yes, with A-GPS, GLONASS
+NFC 	Yes
+Infrared port 	Yes
+Radio 	No
+USB 	microUSB v3.0 (MHL 2.1 TV-out), USB Host
+Features 	Sensors 	Accelerometer, gyro, proximity, compass, barometer, gesture, heart rate
+Messaging 	SMS(threaded view), MMS, Email, Push Mail, IM
+Browser 	HTML5
+Java 	No
+ 	- Wireless charging (Qi-enabled) - market dependent
+- ANT+ support
+- S-Voice natural language commands and dictation
+- Smart stay, Smart pause, Smart scroll
+- Air gestures
+- Dropbox (50 GB cloud storage)
+- Active noise cancellation with dedicated mic
+- MP4/DivX/XviD/WMV/H.264 player
+- MP3/WAV/WMA/eAAC+/FLAC player
+- Photo/video editor
+- Document viewer
+Battery 	  	Li-Ion 2800 mAh battery
+Stand-by 	
+Talk time 	Up to 16 h
+Music play 	Up to 46 h
+Misc 	Colors 	Charcoal Black, Copper Gold, Electric Blue, Shimmery White
+SAR US 	1.03 W/kg (head)     1.26 W/kg (body)    
+SAR EU 	0.48 W/kg (head)     0.33 W/kg (body)     
+

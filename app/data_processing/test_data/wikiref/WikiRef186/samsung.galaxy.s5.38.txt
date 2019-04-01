@@ -1,0 +1,30 @@
+Samsung Galaxy S5 Active (AT&T)
+
+By Eugene Kim
+
+Last year's Galaxy S4$199.88 at Amazon and S4 Active seemed like a natural pairing, but with water-resistance now a standard feature on the Galaxy S5Free at Amazon, you might be wondering why Samsung even bothered with an Active variant this year. The big difference, really, is as much form as function: The S5 Active carries a heartier MIL-spec 810G rating, meaning it can take on more physical abuse. But it also just looks and feels like a nicer device to me, even though it's the same price as the standard GS5. This, of course, is a matter of personal preference, but the two are so close in size that taste really should be the deciding factor. Both GS5s are excellent smartphones—choose the one that fits your needs.
+
+Design and Activity Zone
+Nearly every feature from the standard GS5 makes its way to the Active. The display, processor, cameras, wireless radios, and software are all identical between the two, so head over to the original review for an in-depth look at those features. We'll focus on the design changes and additional or missing features here.
+
+The S5 Active takes on a more rugged look than last year's device with more pronounced, reinforced corners. Smaller details like etched-in grips and faux-rivets, combined with the camouflage green finish of our review unit, give the S5 Active a decidedly tactical feel. At 5.72 by 2.89 by 0.35 inches (HWD), the Active is shorter than the regular S5 and a hair wider and thicker, but it's also far more compact than the regular S5 with a rugged case slapped on top. It's also nearly a full ounce heavier at 6 ounces, but the added density inspires more confidence in its durability over the long run. The gaudy faux-chrome accents and dimpled back cover are gone, neither of which I particularly liked on the regular S5. I much prefer the matte plastics and tactile accents on the Active. AT&T offers the active in the aforementioned camo green and in more neutral gray or red colorways. 
+
+View all 6 photos in gallery
+
+With IP67 waterproofing and a MIL-spec 810G rating, the S5 Active should be as durable as it looks. The military specification means the S5 Active has been tested against dust, shock, vibration, extreme temperatures, humidity, and high-altitude. The most meaningful durability claim is its shock resistance—Samsung claims that the S5 Active can hold up to drops from up to 4 feet onto a flat surface. I subjected the S5 Active to a round of drops and throws inside our labs, ranging from 3 to 5 feet, onto a relatively hard surface. The back cover popped open a bit after some serious abuse, but the phone never looked worse for wear and functioned perfectly afterwards.  
+
+The micro USB port still has that pesky flap, but I found it easier to open thanks to the notch facing forward instead of to the side. The back still peels off to reveal the SIM and microSD card slots as well as the removable 2,800mAh battery, which is the same size as the one in the standard GS5. Battery life approached 20 hours of continuous talk time in our tests, and the Ultra Power Saving Mode is still here, offering up to 4 hours of intermittent use out of the last 2 percent of battery.
+
+I'm partial to on-screen navigation buttons, but the physical Recent Apps, Home, and Back buttons on the S5 Active have their appeal. They feel well-seated and have a satisfyingly clicky feedback, and I was never a fan of Samsung's combination of capacitive and physical buttons on the standard GS5 to begin with. The Power button is on the right edge, while the Volume buttons are joined by a new "Active key" on the left edge.
+
+inline
+
+By default, the Active key launches Samsung's Activity Zone, a new app that puts barometric measurements and GPS coordinates front and center, with easy access to flashlight and stopwatch apps—you know, things active people might be interested in. Luckily, Samsung allows you to re-program the key to launch any two apps installed on your device, using either a short or long press. I love this feature; it's like the Kickstarter-backed Pressy button, except it's real, and it works without occupying your headphone jack. It's especially useful for underwater photography, since the touch screen doesn't work when wet. 
+
+The heart-rate monitor is still here, but the fingerprint scanner didn't make the cut. That's fine as far as I'm concerned, since the swiping motion was always a bit awkward and inconvenient whenever I used it on the regular GS5. The earpiece and back-ported speaker are, as far as I can tell, identical between the GS5 and Active, and call quality is indistinguishable between the two. There's a more robust lip around the camera lens, but image quality is also identical.
+
+Our 16GB model came with 10.91GB available to users out of the box. There's still a good deal of bloatware here courtesy of AT&T and Samsung. These include redundant services like AT&T Locker and Navigator, as well as Samsung media and app portals. Yellow Pages, Beats Music, and Lookout Security are also preinstalled, and none of these are removable. There's no more bloatware here than on the normal GS5, at least.
+
+Conclusions
+The Galaxy S5 Active makes no real compromises to earn its more adventurous designation. I don't care for fingerprint scanners, and I think the Active key will be genuinely more useful for the majority of people. Otherwise, it offers the exact same experience as the standard GS5. I personally prefer the S5 Active's design, and the added weight makes it feel like a more premium device in my hands. Either would make a fine choice, but if you're a klutz or adrenaline junkie, the Active should jump to the top of your list. It shares our Editors' Choice award with its otherwise identical, non-Active sibling on AT&T.
+

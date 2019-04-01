@@ -3,3 +3,4 @@ sklearn
 spacy
 matplotlib
 hdbscan
+gensim

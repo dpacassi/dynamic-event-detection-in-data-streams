@@ -1,0 +1,27 @@
+Samsung Galaxy S5 smartphone fingerprint sensor hacked
+
+Researchers show 'spoofing' of fingerprint system, warning lack of 'lock-out' security makes flagship less safe than iPhone (updated)
+
+The fingerprint security on Samsung's flagship Galaxy S5 phone has been hacked by a German team, who warn that its implementation is less secure - and its consequences potentially much worse - than on Apple's iPhone 5S.
+
+Security Research Labs, based in Berlin, posted a YouTube clip (included below) showing how they had used a rubber mould incorporating a high-resolution image of a fingerprint lifted from a smartphone screen. The same print and mould that was used to spoof the iPhone 5S's fingerprint sensor was used to fool Samsung's.
+
+But the researchers pointed to what they said are "additional concerns" about Samsung's security system compared with the iPhone's, because a would-be hacker can make an unlimited number of attempts at spoofing the fingerprint, and because it can be linked to payment systems such as PayPal - which could then be used to wire money to the attacker's account.
+
+"Samsung's implementation of fingerprint authentication leaves much to be desired," the researcher from SRE said. "They do not seem to have learned from what what others have done… while biometrics will always carry with them the trade of security for convenience, it is the manufactures responsibility to implement them in a way that does not put their users crucial data and payment accounts at risk."
+
+The group specifically highlights the absence of a "lock out" function compared with the iPhone 5S, the only other mass-market phone offering fingerprint authentication. Other manufacturers including HTC and Motorola have offered fingerprint unlocking, but with little takeup.
+
+Apple's implementation, called Touch ID, locks out the user after three attempts, if the phone has been turned off, if more than 48 hours have passed since the phone was unlocked, or to change or remove the Touch ID setting. Once locked out, the user has to enter a password or code to access the phone.
+
+Apple also only links its Touch ID system to unlocking the phone or its App Store, though once a phone is unlocked any app is accessible.
+
+But Samsung offers fingerprint authentication to unlock the phone, for Paypal payments, and to secure folders on the phone. "This gives a would-be attacked an even greater incentive to learn the simple skill of spoofing fingerprints," said SRE's researcher, pointing out that they could use the Paypal implementation to send large sums of money while using the fake fingerprint as verification.
+
+The threat to both Samsung and Apple users seems to be largely theoretical, however. It requires a high-quality fingerprint lifted from clean glass, and scanned at high resolution, and then printed on to latex rubber. Since the iPhone 5S went on sale in September 2013, there have been no recorded cases of where the fingerprint has been spoofed to hack into the phone beyond laboratory tests such as those by SRE.
+
+In a statement, Samsung said: "This is a scenario that is widely regarded in the industry as posing no critical risk for general consumers. This artificial experiment requires a rare combination of highly specialised equipment, materials and conditions. Samsung takes security matters very seriously. We are continuously taking measures to vigorously enhance the security of the device."
+
+Paypal said in a statement to Android Community that "While we take the findings from Security Research Labs very seriously, we are still confident that fingerprint authentication offers an easier and more secure way to pay on mobile devices than passwords or credit cards." The Paypal integration adds a cryptographic "key", not the actual password, it said: "We can simply deactivate the key from a lost or stolen device, and you can create a new one." In the event of fraud, the company said, "you are covered by our purchase protection policy."
+
+

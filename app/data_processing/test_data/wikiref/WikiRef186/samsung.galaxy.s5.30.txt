@@ -1,0 +1,38 @@
+How Google Used Motorola To Smack Down Samsung -- Twice
+
+Samsung is giant. It employs 427,000 staff, has an annual turnover in excess of $270bn and assets of $600bn spread across over 80 business units. And Google just floored it twice using Motorola as a baseball bat.
+
+Why?
+On the surface having 81 per cent of Android marketshare would seem to make Google and Samsung best buddies. Samsung has been the driving force behind Android’s meteoric growth and put Google mobile devices in pole position.
+
+The problem is Samsung wanted too much credit. It wasn’t enough for Samsung to make the most popular Android phones and tablets, it had to hide Android – and consequently Google’s role in its achievement. It did this using ‘TouchWiz’, the company’s proprietary skin which painted over all aspects of Android leaving it unrecognisable. To the casual consumer they were buying ‘a Samsung’, Google’s role was largely unrecognised.
+
+Then things got worse. Samsung began degrading Android performance by switching out vast parts of the software – phone dialler, calendar, email client, contacts, notification center, music and video player, voice control and much more – for its own apps. Reviews were largely negative with TouchWiz and its bloatware slowing down Android, wasting storage space and the replacement apps were seen as inferior or, worse still, needless gimmicks.
+
+Samsung then exploited this further. It put TouchWiz on its smart TVs, another market it dominates, and began building its own Android rival – Tizen – which, thanks to its TouchWiz interface, looks identical to the casual observer. The long term strategy was clear: switch over to Tizen and take the majority of the handset market with it. Google had to act.
+
+How?
+The ‘how’ was Motorola. On 15 August 2011 Google announced it had bought Motorola Mobility for $12.5bn in cash. With it Google acquired more than 20,000 mobile patents and publicly declared the purchase of the phone maker would not in any way compromise relationships with its handset partners… honestly, really, pinky swear.
+
+
+Of course Google didn’t expect handset partners to fully believe this and platitudes issued from them in reaction to the deal confirmed it. Should Google use Motorola to ramp up its own major handset business the market would be theirs. The phones would have stock Android and no-one, not even Samsung, could afford to subsidise their cost as Google can leveraging its mammoth advertising revenue.
+
+The bait was set: obliteration by Google stock Android handsets unless manufacturers (read: Samsung) stopped messing with Android. Google quietly showed it could walk the walk as well as it ramped up Nexus production and introduced the well-received Motorola X and Motorola G which stripped away almost all customisation from stock Android.
+
+Samsung bit. On 27 January 2014 Google and Samsung signed a wide-ranging global patent deal which will last a decade. Buried within it was an agreement that Samsung would tone down TouchWiz, refocus on core Android apps over its own customisations and cancel more radical customisations such as its ‘Magazine UX’ interface. Two days later Google announced the sale of Motorola Mobility to Lenovo showing both agreements had been working in parallel.
+
+The consequences
+The smack down for Samsung is twofold.
+
+Firstly, despite its size and dominance of the Android market, Samsung has been brought back into line. No longer will Samsung run roughshod over Android’s design, kick out its apps in favour of Samsung alternatives and hide Google’s hard work underneath. Indications of a low key Galaxy S5 launch suggest it will stand by its word.
+
+Secondly, the jump off point for Samsung from Android to Tizen is no longer straightforward. With Android shining through more strongly in future Samsung handsets it won’t be a seamless switch from one to the other. If Samsung wants Tizen to succeed it will now have to be earned rather than snuck in under the radar.
+
+All of which should be good news for Android users who will find it easier to move between handset makers when they upgrade while a stock Android experience (particularly with Android 4.4 KitKat’s optimisations) will make for faster, more responsive budget devices. Whether it gives smaller handset makers a greater chance to compete with the all-conquering Samsung, however, remains to be seen.
+
+And what of Google’s supposed $10bn loss? It’s a misreported myth calculated by subtracting Motorola’s $2.91bn sale price from its $12.5bn purchase. What it misses are the $3.2bn Motorola had in cash, $2.4bn saved in deferred tax assets and two separate Motorola unit sales totalling $2.5bn in 2013. Factor in Lenovo’s purchase against roughly $2bn of Motorola losses during Google’s ownership and Google has still only paid $3bn for what it retained: $5.5bn worth of Motorola patents and the company’s cutting edge research lab.
+
+Well played Google. Well played.
+
+Curious on what the deal means for Motorola and Lenovo? Read my new post: Lenovo Was Right To Buy Motorola – Just Look At ThinkPad
+

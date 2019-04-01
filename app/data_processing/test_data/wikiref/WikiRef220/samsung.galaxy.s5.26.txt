@@ -1,0 +1,25 @@
+Samsung Announces Galaxy S5: Initial Thoughts
+
+
+Every year Samsung launches a new Galaxy S flagship smartphone, and as always, Samsung puts the best platform that can be bought in their devices. The Galaxy S5 is no exception, as the MSM8974AC, or Snapdragon 801, powers the Galaxy S5. The 8974AC is the 2.45 GHz bin of the MSM8974AB, a slightly massaged MSM8974 that first launched with the LG G2 and other devices in the summer of 2013. As a recap, the MSM8974AB increases the clock speed of the Hexagon DSP to 465 MHz from 320 MHz, and the LPDDR3 RAM clocks go from 800 MHz to 933 MHz. What really matters though, is that GPU goes from 450 MHz to 578 MHz from 8974 to 8974AC. I definitely have to point to Anand's piece on the Snapdragon 801 for anyone that wants to know more
+
+ The other portion of the hardware story is the camera, which is probably one of the biggest areas for OEMs to distinguish themselves from the pack. Samsung seems to be playing it safe this year with a straight upgrade from 13MP to 16MP by increasing sensor size, and pixel size remains at 1.12 micron side edge length. It is notable that the camera sensor seems to be in a 16:9 aspect ratio, which would make it possible for both photos and videos to keep the same interface without odd reframing effects when going from photo preview to camcorder functionality. Optics are effectively unchanged from the Galaxy S5, as the focal length in 35mm equivalent remains at 31mm, the aperture remains at F/2.2. The one area where there could be a notable improvement is the promised ISOCELL technology, which physically separates pixels better to reduce quantum effects that can lead to lower image resolution and also increases dynamic range, although this will require testing to verify the claims made by Samsung. Samsung has also added 4K video recording for this phone and real time HDR to extend the dynamic range of the camera.
+
+The Galaxy S5 has 2GB of RAM, also not too surprising given the 32-bit ARMv7 architecture of the 8974AC.
+
+The display is a 1080p 5.1” panel, which makes this phone around the same size as the LG G2. Samsung has definitely improved AMOLED, but first impressions are unlikely to tell much when it comes to the quality of calibration and other characteristics of the device. In all likelihood, this will continue to use an RGBG pixel layout in order to improve aging characteristics as the various subpixels age at differing rates. I would expect max brightness to increase, although this may only show in very specific conditions such as extended sunlight exposure and low APL scenarios.
+
+
+
+ The industrial design seems to be an evolution of the Note 3, with a texture that looks similar to that of the Nexus 7 2012. However, whether the stippled texture will actually avoid the long-term issue of a slimy/oily feel is another question that will have to be answered after the hands-on. While we're still on the point of the hardware design, the Galaxy S5 is IP67 rated, which is why the microUSB 3.0 port has a cover for water and dust resistance.
+
+The fingerprint sensor is a swipe-based one, and Brian has voiced displeasure over swipe sensors like those found in the One max. I personally think that there could be some issues with ergonomics, as Samsung places the home button very close to the edge of the phone, which would make it rather difficult to swipe correctly over the home button, especially if the device is being used with one hand.
+
+As always, Samsung has included removable battery and a microSD slot for those that need such capabilities, although now that Samsung is following Google guidelines regarding read/write permissions, the utility of the microSD slot could be much less than previously expected. For the battery, things are noticeably different as Samsung has gone with a 3.85V chemistry compared to the 3.8V chemistry previously used by the Galaxy S4. With a battery capacity of 10.78 WHr, this means that it has 2800 mAh. For reference, the Galaxy S4 had a 9.88 WHr battery with 2600 mAh. 
+
+ As always, Samsung has put TouchWiz on top of their build of Android that will ship with the Galaxy S5, and it mostly looks the same. There are definitely some new features though like My Magazine, which seems to be a way of presenting multiple sources of information using a scrollable list of tiles with images on them.
+
+There might be a trend here in the paragraphs, and while some may see it as a tic, it’s probably more representative of the consistency that Samsung is bringing to the table. “As always” means that people know what to expect, and while it may not be nearly as exciting to the tech press, average people live and die by what’s relatively familiar, not what’s new and exciting. The addition of new features and consistent improvements to performance without compromise relative to the previous generation is definitely something to be applauded, and with review units, hopefully it will be possible to see how the GS5 stacks up against the competition.
+
+At any rate, the phone will launch with blue, black, white, and gold colors. It launches April 11 in 150 countries.
+

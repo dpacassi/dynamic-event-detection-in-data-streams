@@ -1,0 +1,74 @@
+Samsung Galaxy S5 review
+
+The next big thing is a lot of little things
+
+“It’s all in the little things.” It’s a common axiom in sports, in design, and in life. Inches make champions; big things have small beginnings; a small leak can sink a giant ship. It’s a tired cliché, but it’s true. It’s even true in smartphones. Apple’s greatest success isn’t the iPhone’s camera or its software or its battery life — it’s the scrolling and drawing animations, the obvious care put into even the smallest parts of the user experience. They’re things you might never even notice or name, but the small things add up to something important. Details matter.
+
+That’s never been Samsung’s strong suit. Samsung is big. It makes big phones with big screens with big ideas intended to push the boundaries of what a smartphone could or would or should ever do. But this year, Samsung’s trying something a little bit different. With the new Galaxy S5, the Korean company says it focused on the things that matter, not the gimmicky, overbearing features that have unfortunately become its calling card. It’s back to basics, back to what really makes a great smartphone.
+
+The result is on sale now, for $199 or $249 on virtually every major carrier. It’s a big phone made up of a lot of little things.
+
+A year ago, I wondered if HTC's gorgeous, metallic One would inspire or challenge Samsung to leave behind its cheap, plasticky ways and build a smartphone as beautiful as it is feature-rich. The Galaxy S5 is not that phone: it's every bit as utilitarian and function-first as its predecessors. It has a slightly larger display than last year's model, and the phone is thus slightly taller and wider, but it's still light (5.1 ounces) and thin (8.1 millimeters), and really feels no different than the S4 or any other phone this size.
+
+"Samsung's phones are still commodities, made to be sold but not loved"
+
+It's plastic everywhere you touch. It comes in black, white, gold, or blue, each with a ribbed chrome edge that sticks slightly above the front face of the phone. It's Samsung's best use of plastic ever, with a soft, stippled back that doesn't collect grease or shine the way the S4 does. It's far more pleasant both to look at and hold than the S4, or even the fake-leather Note 3. Samsung is slowly learning how to make premium plastic, though it could stand to learn a lot more from Nokia and Apple on the subject.
+
+The real feat was taking that thin, light, plastic shell and somehow making it waterproof. The S5 is rated IP 67, which means it can be submerged in up to a meter of water for up to 30 minutes. You can't use it underwater, of course — the touchscreen goes haywire when it's wet — but it means you can spill coffee on your phone (which I did), get caught in a rainstorm (check), or drop your phone in the urinal (twice), and it'll live to see another day. I've had one phone ruined by rain and another by a random beer spill, so it's nice to let my paranoia go for a change.
+
+But the S5 is still creaky and cheap. It doesn’t feel thoughtfully crafted the way the One or the iPhone 5S does. The carrier and manufacturer logos aren't integrated into the back's dimpled design, just slapped on like rectangular stickers. The capacitive keys next to the phone's home button bleed an ugly circle of white light. Every time the phone vibrates, its back rattles. These are small things, but they betray the fact that Samsung believes a phone that works is good enough, that it needn't be something we love or care about. That leaves me cold, underwhelmed — I can't imagine anyone walking into a store, picking up the S5 and the new One, and not immediately feeling the difference.
+
+
+
+Even in hardware, Samsung touts capability rather than quality. One of the S5's flagship features is its fingerprint sensor, which lets you unlock your phone and even pay for things with one swipe of your finger. It does work, as long as you hold the phone in two hands and oh-so-carefully swipe your finger down the exact center of the home button, at the perfect angle and speed. If you get it wrong, it falls back on a pointlessly complex alphanumeric password. It's impossible to do in one hand, and I could type the world's longest, most secure password in less time than it typically took me to get the sensor to work. Next to Samsung's implementation, Apple's TouchID suddenly feels easy and consistent. (It's not.) I'll never actually use the S5’s fingerprint security, and I can't imagine anyone else will either.
+
+"A great display makes everything better"
+
+Build quality may not matter to Samsung, but luckily display quality does, and it shows. The S5's 5.1-inch, 1080p AMOLED display is simply gorgeous. It's a little more intense and vibrant than the LCD screens I'm used to, but the effect is now much more subtle than on previous devices. The screen has near-perfect viewing angles, gorgeous color reproduction, and appears almost to be perched above the phone, games and movies leaping out toward me. Beautiful displays are non-negotiable in a great smartphone, and Samsung delivers.
+
+It's one of three things Samsung tells me it paid particular attention to this year. The second is battery life, and once again the Korean giant proves that it can do whatever it sets its mind to. The S5 never lasted me less than a full day (though I’m told connecting a Gear Fit can kill the battery fast), and unless I'm watching Netflix all day I can use the phone well into the next afternoon before I need to charge it again. Thanks to a fast quad-core processor and 2GB of RAM, the S5 is both powerful and long-lasting.
+
+The third thing, the last of the must-haves for the Galaxy S5, is the camera. And the S5's new 16-megapixel rear-facing camera is often very good: I took a lot of sharp, bright, detailed photos. (I also took too many of them at a 16:9 aspect ratio, different from every other camera ever made — take the megapixel hit and change that setting.) The camera has a tendency to slightly over-saturate colors, but rarely to anything more than a vaguely artistic effect. Samsung claims the S5's autofocus is faster than the S4’s, thanks to a second sensor that enables phase-detect focus, but it's still occasionally inconsistent and imperfect. It also touts a Lytro-like refocusing mode, but that almost never works and is hilariously basic when it does. The new Real Time HDR mode, on the other hand, is awesome: it makes it far easier to preview and shoot photos with a dark subject and bright background, and it saved a lot of shots for me.
+"The GS5 can take very good pictures, but it doesn't always deliver"
+
+Low light's a problem, though. Where HTC opted to use fewer but larger pixels, which leads to brighter but softer images, Samsung picked sharpness and darkness. That makes photos better in good light, but in dark situations the phone has to rely on its software processing. A good low-light shot on the S5 is a bit soft; a bad one is an impressionist painting. I've never had particularly high hopes for low-light photography on my smartphone, though, and most of the shots I took were at least usable. And I'll take Samsung's sharp outdoor shots over HTC's mushy ones any day, though the iPhone 5S still offers a far better mix of sharpness and versatility than either one.
+
+The camera used to be the most obvious canvas for Samsung's impulsive feature creep, but it's been scaled back a lot this year. Sort of, anyway: there are still dozens of options and filters, plus "Beauty Face" and all the fun dual-camera modes, they're all just a little better hidden. The new "Shot and More" mode lumps them all into one, telling you after your shot which you can apply. That's not a shooting mode, though, that's an editing tool, and it doesn't really make sense in the S5’s workflow.
+
+"There's still too much going on, it's just a little harder to find"Screenshot_2014-04-14-10-39-17
+
+This is a theme with the S5. Samsung says it refined its focus, but that's not really true: there are still too many features, too many options, too many weird ideas about how we want to use our phones. It's just all been tossed in a pile, thrown under a blanket, and swept into the corner where we hopefully won't notice. The S5's settings menu is 61 items long, and shows by default a grid of all-but-identical circular icons. Good luck with that.
+
+The notification pull-down menu has 20 different options, from Airplane Mode to Toolbox (which toggles a button that toggles a list of apps you might want to open, which is not to be confused with the multitasking view or the multi-window view or the app drawer). And for all the "simplification," there are still 27 options in the camera menu. Samsung's latest version of TouchWiz is layered on top of Android 4.4.2, and it's a lot more cohesive in appearance than before, but it's still little more than a junkyard full of 11 ways to do the same thing you’ll never ever want to do. Samsung says all the right things about cleaning up and simplifying the experience, but the S5 bears few of the fruits of those promises.
+
+The S5's built-in and pre-loaded apps are a similar mix: a number of useful, effective additions that are all too easily missed in the ocean of icons on the phone. S Health is in theory a good idea, a full-featured fitness app that lets you track everything from steps to calories. But it’s no more useful than, say, Fitbit, except that it integrates with Samsung's other devices like the Gear and Gear Fit, and with the heart-rate monitor that carves a divot out of the phone's backside. The monitor does work, but it's an odd feature to devote Samsung's time and attention to. The most fitness-conscious S5 buyers are likely to also buy a Gear Fit — which also has a heart-rate monitor — or a device like it, and Samsung would be better served by offloading these ancillary features onto companion devices. Most S5 buyers will never use the heart-rate monitor, so why make it such a central part of the device?
+
+Samsung Galaxy S5
+7.8
+Verge Score
+Good Stuff
+
+    Great display
+    Excellent performance
+    Camera can take amazing pictures
+    Waterproof
+
+Bad Stuff
+
+    Overwhelming features and options
+    Cheap, boring design
+    Camera struggles in low light
+
+"Imagine what Samsung could do, if it tried"
+
+It's back to basics, Samsung says about the Galaxy S5. Time to focus on what matters — displays, batteries, and cameras — and to start to let the rest go. That's the approach Samsung needed to take, but all it was was lip service.
+
+Make no mistake: this is a very good phone. And Samsung did nearly all the important things well. With a great screen, great battery life, and a good camera, the S5 leaves me with few reasons not to recommend it — and the waterproof body is a fantastic bonus. But I don't love anything about this device. It's not beautiful like the One, not polished like the iPhone, not full of cool new software like the Moto X. The S5 is a very good phone, but it leaves me wanting more. I want Samsung to care about design, to believe that its customers have good taste and that there's more to building brand loyalty than beating customers over the head with clever commercials. I want it to give me something, anything, that's both truly different and truly great. But that's not what Samsung does.
+
+I like the Galaxy S5. I do. Millions of people will buy it, and very few will have problems with it. Yet I can't help but hope that one day we all decide "good enough" isn't good enough anymore. That we demand devices that are different, interesting, special. Samsung's proved that it can do anything it sets its mind to — I can't wait to see what happens if it decides to really, truly care.
+
+Photography by Michael Shane
+The Breakdown
+
+More times than not, the Verge score is based on the average of the subscores below. However, since this is a non-weighted average, we reserve the right to tweak the overall score if we feel it doesn't reflect our overall assessment and price of the product. Read more about how we test and rate products.
+

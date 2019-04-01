@@ -1,0 +1,35 @@
+Samsung’s Galaxy S5 is here with more power, more pixels, and a refined design
+
+This year’s flagship doesn’t mess with a winning formula
+
+What do you do when you’re one of the world’s largest smartphone makers and it’s time to update your flagship device? If you’re Samsung, you trot out the new Galaxy S5, a refined and updated take on last year’s wildly successful Galaxy S4. Like the new Gear wearables, the Galaxy S5 looks and feels familiar, but offers a number of improvements over last year’s edition.
+
+The Galaxy S5’s design is a minor evolution of the Galaxy S4 — in fact, the two are almost indistinguishable from the front. The S5’s display is ever so slightly larger at 5.1 inches, but it’s still a 1080p, Super AMOLED panel that doesn’t look very different from the S4’s screen. Below the display is a new home key with integrated fingerprint scanner and capacitive keys for multitasking and Android’s back button.
+
+Samsung has retained the familiar metal-looking plastic surround on the S5, though the charging port (now USB 3.0) comes with an integrated port cover for waterproofing. The S5 is IP67-rated for water and dust resistance, meaning it can be submerged in 3 feet of water for up to 30 minutes at a time.
+
+Though the S5 is extremely familiar-looking from the front, things take a turn around back, where Samsung has replaced the S4’s slimy, glossy plastic battery cover with a dimpled soft-touch finish. The company is calling this a "modern glam" look, though if you’re familiar with the original Nexus 7 released in 2012, it’s very similar to that. The new back offers a significant upgrade in they way the device feels — it’s much more comfortable to hold and doesn’t slide off of surfaces nearly as much as the S4 — but it doesn’t look as tacky as the fake-leather patterns used on Samsung’s Note line of devices. Samsung is offering the S5 in four different colors — black, white, blue, and gold — but the black and white are the most attractive options. The first complaint usually levied at Samsung’s Galaxy smartphones is their abundant use of glossy, cheap feeling plastic, but the S5’s new finish reverses this trend and is one of the most significant upgrades introduced this year.
+"A Familiar design, But with less glossy plastic"
+
+But despite the refined design and new patterned finish, the S5 is unmistakably a Samsung smartphone. The S5 is launching with Android 4.4.2 KitKat with Samsung’s user interface fully intact. Though earlier reports had said that Samsung intended to tone down its software due to pressure from Google, the S5 retains much of the signature pieces of the Galaxy line. There are S-branded apps in many places, including the S Voice personal assistant, and Samsung’s signature bloops and whistles are present every time you interact with the device. The My Magazine feature, Samsung’s Flipboard-like news reader that debuted on the Note 3, is accessible directly to the left of the home screen, but the main display is a very familiar assortment of folders, app shortcuts, and a weather widget. The most notable change is found in the settings menu, where Samsung has swapped out the tabbed interface for a single, vertical scrolling screen with round, flat icons.
+
+Galaxy S5 back
+
+Samsung is making a huge push into fitness tracking this year, and the Galaxy S5 benefits from a revamped S Health app and new heart-rate sensor on its back. The new S Health app can sync with Samsung’s Gear line of wearables, including the Gear Fit fitness band, and it offers guided coaching and feedback while you work out. Developers will be able to tap into the data offered by the service through an SDK that will be out later this year.
+
+The heart rate monitor is a unique addition and is located just below the camera and reads your fingertip to grab your pulse in about five to ten seconds. In our brief tests, the sensor worked as advertised and was able to give me a reading in just a few seconds.
+"Heart-rate monitors and fingerprint scanners"
+
+Less successful is Samsung’s take on the fingerprint-unlock system made popular by Apple with the iPhone 5S. Like the 5S, the S5’s home key features an integrated fingerprint scanner, which can be used to unlock the phone or authenticate purchases online (Samsung is partnering with PayPal to enable this feature, though it doesn’t validate purchases from the Google Play Store). Samsung’s version requires a vertical swipe over the home button to activate the scanner, and we found it to be quite unreliable and virtually impossible to activate when holding the phone in one hand. It can store up to three different digits, but it was very particular about the speed and orientation of the swiping motion used — if we weren’t doing a perfectly straight swipe down, it would refuse to unlock the phone.
+
+Samsung didn’t ignore the other vital components of the S5 — it has a faster, 2.5GHz quad-core processor, 2GB of RAM, a larger battery with the promised 20 percent better stamina, as well as a new low-power conservation mode to get the most battery possible when you’re running low. The S5 is as fast as you’d expect — Samsung has ensured that its flagship phone is one of the most powerful on the market for a number of years now, and the S5 is no different.
+Galaxys5_500_portrait
+
+The camera has been upgraded to a 16-megapixel sensor with 4K video capabilities, and it now supports real-time HDR processing for better photos in mixed lighting. It’s now possible to apply Samsung’s unique camera effects after a picture has been taken, so you don’t have to worry about what mode you’re in when shooting pics. Samsung has also greatly simplified the camera interface, and in our brief tests, it was pretty snappy and responsive.
+
+"The S5 builds on what worked with the S4"
+
+Samsung had a successful formula with the Galaxy S4, and for the most part, it looks like it has retained that with the S5. Things are faster, nicer feeling, and easier to use, but it’s still a Samsung smartphone through and through, and will likely be just as successful if not more so than its predecessor.
+
+The Galaxy S5 is scheduled to launch globally on April 11th and will be available on all major US carriers, though Samsung isn’t yet ready to talk pricing. Chances are, the price won’t matter — Samsung has built a very recognizable and successful brand with its Galaxy smartphones, and there’s no reason the S5 won’t continue the company’s success.
+

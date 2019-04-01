@@ -1,0 +1,42 @@
+Hands On With the Samsung Galaxy S5
+
+BARCELONA—Samsung's Galaxy S5 steps back just a touch from the UI excess of the Galaxy S4, but Samsung just can't help itself; the phone is packed full of features old and new, especially focused on camera improvements and health tracking. It's still going to be the everything phone.
+
+I got to spend some time with the Galaxy S5 in advance of the announcement, and I came away impressed. Here's some of what I saw.
+
+Physical Features, Processor and Networking
+The S5's body isn't its best feature. Let's get that out there. About the same size as the S4 at 5.6 by 2.8 by 0.31 inches (HWD) and 5.1 ounces, it's still plasticy, still bezel-y, with a chintzy chromed plastic edge. Samsung describes it as"modern and glam," but it's going to need to change its materials palette to really get there.
+
+The back is now a textured plastic with a stipple pattern, like you find on the Galaxy Note 3. On the bottom, a plug covers the big USB 3.0 port; this phone is water-resistant and can be dunked, Samsung says. On the top, there's a little IR blaster.
+
+The screen, on the other hand, is truly beautiful. This is still a 5.1-inch, 432 ppi 1,920-by-1080 Super AMOLED display, very similar to the S4's screen. But Samsung put a custom image chip in here that dynamically adjusts the color gamut and contrast based on ambient light. It's a big step up from the standard automatic brightness control, and it makes the colors really pop under different lighting conditions.
+
+Below the screen there's a big home button, and yes, it's a fingerprint scanner. This scanner doesn't just log you in; it can also pay for things with PayPal, and Samsung will have an SDK so third parties can use it for authentication as well. I didn't get to try it.
+
+I did get to try the heart-rate monitor, which is on the back next to the camera flash. Rest your finger on it, and it measures your heart rate. It worked within a few seconds, feeding the data into the S Health app.
+
+MWC Bug Art
+
+Under the hood, we have a 2.5GHz, quad-core Qualcomm MSM8974 processor and a lot of new networking technologies. There's 802.11ac with MIMO for very fast Wi-Fi performance, and LTE/Wi-Fi aggregation, which can download the same file over both networks for really fast performance. (If your LTE is capped, you can turn that off.) The LTE modem supports 21 frequency bands, so there's a chance we'll see a common device across several U.S. carriers, like the iPhones.
+
+The phone has 2GB of RAM and comes in 16 and 32GB storage models, and yes, there's a MicroSD memory card slot, expandable to 128GB. The battery clocks in at 2,800mAh.
+
+Camera and Software
+The S5's 16-megapixel main camera is the bit I'm most hoping to check out further. It's very fast; Samsung said it has 0.3-second autofocus, making sharp pictures feel instant. It's also the first phone we've seen with live HDR preview, so you can see what the popular HDR effect will do to your images; it works for videos, too. There's also a 2-megapixel front-facing camera. Like the Galaxy Note 3's camera, this one records 4K video at 30 frames per second.
+
+Samsung really simplified the camera modes here, which I found hugely relieving. A whole bunch of them have now been lumped under "Shot & More," while controls for HDR and "selective focus" (blurring the background or foreground) are right on the main shooting screen. The S4's camera was vastly overburdened with modes, so this is a big step forward.
+
+Samsung backed off a little on the custom software, but not too far. While this is Android 4.4.2, it's nowhere near stock Android. Let's start with S Health, which will be a big deal this year. It has a pedometer, heart rate tracking, a sleep tracker, blood glucose tracker, activity tracker, and more.
+
+There's Easy Mode, which simplifies the interface for older adults, and Kids Mode, which restricts it for young children. The settings screen is customized; ditto the dialer, the contact book, and the calendar. There's no Google Now, but there's still S Voice. My Magazine is Samsung's version of Flipboard; Samsung Apps is still preloaded; at least Samsung Hub, Samsung's lackluster media store is gone.
+
+When the phone gets low on power, it drops into a monochrome power-saving mode, which doubles the remaining battery life.
+
+So What Do I Think?
+I really liked the Galaxy S4, in all its excess, and so did a lot of people; it was a big hit. The S5 isn't going to change any minds. I'm excited by the new camera features, the health tracking, and the eye-popping screen. The 2.5GHz processor in here promises glorious performance, and I like touches like Easy Mode, Kids Mode, and the low-power mode. I'm also happy to see Samsung is trying to find some way to use fingerprint ID beyond just unlocking the phone.
+Check Out the Best Photos From MWC 2014!
+
+Samsung phone owners love their phones' features and performance and can overlook the oddly cheap-feeling body materials. No, it isn't made of metal and glass, and the S5's interface doesn't have the clean elegance of a Nexus 5 or Moto X. I'm still suspicious of S Voice, which has never worked as well as Google Now for me. But especially if that camera pans out, the Samsung S5 will be an amazing way to track your own life and the world around you.
+
+The Samsung Galaxy S5 will be available "globally" in April, including AT&T, Sprint, T-Mobile, Verizon Wireless, MetroPCS, and U.S. Cellular in the U.S.
+

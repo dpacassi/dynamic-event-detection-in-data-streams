@@ -1,0 +1,55 @@
+Samsung hopes its Galaxy S5 is the picture of health
+
+ Of the seemingly hundreds of phone models produced by Samsung each year, none are more important to the Korean phone maker than the Galaxy S series. Samsung’s flagship series crams all the latest hardware and software into a phone that has a halo effect for all mobile things carrying the Samsung label.
+
+The Galaxy SIII and S4 have been blockbuster sales hits, and we expect no less from the Galaxy S5. And now, after months of rumors and leaked specs, the GS5 is official. Samsung’s new flagship phone is coming on April 11. What does it have in store for us?
+The specs
+
+Let’s cut to the chase. What did Samsung pack inside their its flagship phone?
+
+    Size: 5.6 x 2.8 x 0.31 inches
+    Weight: 5.1 ounces
+    Processor: 2.5 GHz quad-core processor
+    Display: 5.1-inch Super AMOLED, 1920 x 1080 (~430 ppi)
+    OS: Android 4.4.2 KitKat (with Samsung’s latest TouchWiz on top)
+    RAM: 2GB
+    Storage: 16/32GB, with MicroSD slot up to 128GB
+    Cameras: 2.1 megapixels up front, 16 megapixels on the rear camera
+    Video: Ultra HD @ 30fps, HDR, and video stabilization
+    Wireless: LTE Cat.4, Bluetooth 4.0 LE, Wi-Fi 802.11 a/b/g/n/ac, NFC, IR
+    Battery: 2800 mAh
+
+Small improvements in core hardware
+
+This is a cutting-edge phone, as expected. It’s a little larger and a little heavier than the Galaxy S4, but not much. It doesn’t look dramatically different from the GS4, with one major exception—the back features a perforated texture that should give it a much nicer feel than the basic, slick plastic on last year’s model. 
+
+ One place the rumor mill got the story very wrong is in predicting a quad-HD display with a resolution of 2560 x 1440. Instead, the Galaxy S5 will sport a more pedestrian 1920 x 1080 full-HD screen. At 5.1 inches, just a hair bigger than the GS4, that gives you a similar pixel density of 430ppi. 
+
+Samsung promises improvements, including local contrast enhancement, which measuring the ambient light and adjusts the display accordingly, to maintain visibility even in bright outdoor light.
+
+The processor powering the phone wasn’t mentioned by name, only that it is a “2.5 GHz quad-core” processor. Our guess is that this is probably a Snapdragon 801 or 805. That’s a decent step up from the Snapdragon 600 in the Galaxy S4, but it’s not a big leap over other top-end Android phones. The 2GB of RAM it’s rockin’ is also de rigeur in a premium Android phone.
+
+The battery has been boosted from 2600mAh to 2800mAh, still not very impressive compared to the biggest-battery phones on the market. Samsung promises 10 hours of web browsing and 12 hours of video playback, but it’s best to take specs like that with a grain of salt. Frankly, we were hoping for a 3000mAh battery or better.
+
+A feature called Ultra Power Saving Mode sounds like a nice software innovation similar to what we’ve seen on Lumia devices. It turns the screen black and white, and kills all tasks except the essentials like texts and phone calls. Even with just a little battery life left, Samsung promises huge standby time in this mode. Call it peace of mind when you’re not near a charger and still want to get that emergency call.
+Focus on the camera
+
+The 16-megapixel rear camera is a point of pride for Samsung’s new flagship phone. A new fast autofocus mode combines traditional autofocus and phase detection autofocus. It can lock in a shot in 0.3 seconds, Samsung claims. This is a big deal—the camera on the GS4 is high-res, but quite slow, and suffers from annoying focus problems. A new HDR mode allows for much faster HDR shots, and can even take HDR video. Speaking of video, there’s support for shooting ultra-HD at up to 30 frame per second, and digital stabilization, too.
+Water and dust resistant
+
+It looks like there will be no “Galaxy S5 Active” variant, as there was with the GS4. This time, the Galaxy S5 features IP67 water and dust resistance, just like the GS4 Active, in the base model. 
+Swipe your finger, check your pulse
+
+The GS5’s biometric sensors step up from state of the art by including not only a fingerprint scanner but a heartrate monitor as well. The fingerprint sensor lets you unlock your phone, authorize purchases, and unlock Private Mode. That last bit is new—it’s a sandbox for pictures, videos, and apps that you want to hide from anyone else who might use your phone. I guess calling it “porn mode” was too obvious, eh Samsung?
+
+On the back of the phone, just beneath the camera, is something we haven’t seen in a smartphone before: a heartrate monitor. I’m not sure how usable it is to stop your workout, pull your five-inch phone out, and hold your finger on one little spot on the back, but it’s a feature that rival phones don’t have. Samsung’s pushing the fitness thing hard, with new software and a renewed focus on fitness tracking it its new Gear wearables. 
+
+Improved connectivity
+
+With support for LTE Cat.4, Samsung boasts that the GS5 will support LTE “everywhere” and provide the best possible performance. Let’s not count our chickens, though. It’s not uncommon for Samsung to release international versions with broad frequency support, and for U.S. carriers to have slightly different revisions that don’t work with as many frequency bands around the world. We’ll have to wait for more details about regional and carrier variants before breaking out the champagne.
+
+Wi-Fi performance on the Galaxy S5 is getting a kick in the pants, too. It’s not support for 802.11 a/b/g/n and ac that excites us, it’s 2x2 MIMO support. That means using a pair of antennas together for enhanced throughput. What’s more, the GS5 will bond both download over both the Wi-Fi and LTE together, offering greatly improved speeds. That’s a neat feature, but with data caps being what they are, we hope it’s something you can easily disable.
+And lots more
+
+New Galaxy devices are always packed with little features and changes, and I’m sure we’ll discover a lot more before the Galaxy S5 hits shelves in April. For starters, Samsung hasn’t mentioned a price; we’d be shocked if the phone didn’t cost at least $600. There’s a whole new version of Samsung’s Touchwiz UI to detail, additional software features like Kids Mode, and new features to Samsung’s S-Health app, first introduced last year with the GS4 and now enhanced for its successor. We’ll have more on Samsung’s flagship soon, including a hands-on look at the device. 
+
