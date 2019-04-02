@@ -3,6 +3,7 @@ import pandas as pd
 import spacy
 
 from hdbscan import HDBSCAN
+from datasketch import MinHash, MinHashLSH
 
 from gensim.matutils import softcossim
 from gensim import corpora
@@ -12,7 +13,7 @@ from gensim.utils import simple_preprocess
 from sklearn.feature_extraction.text import CountVectorizer  # , TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.cluster import OPTICS
+from sklearn.cluster import OPTICS, Birch
 from sklearn.metrics.pairwise import cosine_similarity
 
 import utils
@@ -27,6 +28,8 @@ class ClusterEvaluation:
 
         self.documents = documents
         self.full_dataset = full_dataset
+
+        self.excluded_entity_types = ['CARDINAL', 'ORDINAL', 'QUANTITY']
 
     ############################
 
@@ -67,7 +70,7 @@ class ClusterEvaluation:
 
     # Result:
     # The problem with the sklearn implementation of optics is, that it does not work with sparse arrays.
-    # Since our word vectors can be quite large, while containing mostly zeros sparse matrices are
+    # Since our word vectors can be quite large, while containing mostly zeros, sparse matrices are
     # required for efficient calculations. Additionally it can be observed that the score is much lower
     # than hdbscan. This is why we use hdbscan for the following clustering tasks.
     #
@@ -75,6 +78,23 @@ class ClusterEvaluation:
     # Number of clusters: 21
     # Completeness: 0.304
     # NMI score: 0.100
+
+    ############################
+
+    # Birch:
+    # TODO: explain why birch
+    # Ref: https://www.researchgate.net/profile/Basavaraju_Mallikarjunappa/publication/45601907_A_Novel_Method_of_Spam_Mail_Detection_using_Text_Based_Clustering_Approach/links/54cb016a0cf2517b7560cc9d/A-Novel-Method-of-Spam-Mail-Detection-using-Text-Based-Clustering-Approach.pdf
+
+    def birch(x):
+        # https://scikit-learn.org/stable/modules/clustering.html#birch
+        labels = Birch(
+            branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
+        ).fit_predict(x)
+        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
+        return labels, n_estimated_topics
+
+    # Result:
+    # First 1000 news articles with 27 clusters:
 
     ############################
 
@@ -120,7 +140,11 @@ class ClusterEvaluation:
         def extract_entities(data):
             # https://spacy.io/usage/linguistic-features#named-entities
             doc = nlp(data)
-            entities = [entity.text for entity in doc.ents]
+            entities = []
+            for entity in doc.ents:
+                if entity.label_ not in self.excluded_entity_types:
+                    entities.append(entity.text)
+
             if len(entities) == 0:
                 entities = ["empty"]
 
@@ -220,30 +244,70 @@ class ClusterEvaluation:
 
     ############################
 
+    # MinHash + LSH
+    # Ref: https://ekzhu.github.io/datasketch/lsh.html
+    def minhash_lsh(self):
+        hashes = []
+
+        nlp = spacy.load("en_core_web_sm")
+
+        # Create LSH index
+        lsh = MinHashLSH(threshold=0.8, num_perm=128)
+
+        for index, document in enumerate(self.documents):
+            hash = MinHash(num_perm=128)
+            # https://spacy.io/usage/linguistic-features#named-entities
+            doc = nlp(document)
+            for entity in doc.ents:
+                if entity.label_ not in self.excluded_entity_types:
+                    hash.update(str.encode(entity.text, 'utf-8'))
+            
+            hashes.append(hash)
+            lsh.insert(index, hash)
+
+        n_estimated_topics = 0
+        processed_indices = []
+        for index, hash in enumerate(hashes):
+            matches = lsh.query(hash)
+            if len(matches) > 1 and index not in processed_indices:
+                n_estimated_topics += 1
+                processed_indices += matches
+
+        # print("Approximate neighbours with Jaccard similarity > 0.5", result)
+        return range(len(hashes)), n_estimated_topics
+    
+    # Result:
+    # Todo: describe result.
+
+    ############################
+
     def run(self):
         # Run clusterings
         results = []
 
-        labels, n_estimated_topics = self.hdbscan()
-        results.append(utils.Result("HDBSCAN", labels, n_estimated_topics))
+        # labels, n_estimated_topics = self.hdbscan()
+        # results.append(utils.Result("HDBSCAN", labels, n_estimated_topics))
 
-        labels, n_estimated_topics = self.optics()
-        results.append(utils.Result("OPTICS", labels, n_estimated_topics))
+        # labels, n_estimated_topics = self.optics()
+        # results.append(utils.Result("OPTICS", labels, n_estimated_topics))
 
-        labels, n_estimated_topics = self.hdbscan_lda()
-        results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics))
+        # labels, n_estimated_topics = self.birch()
+        # results.append(utils.Result("BIRCH", labels, n_estimated_topics))
+
+        # labels, n_estimated_topics = self.hdbscan_lda()
+        # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics))
 
         labels, n_estimated_topics = self.hdbscan_entities()
         results.append(
             utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics)
         )
 
-        labels, n_estimated_topics = self.hdbscan_cossim()
-        results.append(
-            utils.Result(
-                "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics
-            )
-        )
+        # labels, n_estimated_topics = self.hdbscan_cossim()
+        # results.append(
+        #     utils.Result(
+        #         "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics
+        #     )
+        # )
 
         # Causes a MemoryError and is veeery slow with the current implementation.
         # labels, n_estimated_topics = self.hdbscan_soft_cossim()
@@ -252,6 +316,9 @@ class ClusterEvaluation:
         #         "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics
         #     )
         # )
+
+        labels, n_estimated_topics = self.minhash_lsh()
+        results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics))
 
         return results
 
