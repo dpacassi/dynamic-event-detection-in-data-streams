@@ -13,7 +13,7 @@ from gensim.utils import simple_preprocess
 from sklearn.feature_extraction.text import CountVectorizer  # , TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.cluster import OPTICS, Birch
+#from sklearn.cluster import OPTICS, Birch
 from sklearn.metrics.pairwise import cosine_similarity
 
 import utils
@@ -170,6 +170,27 @@ class ClusterEvaluation:
     # Completeness: 0.339
     # NMI score: 0.311
 
+    # Result David:
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 60
+    # Completeness: 0.302
+    # NMI score: 0.287
+
+    # Result after converting all text to lowercase:
+    # Number of clusters: 60
+    # Completeness: 0.302
+    # NMI score: 0.287
+
+    # Result after removing any existing HTML tags:
+    # Number of clusters: 60
+    # Completeness: 0.313
+    # NMI score: 0.294
+
+    # Result after removing punctuation:
+    # Number of clusters: 78
+    # Completeness: 0.354
+    # NMI score: 0.361
+
     ############################
 
     # HDBSCAN with cosine similarity:
@@ -317,8 +338,8 @@ class ClusterEvaluation:
         #     )
         # )
 
-        labels, n_estimated_topics = self.minhash_lsh()
-        results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics))
+        #labels, n_estimated_topics = self.minhash_lsh()
+        #results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics))
 
         return results
 

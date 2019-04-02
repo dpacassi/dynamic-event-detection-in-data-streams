@@ -1,5 +1,6 @@
 import collections
 import pandas
+import re
 
 from sklearn.metrics import accuracy_score, completeness_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
@@ -26,12 +27,41 @@ class Result:
         print()
 
 
+def clean_html(text):
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, ' ', text)
+
+    return cleantext
+
+
+def clean_punctuation(text):
+    cleaned = re.sub(r'[?|!|\'|#]', r'', text)
+    cleaned = re.sub(r'[.|,|)|(|\|/]', r' ', cleaned)
+
+    return cleaned
+
+
+def clean_text(text):
+    # Transform the text to lower case.
+    text = text.lower()
+
+    # Remove any existing HTML tags.
+    text = clean_html(text)
+
+    # Remove punctuation.
+    text = clean_punctuation(text)
+
+    return text
+
+
 def load_test_data(content_column="newspaper_text", nrows=None):
     # filepath = "test_data/uci-news-aggregator.csv"
     # filepath = "test_data/export.csv"
     filepath = "test_data/clean_news.csv"
 
     test_data = pandas.read_csv(filepath, nrows=nrows)
+    test_data[content_column] = test_data[content_column].apply(clean_text)
+
     return test_data[test_data[content_column].notnull()]
 
 
