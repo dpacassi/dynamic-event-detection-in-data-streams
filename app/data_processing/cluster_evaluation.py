@@ -176,20 +176,11 @@ class ClusterEvaluation:
     # Completeness: 0.302
     # NMI score: 0.287
 
-    # Result after converting all text to lowercase:
+    # Result David (after applying text preprocessing):
+    # First 1000 news articles with 27 clusters:
     # Number of clusters: 60
-    # Completeness: 0.302
-    # NMI score: 0.287
-
-    # Result after removing any existing HTML tags:
-    # Number of clusters: 60
-    # Completeness: 0.313
-    # NMI score: 0.294
-
-    # Result after removing punctuation:
-    # Number of clusters: 78
-    # Completeness: 0.354
-    # NMI score: 0.361
+    # Completeness: 0.360
+    # NMI score: 0.373
 
     ############################
 

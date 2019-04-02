@@ -4,7 +4,8 @@ import re
 
 from sklearn.metrics import accuracy_score, completeness_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
-
+from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
 
 class Result:
     def __init__(self, title, labels, n_topics):
@@ -27,29 +28,87 @@ class Result:
         print()
 
 
-def clean_html(text):
+def remove_html(text):
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr, ' ', text)
 
     return cleantext
 
 
-def clean_punctuation(text):
+def replace_non_alpha(text):
+    text = re.sub('[^a-zA-Z]+', ' ', text)
+
+    return text
+
+
+def remove_punctuation(text):
     cleaned = re.sub(r'[?|!|\'|#]', r'', text)
     cleaned = re.sub(r'[.|,|)|(|\|/]', r' ', cleaned)
 
     return cleaned
 
 
+def remove_multiple_whitespaces(text):
+    " ".join(text.split())
+
+    return text
+
+
+def remove_short_words(text):
+    filtered_words = []
+
+    for word in text.split():
+        if len(word) > 2:
+            filtered_words.append(word)
+        else:
+            continue
+
+    text = ' '.join(filtered_words)
+
+    return text
+
+
+def stem_text(text):
+    stop = stopwords.words('english')
+    sno = SnowballStemmer('english')
+    filtered_words = []
+
+    for word in text.split():
+        if (word.isalpha() and (len(word) > 2) and word not in stop):
+            s = (sno.stem(word)).encode('utf8')
+            filtered_words.append(s)
+        else:
+            continue
+
+    text = b' '.join(filtered_words)
+
+    return text
+
+
 def clean_text(text):
+    # Trim text.
+    text = text.strip()
+
     # Transform the text to lower case.
     text = text.lower()
 
     # Remove any existing HTML tags.
-    text = clean_html(text)
+    text = remove_html(text)
+
+    # Replace all non alphabetical characters with spaces.
+    text = replace_non_alpha(text)
 
     # Remove punctuation.
-    text = clean_punctuation(text)
+    #text = remove_punctuation(text)
+
+    # Remove multiple whitespaces.
+    text = remove_multiple_whitespaces(text)
+
+    # Text stemming and stop words removal.
+    #text = stem_text(text)
+
+    # Remove single characters.
+    text = remove_short_words(text)
 
     return text
 
