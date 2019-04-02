@@ -71,16 +71,13 @@ def remove_short_words(text):
 def stem_text(text):
     stop = stopwords.words('english')
     sno = SnowballStemmer('english')
-    filtered_words = []
+    stemmed_words = []
 
     for word in text.split():
-        if (word.isalpha() and (len(word) > 2) and word not in stop):
-            s = (sno.stem(word)).encode('utf8')
-            filtered_words.append(s)
-        else:
-            continue
+        if word not in stop:
+            stemmed_words.append(sno.stem(word))
 
-    text = b' '.join(filtered_words)
+    text = ' '.join(stemmed_words)
 
     return text
 
@@ -99,16 +96,17 @@ def clean_text(text):
     text = replace_non_alpha(text)
 
     # Remove punctuation.
+    # Obsolete since we remove all non alphabetical characters.
     #text = remove_punctuation(text)
 
     # Remove multiple whitespaces.
     text = remove_multiple_whitespaces(text)
 
-    # Text stemming and stop words removal.
-    #text = stem_text(text)
-
     # Remove single characters.
     text = remove_short_words(text)
+
+    # Text stemming and stop words removal.
+    text = stem_text(text)
 
     return text
 

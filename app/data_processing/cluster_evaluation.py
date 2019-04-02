@@ -152,8 +152,8 @@ class ClusterEvaluation:
 
         # Vectorize the entities per document
         data_matrix = CountVectorizer(
-            min_df=2,
-            max_df=0.95,
+            min_df=1,
+            max_df=3,
             lowercase=True,
             analyzer="word",
             stop_words="english",
@@ -176,11 +176,11 @@ class ClusterEvaluation:
     # Completeness: 0.302
     # NMI score: 0.287
 
-    # Result David (after applying text preprocessing):
+    # Result David (after applying text preprocessing and adapting min_df and max_df):
     # First 1000 news articles with 27 clusters:
-    # Number of clusters: 60
-    # Completeness: 0.360
-    # NMI score: 0.373
+    # Number of clusters: 23
+    # Completeness: 0.755
+    # NMI score: 0.709
 
     ############################
 
