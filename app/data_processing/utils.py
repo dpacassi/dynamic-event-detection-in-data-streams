@@ -91,10 +91,10 @@ def stem_text(text):
 
 def clean_text(text):
     # Trim text.
-    # text = text.strip()
+    text = text.strip()
 
     # Transform the text to lower case.
-    # text = text.lower()
+    text = text.lower()
 
     # Remove page breaks
     text = replace_page_breaks(text)
@@ -103,7 +103,7 @@ def clean_text(text):
     text = remove_html(text)
 
     # Replace all non alphabetical characters with spaces.
-    # text = replace_non_alpha(text)
+    text = replace_non_alpha(text)
 
     # Remove punctuation.
     # Obsolete since we remove all non alphabetical characters.
@@ -116,7 +116,7 @@ def clean_text(text):
     # text = remove_short_words(text)
 
     # Text stemming and stop words removal.
-    # text = stem_text(text)
+    text = stem_text(text)
 
     return text
 
@@ -124,7 +124,7 @@ def clean_text(text):
 def load_test_data(content_column="newspaper_text", nrows=None):
     # filepath = "test_data/uci-news-aggregator.csv"
     # filepath = "test_data/export.csv"
-    filepath = "test_data/clean_news.csv"
+    filepath = "test_data/clean_news_less_noisy.csv"
 
     test_data = pandas.read_csv(filepath, nrows=nrows)
     test_data[content_column] = test_data[content_column].apply(clean_text)
@@ -132,7 +132,7 @@ def load_test_data(content_column="newspaper_text", nrows=None):
     return test_data[test_data[content_column].notnull()]
 
 
-def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data):
+def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data, threshold=0.7):
     documents_by_topic = collections.defaultdict(list)
     labels = []
 
@@ -143,6 +143,9 @@ def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data
             if topic_distribution > max_topic_distribution_value:
                 max_topic_distribution_value = topic_distribution
                 max_topic_distribution_index = index
+
+        if max_topic_distribution_value < threshold:
+            max_topic_distribution_index = -1
 
         documents_by_topic[max_topic_distribution_index].append([max_topic_distribution_value, test_data.iloc[row]])
         labels.append(max_topic_distribution_index)
