@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import spacy
+import collections
+
+from scipy.sparse import find
 
 from hdbscan import HDBSCAN
 from datasketch import MinHash, MinHashLSH
@@ -13,7 +16,7 @@ from gensim.utils import simple_preprocess
 from sklearn.feature_extraction.text import CountVectorizer  # , TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
-#from sklearn.cluster import OPTICS, Birch
+from sklearn.cluster import Birch  # , OPTICS
 from sklearn.metrics.pairwise import cosine_similarity
 
 import utils
@@ -98,6 +101,50 @@ class ClusterEvaluation:
 
     ############################
 
+    ############################
+
+    # BIRCH with entities instead of raw_text:
+
+    def birch_entities(self):
+        # The model has to be downloaded first!
+        # python -m spacy download en_core_web_sm
+        nlp = spacy.load("en_core_web_sm")
+
+        # Extract entities per document with spacy
+        # Maybe try different entity extractors? for example MITIE
+        def extract_entities(data):
+            # https://spacy.io/usage/linguistic-features#named-entities
+            doc = nlp(data)
+            entities = []
+            for entity in doc.ents:
+                if entity.label_ not in self.excluded_entity_types:
+                    entities.append(entity.text)
+
+            if len(entities) == 0:
+                entities = ["empty"]
+
+            return entities
+
+        # Vectorize the entities per document
+        data_matrix = CountVectorizer(
+            min_df=1,
+            max_df=3,
+            lowercase=True,
+            analyzer="word",
+            stop_words="english",
+            tokenizer=extract_entities,
+        ).fit_transform(self.documents)
+
+        labels = Birch(
+            branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
+        ).fit_predict(data_matrix)
+        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
+        return labels, n_estimated_topics
+
+    # Result:
+
+    ############################
+
     # HDBSCAN + LDA:
     # Use hdbscan to estimate number of clusters and use the estimation for the LDA model.
     # Inspired by https://www.multisensorproject.eu/wp-content/uploads/2016/11/2016_GIALAMPOUKIDIS_et_al_MLDM2016_camera_ready_forRG.pdf
@@ -133,7 +180,7 @@ class ClusterEvaluation:
     def hdbscan_entities(self):
         # The model has to be downloaded first!
         # python -m spacy download en_core_web_sm
-        nlp = spacy.load("en_core_web_sm")
+        nlp = spacy.load("en_core_web_md")
 
         # Extract entities per document with spacy
         # Maybe try different entity extractors? for example MITIE
@@ -151,18 +198,23 @@ class ClusterEvaluation:
             return entities
 
         # Vectorize the entities per document
-        data_matrix = CountVectorizer(
+        vectorizer = CountVectorizer(
             min_df=1,
-            max_df=3,
-            lowercase=True,
-            analyzer="word",
-            stop_words="english",
+            max_df=0.8,
+            # analyzer="word",
+            # stop_words="english",
             tokenizer=extract_entities,
-        ).fit_transform(self.documents)
+        ).fit(self.documents)
+
+        data_matrix = vectorizer.transform(self.documents)
+        features = vectorizer.get_feature_names()
+
+        # Extract entities from sparse data_matrix
+        features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
 
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics
+        return labels, n_estimated_topics, features_by_document
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -264,7 +316,7 @@ class ClusterEvaluation:
         nlp = spacy.load("en_core_web_sm")
 
         # Create LSH index
-        lsh = MinHashLSH(threshold=0.8, num_perm=128)
+        lsh = MinHashLSH(threshold=0.95, num_perm=128)
 
         for index, document in enumerate(self.documents):
             hash = MinHash(num_perm=128)
@@ -309,9 +361,14 @@ class ClusterEvaluation:
         # labels, n_estimated_topics = self.hdbscan_lda()
         # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics))
 
-        labels, n_estimated_topics = self.hdbscan_entities()
+        # labels, n_estimated_topics = self.birch_entities()
+        # results.append(
+        #     utils.Result("Birch + Entity extraction", labels, n_estimated_topics)
+        # )
+
+        labels, n_estimated_topics, features = self.hdbscan_entities()
         results.append(
-            utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics)
+            utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, features)
         )
 
         # labels, n_estimated_topics = self.hdbscan_cossim()
@@ -329,8 +386,8 @@ class ClusterEvaluation:
         #     )
         # )
 
-        #labels, n_estimated_topics = self.minhash_lsh()
-        #results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics))
+        # labels, n_estimated_topics = self.minhash_lsh()
+        # results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics))
 
         return results
 
@@ -341,7 +398,9 @@ if __name__ == "__main__":
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
 
     # Load data and setup for evaluation
+    id_column = "id"
     content_column = "newspaper_text"
+    headline_column = "title"
     story_column = "story"
 
     # Todo: Timing and different sample sets
@@ -352,6 +411,26 @@ if __name__ == "__main__":
 
     print("True number of cluster: %d" % len(set(labels_true)))
 
+    show_details = True
+
     # Print resultsdataset
     for result in results:
         result.print_evaluation(labels_true)
+        print(len(result.features))
+        if show_details:
+
+            grouped_indices = collections.defaultdict(list)
+            for index, value in enumerate(result.labels):
+                if value >= 0:
+                    grouped_indices[value].append(index)
+
+            for key, indices in grouped_indices.items():
+                print("Group %d: \n" % key)
+                # print(indices)
+                for index in indices:
+                    print("{}: {}".format(dataset[id_column][index], dataset[headline_column][index]))
+                    print("Entities: {}".format(result.features[index] if index < len(result.features) else "no entities"))
+                print("------------------------------")
+
+        print(result.labels)
+        print(result.n_topics)

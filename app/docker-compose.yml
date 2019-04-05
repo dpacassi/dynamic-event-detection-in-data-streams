@@ -33,3 +33,8 @@ services:
       - neo4j
     environment:
       NEO4J_URI: bolt://neo4j:7687
+
+  corenlp:
+    image: frnkenstien/corenlp
+    ports:
+      - 9000:9000

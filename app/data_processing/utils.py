@@ -2,16 +2,19 @@ import collections
 import pandas
 import re
 
+from scipy.sparse import find
 from sklearn.metrics import accuracy_score, completeness_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
+
 class Result:
-    def __init__(self, title, labels, n_topics):
+    def __init__(self, title, labels, n_topics, features=None):
         self.title = title
         self.labels = labels
         self.n_topics = n_topics
+        self.features = features
 
     def print_evaluation(self, y_true):
         print("--------------------------")
@@ -39,6 +42,10 @@ def replace_non_alpha(text):
     text = re.sub('[^a-zA-Z]+', ' ', text)
 
     return text
+
+
+def replace_page_breaks(text):
+    return re.sub(r'(\\n)', r'', text)
 
 
 def remove_punctuation(text):
@@ -84,29 +91,32 @@ def stem_text(text):
 
 def clean_text(text):
     # Trim text.
-    text = text.strip()
+    # text = text.strip()
 
     # Transform the text to lower case.
-    text = text.lower()
+    # text = text.lower()
+
+    # Remove page breaks
+    text = replace_page_breaks(text)
 
     # Remove any existing HTML tags.
     text = remove_html(text)
 
     # Replace all non alphabetical characters with spaces.
-    text = replace_non_alpha(text)
+    # text = replace_non_alpha(text)
 
     # Remove punctuation.
     # Obsolete since we remove all non alphabetical characters.
-    #text = remove_punctuation(text)
+    # text = remove_punctuation(text)
 
     # Remove multiple whitespaces.
     text = remove_multiple_whitespaces(text)
 
     # Remove single characters.
-    text = remove_short_words(text)
+    # text = remove_short_words(text)
 
     # Text stemming and stop words removal.
-    text = stem_text(text)
+    # text = stem_text(text)
 
     return text
 
@@ -138,3 +148,11 @@ def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data
         labels.append(max_topic_distribution_index)
 
     return labels, documents_by_topic
+
+
+def map_features_to_word_vectors(data_matrix, features):
+    features_by_document = []
+    for sparse_row in data_matrix:
+        row_indices, column_indices, values = find(sparse_row)
+        features_by_document.append([features[index] for index in column_indices])
+    return features_by_document
