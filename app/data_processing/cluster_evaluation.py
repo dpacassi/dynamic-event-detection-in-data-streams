@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import spacy
 import collections
+import argparse
 
 from scipy.sparse import find
 
@@ -397,6 +398,12 @@ if __name__ == "__main__":
     # python -m spacy download en_core_web_sm
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
 
+    # Handle arguments.
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--show-details', dest='show_details', action='store_true')
+    ap.set_defaults(show_details=False)
+    args = vars(ap.parse_args())
+
     # Load data and setup for evaluation
     id_column = "id"
     content_column = "newspaper_text"
@@ -411,14 +418,12 @@ if __name__ == "__main__":
 
     print("True number of cluster: %d" % len(set(labels_true)))
 
-    show_details = True
-
     # Print resultsdataset
     for result in results:
         result.print_evaluation(labels_true)
-        print(len(result.features))
-        if show_details:
 
+        if args['show_details']:
+            print(len(result.features))
             grouped_indices = collections.defaultdict(list)
             for index, value in enumerate(result.labels):
                 if value >= 0:
@@ -432,5 +437,5 @@ if __name__ == "__main__":
                     print("Entities: {}".format(result.features[index] if index < len(result.features) else "no entities"))
                 print("------------------------------")
 
-        print(result.labels)
-        print(result.n_topics)
+            print(result.labels)
+            print(result.n_topics)
