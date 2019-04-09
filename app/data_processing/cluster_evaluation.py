@@ -13,7 +13,7 @@ from gensim import corpora
 import gensim.downloader as api
 from gensim.utils import simple_preprocess
 
-from sklearn.feature_extraction.text import CountVectorizer  # , TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer , TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.cluster import Birch  # , OPTICS
@@ -25,9 +25,15 @@ import utils
 class ClusterEvaluation:
     def __init__(self, documents, full_dataset=None):
         # Single preprocessing for easy testing of different vectorizers and to reduce redundant computation
-        self.data_matrix = CountVectorizer(
-            min_df=2, max_df=0.8, lowercase=True, analyzer="word", stop_words="english"
-        ).fit_transform(documents)
+        vectorizer = CountVectorizer(
+            min_df=3, max_df=0.9, lowercase=True, analyzer="word", stop_words="english"
+        ).fit(documents)
+
+        self.data_matrix = vectorizer.transform(documents)
+        features = vectorizer.get_feature_names()
+
+        # Extract entities from sparse data_matrix
+        self.features_by_document = utils.map_features_to_word_vectors(self.data_matrix, features)
 
         self.documents = documents
         self.full_dataset = full_dataset
@@ -49,7 +55,7 @@ class ClusterEvaluation:
             self.data_matrix
         )
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics
+        return labels, n_estimated_topics, self.features_by_document
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -157,7 +163,7 @@ class ClusterEvaluation:
             1 if -1 in hdbscan_labels else 0
         )
 
-        model = LatentDirichletAllocation(n_components=n_estimated_topics).fit(
+        model = LatentDirichletAllocation(n_components=n_estimated_topics, max_iter=50).fit(
             self.data_matrix
         )
         document_matrix = model.transform(self.data_matrix)
@@ -349,8 +355,8 @@ class ClusterEvaluation:
         # Run clusterings
         results = []
 
-        # labels, n_estimated_topics = self.hdbscan()
-        # results.append(utils.Result("HDBSCAN", labels, n_estimated_topics))
+        labels, n_estimated_topics, features = self.hdbscan()
+        results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, features))
 
         # labels, n_estimated_topics = self.optics()
         # results.append(utils.Result("OPTICS", labels, n_estimated_topics))
@@ -358,18 +364,18 @@ class ClusterEvaluation:
         # labels, n_estimated_topics = self.birch()
         # results.append(utils.Result("BIRCH", labels, n_estimated_topics))
 
-        # labels, n_estimated_topics = self.hdbscan_lda()
-        # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics))
+        labels, n_estimated_topics = self.hdbscan_lda()
+        results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics))
 
         # labels, n_estimated_topics = self.birch_entities()
         # results.append(
         #     utils.Result("Birch + Entity extraction", labels, n_estimated_topics)
         # )
 
-        labels, n_estimated_topics, features = self.hdbscan_entities()
-        results.append(
-            utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, features)
-        )
+        # labels, n_estimated_topics, features = self.hdbscan_entities()
+        # results.append(
+        #     utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, features)
+        # )
 
         # labels, n_estimated_topics = self.hdbscan_cossim()
         # results.append(
@@ -415,10 +421,8 @@ if __name__ == "__main__":
 
     # Print resultsdataset
     for result in results:
-        result.print_evaluation(labels_true)
-        print(len(result.features))
-        if show_details:
-
+        if show_details and result.features is not None:
+            print(len(result.features))
             grouped_indices = collections.defaultdict(list)
             for index, value in enumerate(result.labels):
                 if value >= 0:
@@ -431,6 +435,8 @@ if __name__ == "__main__":
                     print("{}: {}".format(dataset[id_column][index], dataset[headline_column][index]))
                     print("Entities: {}".format(result.features[index] if index < len(result.features) else "no entities"))
                 print("------------------------------")
+
+        result.print_evaluation(labels_true)
 
         print(result.labels)
         print(result.n_topics)
