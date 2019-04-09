@@ -115,7 +115,7 @@ def lemmatize_text(text):
 
 
 def remove_common_words(text):
-  common_words = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'year', 'years', 'month', 'months', 'day', 'days', 'hour', 'hours', 'minutes', 'minute', 'seconds', 'second', 'time', 'date', 'all', 'rights', 'reserved', 'story', 'reuters', 'first', 'second', 'third', 'soon']
+  common_words = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'year', 'years', 'month', 'months', 'day', 'days', 'hour', 'hours', 'minutes', 'minute', 'seconds', 'second', 'time', 'date', 'all', 'rights', 'reserved', 'story', 'reuters', 'first', 'second', 'third', 'soon', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'today', 'now']
   doc = []
 
   for word in text.split():

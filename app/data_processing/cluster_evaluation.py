@@ -444,7 +444,6 @@ if __name__ == "__main__":
     headline_column = "title"
     story_column = "story"
 
-    # Todo: Timing and different sample sets
     dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
 
