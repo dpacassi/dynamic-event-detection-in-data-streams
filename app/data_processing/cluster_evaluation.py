@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import spacy
 import collections
+import argparse
+import time
 
 from scipy.sparse import find
 
@@ -51,11 +53,13 @@ class ClusterEvaluation:
     # the issues regarding clusters of varying density of its predecessor dbscan.
 
     def hdbscan(self):
+        start = time.time()
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
             self.data_matrix
         )
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics, self.features_by_document
+        end = time.time()
+        return labels, n_estimated_topics, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -72,10 +76,12 @@ class ClusterEvaluation:
     # can work with clusters of varying density.
 
     def optics(self):
+        start = time.time()
         labels = OPTICS(eps=0.5, min_samples=3).fit_predict(self.data_matrix.todense())
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
+        end = time.time()
 
-        return labels, n_estimated_topics
+        return labels, n_estimated_topics, (end - start)
 
     # Result:
     # The problem with the sklearn implementation of optics is, that it does not work with sparse arrays.
@@ -96,11 +102,14 @@ class ClusterEvaluation:
 
     def birch(x):
         # https://scikit-learn.org/stable/modules/clustering.html#birch
+        start = time.time()
         labels = Birch(
             branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
         ).fit_predict(x)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics
+        end = time.time()
+
+        return labels, n_estimated_topics, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -114,6 +123,7 @@ class ClusterEvaluation:
     def birch_entities(self):
         # The model has to be downloaded first!
         # python -m spacy download en_core_web_sm
+        start = time.time()
         nlp = spacy.load("en_core_web_sm")
 
         # Extract entities per document with spacy
@@ -145,7 +155,9 @@ class ClusterEvaluation:
             branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
         ).fit_predict(data_matrix)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics
+        end = time.time()
+
+        return labels, n_estimated_topics, (end - start)
 
     # Result:
 
@@ -156,6 +168,7 @@ class ClusterEvaluation:
     # Inspired by https://www.multisensorproject.eu/wp-content/uploads/2016/11/2016_GIALAMPOUKIDIS_et_al_MLDM2016_camera_ready_forRG.pdf
 
     def hdbscan_lda(self):
+        start = time.time()
         hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
             self.data_matrix
         )
@@ -171,7 +184,9 @@ class ClusterEvaluation:
         lda_labels, documents_by_topic = utils.get_labels_and_documents_from_distribution_matrix(
             document_matrix, self.full_dataset
         )
-        return lda_labels, n_estimated_topics
+        end = time.time()
+
+        return lda_labels, n_estimated_topics, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -184,6 +199,8 @@ class ClusterEvaluation:
     # HDBSCAN with entities instead of raw_text:
 
     def hdbscan_entities(self):
+        start = time.time()
+
         # The model has to be downloaded first!
         # python -m spacy download en_core_web_sm
         nlp = spacy.load("en_core_web_md")
@@ -220,7 +237,9 @@ class ClusterEvaluation:
 
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics, features_by_document
+        end = time.time()
+
+        return labels, n_estimated_topics, features_by_document, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -249,11 +268,14 @@ class ClusterEvaluation:
 
     def hdbscan_cossim(self):
         # Create cossim matrix
+        start = time.time()
         cossim_matrix = cosine_similarity(self.data_matrix)
 
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics
+        end = time.time()
+
+        return labels, n_estimated_topics, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -274,6 +296,7 @@ class ClusterEvaluation:
     def hdbscan_soft_cossim(self):
         # Download the FastText model
         # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
+        start = time.time()
         fasttext_model300 = api.load("fasttext-wiki-news-subwords-300")
 
         # Prepare a dictionary and a corpus.
@@ -307,7 +330,9 @@ class ClusterEvaluation:
 
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
         n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
-        return labels, n_estimated_topics
+        end = time.time()
+
+        return labels, n_estimated_topics, (end - start)
 
     # Result:
     # So far not runnable due to memory restrictions.
@@ -317,8 +342,8 @@ class ClusterEvaluation:
     # MinHash + LSH
     # Ref: https://ekzhu.github.io/datasketch/lsh.html
     def minhash_lsh(self):
+        start = time.time()
         hashes = []
-
         nlp = spacy.load("en_core_web_sm")
 
         # Create LSH index
@@ -344,7 +369,9 @@ class ClusterEvaluation:
                 processed_indices += matches
 
         # print("Approximate neighbours with Jaccard similarity > 0.5", result)
-        return range(len(hashes)), n_estimated_topics
+        end = time.time()
+
+        return range(len(hashes)), n_estimated_topics, (end - start)
     
     # Result:
     # Todo: describe result.
@@ -355,45 +382,45 @@ class ClusterEvaluation:
         # Run clusterings
         results = []
 
-        labels, n_estimated_topics, features = self.hdbscan()
-        results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, features))
+        # labels, n_estimated_topics, processing_time = self.hdbscan()
+        # results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, processing_time))
 
-        # labels, n_estimated_topics = self.optics()
-        # results.append(utils.Result("OPTICS", labels, n_estimated_topics))
+        # labels, n_estimated_topics, processing_time = self.optics()
+        # results.append(utils.Result("OPTICS", labels, n_estimated_topics, processing_time))
 
-        # labels, n_estimated_topics = self.birch()
-        # results.append(utils.Result("BIRCH", labels, n_estimated_topics))
+        # labels, n_estimated_topics, processing_time = self.birch()
+        # results.append(utils.Result("BIRCH", labels, n_estimated_topics, processing_time))
 
-        labels, n_estimated_topics = self.hdbscan_lda()
-        results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics))
-
-        # labels, n_estimated_topics = self.birch_entities()
+        # labels, n_estimated_topics, processing_time = self.birch_entities()
         # results.append(
-        #     utils.Result("Birch + Entity extraction", labels, n_estimated_topics)
+        #     utils.Result("Birch + Entity extraction", labels, n_estimated_topics, processing_time)
         # )
 
-        # labels, n_estimated_topics, features = self.hdbscan_entities()
-        # results.append(
-        #     utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, features)
-        # )
+        # labels, n_estimated_topics, processing_time = self.hdbscan_lda()
+        # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics. processing_time))
 
-        # labels, n_estimated_topics = self.hdbscan_cossim()
+        labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
+        results.append(
+            utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
+        )
+
+        # labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
         # results.append(
         #     utils.Result(
-        #         "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics
+        #         "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
         #     )
         # )
 
         # Causes a MemoryError and is veeery slow with the current implementation.
-        # labels, n_estimated_topics = self.hdbscan_soft_cossim()
+        # labels, n_estimated_topics, processing_time = self.hdbscan_soft_cossim()
         # results.append(
         #     utils.Result(
-        #         "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics
+        #         "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
         #     )
         # )
 
-        # labels, n_estimated_topics = self.minhash_lsh()
-        # results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics))
+        # labels, n_estimated_topics, processing_time = self.minhash_lsh()
+        # results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
 
         return results
 
@@ -403,6 +430,13 @@ if __name__ == "__main__":
     # python -m spacy download en_core_web_sm
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
 
+    # Handle arguments.
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--show-details', dest='show_details', action='store_true')
+    ap.add_argument('--rows', required=False, type=int, default=1000)
+    ap.set_defaults(show_details=False)
+    args = vars(ap.parse_args())
+
     # Load data and setup for evaluation
     id_column = "id"
     content_column = "newspaper_text"
@@ -410,18 +444,18 @@ if __name__ == "__main__":
     story_column = "story"
 
     # Todo: Timing and different sample sets
-    dataset = utils.load_test_data(content_column=content_column, nrows=1000)
+    dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'])
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
 
     results = ClusterEvaluation(dataset[content_column], dataset).run()
 
     print("True number of cluster: %d" % len(set(labels_true)))
 
-    show_details = True
-
     # Print resultsdataset
     for result in results:
-        if show_details and result.features is not None:
+        result.print_evaluation(labels_true)
+
+        if args['show_details'] and result.features is not None:
             print(len(result.features))
             grouped_indices = collections.defaultdict(list)
             for index, value in enumerate(result.labels):
@@ -436,7 +470,5 @@ if __name__ == "__main__":
                     print("Entities: {}".format(result.features[index] if index < len(result.features) else "no entities"))
                 print("------------------------------")
 
-        result.print_evaluation(labels_true)
-
-        print(result.labels)
-        print(result.n_topics)
+            print(result.labels)
+            print(result.n_topics)
