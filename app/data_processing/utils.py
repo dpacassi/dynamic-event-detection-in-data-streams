@@ -3,7 +3,7 @@ import pandas
 import re
 
 from scipy.sparse import find
-from sklearn.metrics import accuracy_score, completeness_score
+from sklearn.metrics import accuracy_score, completeness_score, precision_recall_fscore_support
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
@@ -28,6 +28,11 @@ class Result:
                 y_true, self.labels, average_method="arithmetic"
             )
         )
+        print("Accuracy: %0.3f" % accuracy_score(y_true, self.labels))
+        precision, recall, fscore, support = precision_recall_fscore_support(y_true, self.labels, average='micro')
+        # print("Precision: %0.3f" % precision)
+        # print("Recall: %0.3f" % recall)
+        print("F-score: %0.3f" % fscore)
         print()
 
 
