@@ -128,12 +128,13 @@ def clean_text(text):
     return text
 
 
-def load_test_data(content_column="newspaper_text", nrows=None):
+def load_test_data(content_column="newspaper_text", nrows=None, skip_rows=0):
     # filepath = "test_data/uci-news-aggregator.csv"
     # filepath = "test_data/export.csv"
     filepath = "test_data/clean_news_less_noisy.csv"
 
-    test_data = pandas.read_csv(filepath, nrows=nrows)
+    names = ['id', 'title', 'url', 'publisher', 'category', 'story', 'hostname', 'date', 'newspaper_processed', 'newspaper_meta_language', 'newspaper_keywords', 'newspaper_text']
+    test_data = pandas.read_csv(filepath, nrows=nrows, skiprows=skip_rows, header=None, names=names)
     test_data[content_column] = test_data[content_column].apply(clean_text)
 
     return test_data[test_data[content_column].notnull()]

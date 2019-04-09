@@ -27,7 +27,7 @@ for index, row in test_data.iterrows():
         errors += 1
 
 test_data.drop(noise)
-test_data.to_csv("test_data/clean_news_less_noisy.csv")
+test_data.to_csv("test_data/clean_news_less_noisy.csv", index=False, header=False)
 
 
 print()

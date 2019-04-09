@@ -428,6 +428,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.add_argument('--rows', required=False, type=int, default=1000)
+    ap.add_argument('--skip-rows', required=False, type=int, default=0)
     ap.set_defaults(show_details=False)
     args = vars(ap.parse_args())
 
@@ -438,7 +439,7 @@ if __name__ == "__main__":
     story_column = "story"
 
     # Todo: Timing and different sample sets
-    dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'])
+    dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
 
     results = ClusterEvaluation(dataset[content_column], dataset).run()
