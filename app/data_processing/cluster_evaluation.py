@@ -7,6 +7,7 @@ import time
 
 from dotenv import load_dotenv
 
+from pattern.text import keywords as findKeywords
 from scipy.sparse import find
 
 from hdbscan import HDBSCAN
@@ -259,7 +260,48 @@ class ClusterEvaluation:
     # First 1000 news articles with 27 clusters:
     # Number of clusters: 23
     # Completeness: 0.755
-    # NMI score: 0.709
+    # NMI score: 0.70
+    
+    ############################
+
+    # HDBSCAN with tokens instead of raw_text:
+
+    def hdbscan_keywords(self):
+        start = time.time()
+
+        def extract_keywords(data):
+            entities = findKeywords(data, language='en')
+            if len(entities) == 0:
+                entities = ["empty"]
+
+            return entities
+
+        # Vectorize the entities per document
+        vectorizer = CountVectorizer(
+            min_df=1,
+            max_df=0.8,
+            # analyzer="word",
+            # stop_words="english",
+            tokenizer=extract_keywords,
+        ).fit(self.documents)
+
+        data_matrix = vectorizer.transform(self.documents)
+        features = vectorizer.get_feature_names()
+
+        # Extract entities from sparse data_matrix
+        features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
+
+        labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
+        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
+        end = time.time()
+
+        return labels, n_estimated_topics, features_by_document, (end - start)
+
+    # Result:
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 63
+    # Completeness: 0.339
+    # NMI score: 0.311
 
     ############################
 
@@ -341,23 +383,21 @@ class ClusterEvaluation:
 
     ############################
 
-    # MinHash + LSH
+    # Keyterms + MinHash + LSH
     # Ref: https://ekzhu.github.io/datasketch/lsh.html
     def minhash_lsh(self):
         start = time.time()
         hashes = []
-        nlp = spacy.load("en_core_web_sm")
 
         # Create LSH index
-        lsh = MinHashLSH(threshold=0.95, num_perm=128)
+        lsh = MinHashLSH(threshold=0.99, num_perm=128)
 
         for index, document in enumerate(self.documents):
             hash = MinHash(num_perm=128)
-            # https://spacy.io/usage/linguistic-features#named-entities
-            doc = nlp(document)
-            for entity in doc.ents:
-                if entity.label_ not in self.excluded_entity_types:
-                    hash.update(str.encode(entity.text, 'utf-8'))
+            entities = findKeywords(document, language='en')
+
+            for entity in entities:
+                hash.update(str.encode(entity, 'utf-8'))
             
             hashes.append(hash)
             lsh.insert(index, hash)
@@ -406,6 +446,11 @@ class ClusterEvaluation:
             utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
         )
 
+        labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
+        results.append(
+            utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
+        )
+
         # labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
         # results.append(
         #     utils.Result(
@@ -421,15 +466,15 @@ class ClusterEvaluation:
         #     )
         # )
 
-        # labels, n_estimated_topics, processing_time = self.minhash_lsh()
-        # results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
+        labels, n_estimated_topics, processing_time = self.minhash_lsh()
+        results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
 
         return results
 
 
 if __name__ == "__main__":
     # Note: Download nlp datasets the first time you run this script.
-    # python -m spacy download en_core_web_sm
+    # python -m spacy download en_core_web_md
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
 
     # Load environment variables.
