@@ -1,5 +1,6 @@
 import collections
 import pandas
+import spacy
 import re
 
 from scipy.sparse import find
@@ -7,6 +8,7 @@ from sklearn.metrics import accuracy_score, completeness_score, precision_recall
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
+from nltk.stem import WordNetLemmatizer
 
 
 class Result:
@@ -18,7 +20,7 @@ class Result:
         self.processing_time = processing_time
 
     def print_evaluation(self, y_true):
-        print("--------------------------")
+        print("------------------------------")
         print(self.title)
         print()
         print("Number of clusters: %d" % self.n_topics)
@@ -96,7 +98,36 @@ def stem_text(text):
     return text
 
 
-def clean_text(text):
+def lemmatize_text(text):
+    nlp = spacy.load('en', disable=['parser', 'ner'])
+    sentences = text.split('.')
+    lemmatized_text = []
+
+    for sentence in sentences:
+        sentence = sentence.strip()
+        doc = nlp(sentence)
+        lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.lower_ for token in doc])
+        lemmatized_text.append(lemmatized_sentence)
+
+    text = '.'.join(lemmatized_text)
+
+    return text
+
+
+def remove_common_words(text):
+  common_words = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'year', 'years', 'month', 'months', 'day', 'days', 'hour', 'hours', 'minutes', 'minute', 'seconds', 'second', 'time', 'date', 'all', 'rights', 'reserved', 'story', 'reuters', 'first', 'second', 'third', 'soon', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'today', 'now']
+  doc = []
+
+  for word in text.split():
+      if word not in common_words:
+          doc.append(word)
+
+  text = ' '.join(doc)
+
+  return text
+
+
+def clean_text(text, use_stemming=False, use_lemmatization=False):
     # Trim text.
     text = text.strip()
 
@@ -109,6 +140,10 @@ def clean_text(text):
     # Remove any existing HTML tags.
     text = remove_html(text)
 
+    # Text lemmatization with spaCy.
+    if use_lemmatization:
+        text = lemmatize_text(text)
+
     # Replace all non alphabetical characters with spaces.
     text = replace_non_alpha(text)
 
@@ -120,20 +155,25 @@ def clean_text(text):
     text = remove_multiple_whitespaces(text)
 
     # Remove single characters.
-    # text = remove_short_words(text)
+    text = remove_short_words(text)
+
+    # Remove common words.
+    text = remove_common_words(text)
 
     # Text stemming and stop words removal.
-    text = stem_text(text)
+    if use_stemming:
+        text = stem_text(text)
 
     return text
 
 
-def load_test_data(content_column="newspaper_text", nrows=None):
+def load_test_data(content_column="newspaper_text", nrows=None, skip_rows=0):
     # filepath = "test_data/uci-news-aggregator.csv"
     # filepath = "test_data/export.csv"
     filepath = "test_data/clean_news_less_noisy.csv"
 
-    test_data = pandas.read_csv(filepath, nrows=nrows)
+    names = ['id', 'title', 'url', 'publisher', 'category', 'story', 'hostname', 'date', 'newspaper_processed', 'newspaper_meta_language', 'newspaper_keywords', 'newspaper_text']
+    test_data = pandas.read_csv(filepath, nrows=nrows, skiprows=skip_rows, header=None, names=names)
     test_data[content_column] = test_data[content_column].apply(clean_text)
 
     return test_data[test_data[content_column].notnull()]
