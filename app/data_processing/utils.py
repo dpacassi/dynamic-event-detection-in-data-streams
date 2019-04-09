@@ -2,13 +2,14 @@ import collections
 import pandas
 import spacy
 import re
+import os
+import pymysql
 
 from scipy.sparse import find
 from sklearn.metrics import accuracy_score, completeness_score, precision_recall_fscore_support
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
-from nltk.stem import WordNetLemmatizer
 
 
 class Result:
@@ -177,6 +178,38 @@ def load_test_data(content_column="newspaper_text", nrows=None, skip_rows=0):
     test_data[content_column] = test_data[content_column].apply(clean_text)
 
     return test_data[test_data[content_column].notnull()]
+
+
+def load_test_data_from_db(nrows=1000, skip_rows=0):
+    connection = pymysql.connect(
+        host=os.environ['MYSQL_HOSTNAME'],
+        port=int(os.environ['MYSQL_PORT']),
+        user=os.environ['MYSQL_USER'],
+        passwd=os.environ['MYSQL_PASSWORD'],
+        database=os.environ['MYSQL_DATABASE'],
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    get_sql = (
+        "SELECT *"
+        " FROM news_article"
+        " WHERE"
+        "     newspaper_processed = 1"
+        "     AND newspaper_text IS NOT NULL"
+        "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "     AND newspaper_text NOT LIKE '%%404%%'"
+        "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        " ORDER BY id ASC"
+        " LIMIT %s"
+    )
+
+    data = pandas.read_sql(sql=get_sql, con=connection, index_col='id', params=[nrows])
+    connection.close()
+
+    return data
 
 
 def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data, threshold=0.7):

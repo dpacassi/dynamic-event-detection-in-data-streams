@@ -5,6 +5,8 @@ import collections
 import argparse
 import time
 
+from dotenv import load_dotenv
+
 from scipy.sparse import find
 
 from hdbscan import HDBSCAN
@@ -430,11 +432,15 @@ if __name__ == "__main__":
     # python -m spacy download en_core_web_sm
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
 
+    # Load environment variables.
+    load_dotenv()
+
     # Handle arguments.
     ap = argparse.ArgumentParser()
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.add_argument('--rows', required=False, type=int, default=1000)
     ap.add_argument('--skip-rows', required=False, type=int, default=0)
+    ap.add_argument('--source', required=False, type=str, default='database')
     ap.set_defaults(show_details=False)
     args = vars(ap.parse_args())
 
@@ -444,9 +450,12 @@ if __name__ == "__main__":
     headline_column = "title"
     story_column = "story"
 
-    dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
-    labels_true = LabelEncoder().fit_transform(dataset[story_column])
+    if args['source'] == 'csv':
+        dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
+    else:
+        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'])
 
+    labels_true = LabelEncoder().fit_transform(dataset[story_column])
     results = ClusterEvaluation(dataset[content_column], dataset).run()
 
     print("True number of clusters: %d" % len(set(labels_true)))
