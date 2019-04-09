@@ -15,7 +15,7 @@ from gensim import corpora
 import gensim.downloader as api
 from gensim.utils import simple_preprocess
 
-from sklearn.feature_extraction.text import CountVectorizer  # , TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer , TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.cluster import Birch  # , OPTICS
@@ -27,9 +27,15 @@ import utils
 class ClusterEvaluation:
     def __init__(self, documents, full_dataset=None):
         # Single preprocessing for easy testing of different vectorizers and to reduce redundant computation
-        self.data_matrix = CountVectorizer(
-            min_df=2, max_df=0.8, lowercase=True, analyzer="word", stop_words="english"
-        ).fit_transform(documents)
+        vectorizer = CountVectorizer(
+            min_df=3, max_df=0.9, lowercase=True, analyzer="word", stop_words="english"
+        ).fit(documents)
+
+        self.data_matrix = vectorizer.transform(documents)
+        features = vectorizer.get_feature_names()
+
+        # Extract entities from sparse data_matrix
+        self.features_by_document = utils.map_features_to_word_vectors(self.data_matrix, features)
 
         self.documents = documents
         self.full_dataset = full_dataset
@@ -170,7 +176,7 @@ class ClusterEvaluation:
             1 if -1 in hdbscan_labels else 0
         )
 
-        model = LatentDirichletAllocation(n_components=n_estimated_topics).fit(
+        model = LatentDirichletAllocation(n_components=n_estimated_topics, max_iter=50).fit(
             self.data_matrix
         )
         document_matrix = model.transform(self.data_matrix)
@@ -450,7 +456,7 @@ if __name__ == "__main__":
     for result in results:
         result.print_evaluation(labels_true)
 
-        if args['show_details']:
+        if args['show_details'] and result.features is not None:
             print(len(result.features))
             grouped_indices = collections.defaultdict(list)
             for index, value in enumerate(result.labels):
