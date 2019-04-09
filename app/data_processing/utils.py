@@ -18,7 +18,7 @@ class Result:
         self.processing_time = processing_time
 
     def print_evaluation(self, y_true):
-        print("--------------------------")
+        print("------------------------------")
         print(self.title)
         print()
         print("Number of clusters: %d" % self.n_topics)

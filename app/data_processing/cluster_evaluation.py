@@ -450,7 +450,8 @@ if __name__ == "__main__":
 
     results = ClusterEvaluation(dataset[content_column], dataset).run()
 
-    print("True number of cluster: %d" % len(set(labels_true)))
+    print("True number of clusters: %d" % len(set(labels_true)))
+    print("")
 
     # Print resultsdataset
     for result in results:
