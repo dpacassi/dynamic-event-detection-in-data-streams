@@ -10,11 +10,12 @@ from nltk.stem.snowball import SnowballStemmer
 
 
 class Result:
-    def __init__(self, title, labels, n_topics, features=None):
+    def __init__(self, title, labels, n_topics, processing_time, features=None):
         self.title = title
         self.labels = labels
         self.n_topics = n_topics
         self.features = features
+        self.processing_time = processing_time
 
     def print_evaluation(self, y_true):
         print("--------------------------")
@@ -33,6 +34,7 @@ class Result:
         # print("Precision: %0.3f" % precision)
         # print("Recall: %0.3f" % recall)
         print("F-score: %0.3f" % fscore)
+        print("Processing time: %0.2f seconds" % self.processing_time)
         print()
 
 
