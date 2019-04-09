@@ -1,4 +1,4 @@
-from graph.db import Db
+from graph.graph_db import GraphDb
 from twitter_api.api import TwitterApi
 
 from pattern.text import keywords as findKeywords
@@ -6,7 +6,7 @@ from pattern.text import keywords as findKeywords
 
 class ProcessTwitter:
     def __init__(self):
-        self.db = Db()
+        self.db = GraphDb()
         self.api = TwitterApi()
 
     def run(self, limit=None):

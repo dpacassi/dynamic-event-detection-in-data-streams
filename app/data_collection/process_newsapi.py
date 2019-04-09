@@ -1,4 +1,4 @@
-from graph.db import Db
+from graph.graph_db import GraphDb
 from newsapi_org.api import NewsApi
 
 from pattern.text import keywords as findKeywords
@@ -6,7 +6,7 @@ from pattern.text import keywords as findKeywords
 
 class ProcessNewsApi:
     def __init__(self):
-        self.db = Db()
+        self.db = GraphDb()
         self.api = NewsApi()
 
     def run(self, limit=None):

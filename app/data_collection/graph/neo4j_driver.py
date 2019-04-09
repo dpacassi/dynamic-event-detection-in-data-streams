@@ -26,7 +26,7 @@ class Neo4jDriver:
                     "CREATE (a:{}) RETURN a".format(entityName))
 
             record = result.single()[0]
-            return Entity(entityName=entityName, id=record.id)  # , properties=record.properties)
+            return Entity(entityName=entityName, id=record.id, properties=properties), result  # , properties=record.properties)
 
     def createRelationship(self, firstEntity, relationship, secondEntity):
         with self.driver.session() as session:

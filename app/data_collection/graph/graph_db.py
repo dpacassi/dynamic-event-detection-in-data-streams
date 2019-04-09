@@ -1,7 +1,7 @@
 from .neo4j_driver import Neo4jDriver
 
 
-class Db:
+class GraphDb:
 
     def __init__(self):
         self.driver = Neo4jDriver()
