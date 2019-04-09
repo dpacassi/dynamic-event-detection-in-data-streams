@@ -114,6 +114,19 @@ def lemmatize_text(text):
     return text
 
 
+def remove_common_words(text):
+  common_words = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'year', 'years', 'month', 'months', 'day', 'days', 'hour', 'hours', 'minutes', 'minute', 'seconds', 'second', 'time', 'date', 'all', 'rights', 'reserved', 'story', 'reuters', 'first', 'second', 'third', 'soon']
+  doc = []
+
+  for word in text.split():
+      if word not in common_words:
+          doc.append(word)
+
+  text = ' '.join(doc)
+
+  return text
+
+
 def clean_text(text, use_stemming=False, use_lemmatization=False):
     # Trim text.
     text = text.strip()
@@ -143,6 +156,9 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
 
     # Remove single characters.
     text = remove_short_words(text)
+
+    # Remove common words.
+    text = remove_common_words(text)
 
     # Text stemming and stop words removal.
     if use_stemming:
