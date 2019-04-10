@@ -132,7 +132,7 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
     text = text.strip()
 
     # Transform the text to lower case.
-    text = text.lower()
+    # text = text.lower()
 
     # Remove page breaks
     text = replace_page_breaks(text)
@@ -145,7 +145,7 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
         text = lemmatize_text(text)
 
     # Replace all non alphabetical characters with spaces.
-    text = replace_non_alpha(text)
+    # text = replace_non_alpha(text)
 
     # Remove punctuation.
     # Obsolete since we remove all non alphabetical characters.
@@ -155,10 +155,10 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
     text = remove_multiple_whitespaces(text)
 
     # Remove single characters.
-    text = remove_short_words(text)
+    # text = remove_short_words(text)
 
     # Remove common words.
-    text = remove_common_words(text)
+    # text = remove_common_words(text)
 
     # Text stemming and stop words removal.
     if use_stemming:

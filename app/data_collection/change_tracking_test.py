@@ -4,6 +4,7 @@ from graph.graph_db import GraphDb
 
 from pattern.text import keywords as findKeywords
 
+import textacy
 
 db = GraphDb()
 
@@ -38,6 +39,8 @@ text = '''
      closed this Monday.
  '''
 
+
+# CFLAGS="-Wno-narrowing" pip install cld2-cffi
 keywords = findKeywords(text, language='en')
 
 topic_one, _ = db.createEntity("Topic", {"name": "Mother"})

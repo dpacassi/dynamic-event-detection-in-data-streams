@@ -5,6 +5,7 @@ import collections
 import argparse
 import time
 
+from textacy import extract, keyterms, Doc
 from pattern.text import keywords as findKeywords
 from scipy.sparse import find
 
@@ -297,9 +298,59 @@ class ClusterEvaluation:
 
     # Result:
     # First 1000 news articles with 27 clusters:
-    # Number of clusters: 63
-    # Completeness: 0.339
-    # NMI score: 0.311
+    # Number of clusters: 0
+    # Completeness: 0.0
+    # NMI score: 0.0
+
+    ############################
+
+    # HDBSCAN with keyterms and entities instead of raw_text:
+
+    def hdbscan_keyterms_and_entities(self):
+        start = time.time()
+
+        def extract_keyterms_and_entities(data):
+            tokens = []
+            doc = Doc(data, lang='en_core_web_md')
+            res = extract.named_entities(doc, include_types=['PERSON', 'ORG', 'LOC'])
+            for r in res:
+                tokens.append(str(r[0]))
+
+            res = keyterms.sgrank(doc, n_keyterms=50)
+            for r in res:
+                tokens.append(str(r[0]))
+
+            if len(tokens) == 0:
+                tokens = ["empty"]
+
+            return tokens
+
+        # Vectorize the entities per document
+        vectorizer = TfidfVectorizer(
+            min_df=2,
+            max_df=0.8,
+            # analyzer="word",
+            # stop_words="english",
+            tokenizer=extract_keyterms_and_entities,
+        ).fit(self.documents)
+
+        data_matrix = vectorizer.transform(self.documents)
+        features = vectorizer.get_feature_names()
+
+        # Extract entities from sparse data_matrix
+        features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
+
+        labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
+        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
+        end = time.time()
+
+        return labels, n_estimated_topics, features_by_document, (end - start)
+
+    # Result:
+    # First 1000 news articles with 27 clusters:
+    # Number of clusters: 0
+    # Completeness: 0.0
+    # NMI score: 0.0
 
     ############################
 
@@ -439,14 +490,19 @@ class ClusterEvaluation:
         # labels, n_estimated_topics, processing_time = self.hdbscan_lda()
         # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics. processing_time))
 
-        labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
-        results.append(
-            utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
-        )
+        # labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
+        # results.append(
+        #     utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
+        # )
 
-        labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
+        # labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
+        # results.append(
+        #     utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
+        # )
+
+        labels, n_estimated_topics, features, processing_time = self.hdbscan_keyterms_and_entities()
         results.append(
-            utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
+            utils.Result("HDBSCAN + Keyterm + Entity extraction", labels, n_estimated_topics, processing_time, features)
         )
 
         # labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
@@ -464,8 +520,8 @@ class ClusterEvaluation:
         #     )
         # )
 
-        labels, n_estimated_topics, processing_time = self.minhash_lsh()
-        results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
+        # labels, n_estimated_topics, processing_time = self.minhash_lsh()
+        # results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
 
         return results
 
@@ -500,6 +556,7 @@ if __name__ == "__main__":
     # Print resultsdataset
     for result in results:
         result.print_evaluation(labels_true)
+        print(result.labels)
 
         if args['show_details'] and result.features is not None:
             print(len(result.features))
@@ -513,7 +570,7 @@ if __name__ == "__main__":
                 # print(indices)
                 for index in indices:
                     print("{}: {}".format(dataset[id_column][index], dataset[headline_column][index]))
-                    print("Entities: {}".format(result.features[index] if index < len(result.features) else "no entities"))
+                    # print("Entities: {}".format(result.features[index] if index < len(result.features) else "no entities"))
                 print("------------------------------")
 
             print(result.labels)
