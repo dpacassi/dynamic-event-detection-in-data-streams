@@ -13,5 +13,10 @@ CREATE TABLE `data_database`.`news_article` (
   `newspaper_meta_language` VARCHAR(16) NULL,
   `newspaper_keywords` LONGTEXT NULL,
   `newspaper_text` LONGTEXT NULL,
+  `title_keywords_intersection` TINYINT UNSIGNED NULL,
   PRIMARY KEY (`id`)
 );
+
+ALTER TABLE `data_database`.`news_article`
+ADD INDEX `idx_title` (`title` ASC),
+ADD INDEX `idx_date` (`date` ASC);

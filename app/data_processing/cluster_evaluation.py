@@ -6,6 +6,8 @@ import argparse
 import time
 
 from textacy import extract, keyterms, Doc
+from dotenv import load_dotenv
+
 from pattern.text import keywords as findKeywords
 from scipy.sparse import find
 
@@ -59,9 +61,8 @@ class ClusterEvaluation:
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
             self.data_matrix
         )
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -80,10 +81,9 @@ class ClusterEvaluation:
     def optics(self):
         start = time.time()
         labels = OPTICS(eps=0.5, min_samples=3).fit_predict(self.data_matrix.todense())
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # The problem with the sklearn implementation of optics is, that it does not work with sparse arrays.
@@ -108,10 +108,9 @@ class ClusterEvaluation:
         labels = Birch(
             branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
         ).fit_predict(x)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -156,10 +155,9 @@ class ClusterEvaluation:
         labels = Birch(
             branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
         ).fit_predict(data_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
 
@@ -174,9 +172,6 @@ class ClusterEvaluation:
         hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
             self.data_matrix
         )
-        n_estimated_topics = len(set(hdbscan_labels)) - (
-            1 if -1 in hdbscan_labels else 0
-        )
 
         model = LatentDirichletAllocation(n_components=n_estimated_topics, max_iter=50).fit(
             self.data_matrix
@@ -188,7 +183,7 @@ class ClusterEvaluation:
         )
         end = time.time()
 
-        return lda_labels, n_estimated_topics, (end - start)
+        return lda_labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -238,10 +233,9 @@ class ClusterEvaluation:
         features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
 
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, features_by_document, (end - start)
+        return labels, features_by_document, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -291,10 +285,9 @@ class ClusterEvaluation:
         features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
 
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, features_by_document, (end - start)
+        return labels, features_by_document, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -365,10 +358,9 @@ class ClusterEvaluation:
         cossim_matrix = cosine_similarity(self.data_matrix)
 
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -422,10 +414,9 @@ class ClusterEvaluation:
         )
 
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # So far not runnable due to memory restrictions.
@@ -451,6 +442,7 @@ class ClusterEvaluation:
             hashes.append(hash)
             lsh.insert(index, hash)
 
+        # TODO: Check if n_estimated_topics is correctly build in utils.py
         n_estimated_topics = 0
         processed_indices = []
         for index, hash in enumerate(hashes):
@@ -462,66 +454,75 @@ class ClusterEvaluation:
         # print("Approximate neighbours with Jaccard similarity > 0.5", result)
         end = time.time()
 
-        return range(len(hashes)), n_estimated_topics, (end - start)
+        return range(len(hashes)), (end - start)
     
     # Result:
     # Todo: describe result.
 
     ############################
 
-    def run(self):
+    def run(self, methods):
         # Run clusterings
         results = []
 
-        # labels, n_estimated_topics, processing_time = self.hdbscan()
-        # results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, processing_time))
+        if 'hdbscan' in methods:
+            labels, processing_time = self.hdbscan()
+            results.append(utils.Result("HDBSCAN", labels, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.optics()
-        # results.append(utils.Result("OPTICS", labels, n_estimated_topics, processing_time))
+        if 'optics' in methods:
+            labels, processing_time = self.optics()
+            results.append(utils.Result("OPTICS", labels, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.birch()
-        # results.append(utils.Result("BIRCH", labels, n_estimated_topics, processing_time))
+        if 'birch' in methods:
+            labels, processing_time = self.birch()
+            results.append(utils.Result("BIRCH", labels, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.birch_entities()
-        # results.append(
-        #     utils.Result("Birch + Entity extraction", labels, n_estimated_topics, processing_time)
-        # )
+        if 'birch_entities' in methods:
+            labels, processing_time = self.birch_entities()
+            results.append(utils.Result("Birch + Entity extraction", labels, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.hdbscan_lda()
-        # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics. processing_time))
+        if 'hdbscan_lda' in methods:
+            labels, processing_time = self.hdbscan_lda()
+            results.append(utils.Result("HDBSCAN + LDA", labels, processing_time))
 
-        # labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
-        # results.append(
-        #     utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
-        # )
+        if 'hdbscan_entities' in methods:
+            labels, features, processing_time = self.hdbscan_entities()
+            results.append(
+                utils.Result("HDBSCAN + Entity extraction", labels, processing_time, features)
+            )
 
-        # labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
-        # results.append(
-        #     utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
-        # )
+        if 'hdbscan_keywords' in methods:
+            labels, features, processing_time = self.hdbscan_keywords()
+            results.append(
+                utils.Result("HDBSCAN + Keyword extraction", labels, processing_time, features)
+            )
 
-        labels, n_estimated_topics, features, processing_time = self.hdbscan_keyterms_and_entities()
-        results.append(
-            utils.Result("HDBSCAN + Keyterm + Entity extraction", labels, n_estimated_topics, processing_time, features)
-        )
+        if 'hdbscan_keyterms_and_entities' in methods:
+            labels, n_estimated_topics, features, processing_time = self.hdbscan_keyterms_and_entities()
+            results.append(
+                utils.Result("HDBSCAN + Keyterm + Entity extraction", labels, n_estimated_topics, processing_time, features)
+            )
 
-        # labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
-        # results.append(
-        #     utils.Result(
-        #         "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
-        #     )
-        # )
+        if 'hdbscan_cossim' in methods:
+            labels, processing_time = self.hdbscan_cossim()
+            results.append(
+                utils.Result(
+                    "HDBSCAN + Cosine Similarity Matrix", labels, processing_time
+                )
+            )
 
-        # Causes a MemoryError and is veeery slow with the current implementation.
-        # labels, n_estimated_topics, processing_time = self.hdbscan_soft_cossim()
-        # results.append(
-        #     utils.Result(
-        #         "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
-        #     )
-        # )
+        if 'hdbscan_soft_cossim' in methods:
+            # Causes a MemoryError and is veeery slow with the current implementation.
+            labels, processing_time = self.hdbscan_soft_cossim()
+            results.append(
+                utils.Result(
+                    "HDBSCAN + Soft Cosine Similarity Matrix", labels, processing_time
+                )
+            )
 
-        # labels, n_estimated_topics, processing_time = self.minhash_lsh()
-        # results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
+        if 'minhash_lsh' in methods:
+            labels, processing_time = self.minhash_lsh()
+            results.append(utils.Result("MinHash + LSH", labels, processing_time))
 
         return results
 
@@ -531,12 +532,23 @@ if __name__ == "__main__":
     # python -m spacy download en_core_web_md
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
 
+    # Load environment variables.
+    load_dotenv()
+
     # Handle arguments.
     ap = argparse.ArgumentParser()
-    ap.add_argument('--show-details', dest='show_details', action='store_true')
+    ap.add_argument('--methods', required=False, type=str, default="hdbscan_entities")
     ap.add_argument('--rows', required=False, type=int, default=1000)
     ap.add_argument('--skip-rows', required=False, type=int, default=0)
+    ap.add_argument('--source', required=False, type=str, default='database')
+    ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
+    ap.add_argument('--keep-stopwords', dest='keep_stopwords', action='store_true')
+    ap.set_defaults(keep_stopwords=False)
+    ap.add_argument('--use-stemming', dest='use_stemming', action='store_true')
+    ap.set_defaults(use_stemming=False)
+    ap.add_argument('--use-lemmatization', dest='use_lemmatization', action='store_true')
+    ap.set_defaults(use_lemmatization=False)
     args = vars(ap.parse_args())
 
     # Load data and setup for evaluation
@@ -545,10 +557,13 @@ if __name__ == "__main__":
     headline_column = "title"
     story_column = "story"
 
-    dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
-    labels_true = LabelEncoder().fit_transform(dataset[story_column])
+    if args['source'] == 'csv':
+        dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
+    else:
+        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'])
 
-    results = ClusterEvaluation(dataset[content_column], dataset).run()
+    labels_true = LabelEncoder().fit_transform(dataset[story_column])
+    results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','))
 
     print("True number of clusters: %d" % len(set(labels_true)))
     print("")

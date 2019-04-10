@@ -2,40 +2,47 @@ import collections
 import pandas
 import spacy
 import re
+import os
+import pymysql
+from warnings import simplefilter
 
 from scipy.sparse import find
-from sklearn.metrics import accuracy_score, completeness_score, precision_recall_fscore_support
+from sklearn.metrics import completeness_score, homogeneity_score, v_measure_score, adjusted_rand_score, adjusted_mutual_info_score, silhouette_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
-from nltk.stem import WordNetLemmatizer
 
+# Ignore all future warnings.
+simplefilter(action='ignore', category=FutureWarning)
 
 class Result:
-    def __init__(self, title, labels, n_topics, processing_time, features=None):
+    def __init__(self, title, labels, processing_time, features=None):
         self.title = title
         self.labels = labels
-        self.n_topics = n_topics
         self.features = features
         self.processing_time = processing_time
 
     def print_evaluation(self, y_true):
+        # Number of clusters in labels, ignoring noise if present.
+        n_clusters = len(set(self.labels)) - (1 if -1 in self.labels else 0)
+        n_noise = list(self.labels).count(-1)
+
         print("------------------------------")
         print(self.title)
         print()
-        print("Number of clusters: %d" % self.n_topics)
+        print("Estimated number of clusters: %d" % n_clusters)
+        print("Estimated number of noise points: %d" % n_noise)
+        print("Homogeneity: %0.3f" % homogeneity_score(y_true, self.labels))
         print("Completeness: %0.3f" % completeness_score(y_true, self.labels))
+        print("V-measure: %0.3f" % v_measure_score(y_true, self.labels))
         print(
             "NMI score: %0.3f"
             % normalized_mutual_info_score(
                 y_true, self.labels, average_method="arithmetic"
             )
         )
-        print("Accuracy: %0.3f" % accuracy_score(y_true, self.labels))
-        precision, recall, fscore, support = precision_recall_fscore_support(y_true, self.labels, average='micro')
-        # print("Precision: %0.3f" % precision)
-        # print("Recall: %0.3f" % recall)
-        print("F-score: %0.3f" % fscore)
+        print("Adjusted Rand Index: %0.3f" % adjusted_rand_score(y_true, self.labels))
+        print("Adjusted Mutual Information: %0.3f" % adjusted_mutual_info_score(y_true, self.labels))
         print("Processing time: %0.2f seconds" % self.processing_time)
         print()
 
@@ -84,21 +91,28 @@ def remove_short_words(text):
     return text
 
 
-def stem_text(text):
+def stem_text(text, remove_stopwords=True):
     stop = stopwords.words('english')
     sno = SnowballStemmer('english')
-    stemmed_words = []
+    sentences = text.split('.')
+    stemmed_text = []
 
-    for word in text.split():
-        if word not in stop:
-            stemmed_words.append(sno.stem(word))
+    for sentence in sentences:
+        sentence = sentence.strip()
 
-    text = ' '.join(stemmed_words)
+        for word in sentence.split():
+            if remove_stopwords and word not in stop:
+                stemmed_text.append(sno.stem(word))
+            elif not remove_stopwords:
+                stemmed_text.append(sno.stem(word))
+
+    text = ' '.join(stemmed_text)
 
     return text
 
 
-def lemmatize_text(text):
+def lemmatize_text(text, remove_stopwords=True):
+    stop = stopwords.words('english')
     nlp = spacy.load('en', disable=['parser', 'ner'])
     sentences = text.split('.')
     lemmatized_text = []
@@ -106,7 +120,12 @@ def lemmatize_text(text):
     for sentence in sentences:
         sentence = sentence.strip()
         doc = nlp(sentence)
-        lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.lower_ for token in doc])
+
+        if remove_stopwords:
+            lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' and token.lemma_ not in stop else token.lower_ for token in doc])
+        else:
+            lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.lower_ for token in doc])
+
         lemmatized_text.append(lemmatized_sentence)
 
     text = '.'.join(lemmatized_text)
@@ -127,7 +146,7 @@ def remove_common_words(text):
   return text
 
 
-def clean_text(text, use_stemming=False, use_lemmatization=False):
+def clean_text(text, remove_stopwords=True, use_stemming=False, use_lemmatization=False):
     # Trim text.
     text = text.strip()
 
@@ -140,9 +159,16 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
     # Remove any existing HTML tags.
     text = remove_html(text)
 
+    # Remove common words.
+    text = remove_common_words(text)
+
     # Text lemmatization with spaCy.
     if use_lemmatization:
-        text = lemmatize_text(text)
+        text = lemmatize_text(text, remove_stopwords)
+
+    # Text stemming.
+    if use_stemming:
+        text = stem_text(text, remove_stopwords)
 
     # Replace all non alphabetical characters with spaces.
     # text = replace_non_alpha(text)
@@ -157,26 +183,53 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
     # Remove single characters.
     # text = remove_short_words(text)
 
-    # Remove common words.
-    # text = remove_common_words(text)
-
-    # Text stemming and stop words removal.
-    if use_stemming:
-        text = stem_text(text)
-
     return text
 
 
-def load_test_data(content_column="newspaper_text", nrows=None, skip_rows=0):
-    # filepath = "test_data/uci-news-aggregator.csv"
-    # filepath = "test_data/export.csv"
+def load_test_data(nrows=1000, skip_rows=0, keep_stopwords=False, use_stemming=False, use_lemmatization=False):
     filepath = "test_data/clean_news_less_noisy.csv"
 
     names = ['id', 'title', 'url', 'publisher', 'category', 'story', 'hostname', 'date', 'newspaper_processed', 'newspaper_meta_language', 'newspaper_keywords', 'newspaper_text']
     test_data = pandas.read_csv(filepath, nrows=nrows, skiprows=skip_rows, header=None, names=names)
-    test_data[content_column] = test_data[content_column].apply(clean_text)
+    test_data['newspaper_text'] = test_data['newspaper_text'].apply(clean_text)
 
-    return test_data[test_data[content_column].notnull()]
+    return test_data[test_data['newspaper_text'].notnull()]
+
+
+def load_test_data_from_db(nrows=1000, skip_rows=0, keep_stopwords=False, use_stemming=False, use_lemmatization=False):
+    connection = pymysql.connect(
+        host=os.environ['MYSQL_HOSTNAME'],
+        port=int(os.environ['MYSQL_PORT']),
+        user=os.environ['MYSQL_USER'],
+        passwd=os.environ['MYSQL_PASSWORD'],
+        database=os.environ['MYSQL_DATABASE'],
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    get_sql = (
+        "SELECT *"
+        " FROM news_article"
+        " WHERE"
+        "     newspaper_processed = 1"
+        "     AND title_keywords_intersection = 1"
+        "     AND hostname != 'newsledge.com'"
+        "     AND hostname != 'www.newsledge.com'"
+        "     AND newspaper_text IS NOT NULL"
+        "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "     AND newspaper_text NOT LIKE '%%404%%'"
+        "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        " ORDER BY id ASC"
+        " LIMIT %s, %s"
+    )
+
+    data = pandas.read_sql(sql=get_sql, con=connection, index_col='id', params=[skip_rows, nrows])
+    connection.close()
+    data['newspaper_text'] = data['newspaper_text'].apply(clean_text)
+
+    return data
 
 
 def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data, threshold=0.7):

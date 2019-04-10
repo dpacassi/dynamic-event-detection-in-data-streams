@@ -6,3 +6,5 @@ hdbscan
 gensim
 datasketch
 nltk
+pymysql
+python-dotenv
