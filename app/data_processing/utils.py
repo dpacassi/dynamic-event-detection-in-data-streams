@@ -4,13 +4,16 @@ import spacy
 import re
 import os
 import pymysql
+from warnings import simplefilter
 
 from scipy.sparse import find
-from sklearn.metrics import accuracy_score, completeness_score, precision_recall_fscore_support
+from sklearn.metrics import completeness_score, homogeneity_score, v_measure_score, adjusted_rand_score, adjusted_mutual_info_score, silhouette_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
+# Ignore all future warnings.
+simplefilter(action='ignore', category=FutureWarning)
 
 class Result:
     def __init__(self, title, labels, processing_time, features=None):
@@ -29,19 +32,17 @@ class Result:
         print()
         print("Estimated number of clusters: %d" % n_clusters)
         print("Estimated number of noise points: %d" % n_noise)
+        print("Homogeneity: %0.3f" % homogeneity_score(y_true, self.labels))
         print("Completeness: %0.3f" % completeness_score(y_true, self.labels))
+        print("V-measure: %0.3f" % v_measure_score(y_true, self.labels))
         print(
             "NMI score: %0.3f"
             % normalized_mutual_info_score(
                 y_true, self.labels, average_method="arithmetic"
             )
         )
-        # Following metrics are not used as
-        # print("Accuracy: %0.3f" % accuracy_score(y_true, self.labels))
-        # precision, recall, fscore, support = precision_recall_fscore_support(y_true, self.labels, average='micro')
-        # print("Precision: %0.3f" % precision)
-        # print("Recall: %0.3f" % recall)
-        # print("F-score: %0.3f" % fscore)
+        print("Adjusted Rand Index: %0.3f" % adjusted_rand_score(y_true, self.labels))
+        print("Adjusted Mutual Information: %0.3f" % adjusted_mutual_info_score(y_true, self.labels))
         print("Processing time: %0.2f seconds" % self.processing_time)
         print()
 
