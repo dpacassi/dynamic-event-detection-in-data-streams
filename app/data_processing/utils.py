@@ -13,18 +13,22 @@ from nltk.stem.snowball import SnowballStemmer
 
 
 class Result:
-    def __init__(self, title, labels, n_topics, processing_time, features=None):
+    def __init__(self, title, labels, processing_time, features=None):
         self.title = title
         self.labels = labels
-        self.n_topics = n_topics
         self.features = features
         self.processing_time = processing_time
 
     def print_evaluation(self, y_true):
+        # Number of clusters in labels, ignoring noise if present.
+        n_clusters = len(set(self.labels)) - (1 if -1 in self.labels else 0)
+        n_noise = list(self.labels).count(-1)
+
         print("------------------------------")
         print(self.title)
         print()
-        print("Number of clusters: %d" % self.n_topics)
+        print("Estimated number of clusters: %d" % n_clusters)
+        print("Estimated number of noise points: %d" % n_noise)
         print("Completeness: %0.3f" % completeness_score(y_true, self.labels))
         print(
             "NMI score: %0.3f"
@@ -32,11 +36,12 @@ class Result:
                 y_true, self.labels, average_method="arithmetic"
             )
         )
-        print("Accuracy: %0.3f" % accuracy_score(y_true, self.labels))
-        precision, recall, fscore, support = precision_recall_fscore_support(y_true, self.labels, average='micro')
+        # Following metrics are not used as
+        # print("Accuracy: %0.3f" % accuracy_score(y_true, self.labels))
+        # precision, recall, fscore, support = precision_recall_fscore_support(y_true, self.labels, average='micro')
         # print("Precision: %0.3f" % precision)
         # print("Recall: %0.3f" % recall)
-        print("F-score: %0.3f" % fscore)
+        # print("F-score: %0.3f" % fscore)
         print("Processing time: %0.2f seconds" % self.processing_time)
         print()
 

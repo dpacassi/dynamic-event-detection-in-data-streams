@@ -60,9 +60,8 @@ class ClusterEvaluation:
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
             self.data_matrix
         )
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -81,10 +80,9 @@ class ClusterEvaluation:
     def optics(self):
         start = time.time()
         labels = OPTICS(eps=0.5, min_samples=3).fit_predict(self.data_matrix.todense())
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # The problem with the sklearn implementation of optics is, that it does not work with sparse arrays.
@@ -109,10 +107,9 @@ class ClusterEvaluation:
         labels = Birch(
             branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
         ).fit_predict(x)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -157,10 +154,9 @@ class ClusterEvaluation:
         labels = Birch(
             branching_factor=50, n_clusters=None, threshold=0.25, compute_labels=True
         ).fit_predict(data_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
 
@@ -175,9 +171,6 @@ class ClusterEvaluation:
         hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
             self.data_matrix
         )
-        n_estimated_topics = len(set(hdbscan_labels)) - (
-            1 if -1 in hdbscan_labels else 0
-        )
 
         model = LatentDirichletAllocation(n_components=n_estimated_topics, max_iter=50).fit(
             self.data_matrix
@@ -189,7 +182,7 @@ class ClusterEvaluation:
         )
         end = time.time()
 
-        return lda_labels, n_estimated_topics, (end - start)
+        return lda_labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -239,10 +232,9 @@ class ClusterEvaluation:
         features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
 
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, features_by_document, (end - start)
+        return labels, features_by_document, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -292,10 +284,9 @@ class ClusterEvaluation:
         features_by_document = utils.map_features_to_word_vectors(data_matrix, features)
 
         labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, features_by_document, (end - start)
+        return labels, features_by_document, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -316,10 +307,9 @@ class ClusterEvaluation:
         cossim_matrix = cosine_similarity(self.data_matrix)
 
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # First 1000 news articles with 27 clusters:
@@ -373,10 +363,9 @@ class ClusterEvaluation:
         )
 
         labels = HDBSCAN(min_cluster_size=3).fit_predict(cossim_matrix)
-        n_estimated_topics = len(set(labels)) - (1 if -1 in labels else 0)
         end = time.time()
 
-        return labels, n_estimated_topics, (end - start)
+        return labels, (end - start)
 
     # Result:
     # So far not runnable due to memory restrictions.
@@ -402,6 +391,7 @@ class ClusterEvaluation:
             hashes.append(hash)
             lsh.insert(index, hash)
 
+        # TODO: Check if n_estimated_topics is correctly build in utils.py
         n_estimated_topics = 0
         processed_indices = []
         for index, hash in enumerate(hashes):
@@ -413,7 +403,7 @@ class ClusterEvaluation:
         # print("Approximate neighbours with Jaccard similarity > 0.5", result)
         end = time.time()
 
-        return range(len(hashes)), n_estimated_topics, (end - start)
+        return range(len(hashes)), (end - start)
     
     # Result:
     # Todo: describe result.
@@ -425,59 +415,57 @@ class ClusterEvaluation:
         results = []
 
         if 'hdbscan' in methods:
-            labels, n_estimated_topics, processing_time = self.hdbscan()
-            results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, processing_time))
+            labels, processing_time = self.hdbscan()
+            results.append(utils.Result("HDBSCAN", labels, processing_time))
 
         if 'optics' in methods:
-            labels, n_estimated_topics, processing_time = self.optics()
-            results.append(utils.Result("OPTICS", labels, n_estimated_topics, processing_time))
+            labels, processing_time = self.optics()
+            results.append(utils.Result("OPTICS", labels, processing_time))
 
         if 'birch' in methods:
-            labels, n_estimated_topics, processing_time = self.birch()
-            results.append(utils.Result("BIRCH", labels, n_estimated_topics, processing_time))
+            labels, processing_time = self.birch()
+            results.append(utils.Result("BIRCH", labels, processing_time))
 
         if 'birch_entities' in methods:
-            labels, n_estimated_topics, processing_time = self.birch_entities()
-            results.append(
-                utils.Result("Birch + Entity extraction", labels, n_estimated_topics, processing_time)
-        )
+            labels, processing_time = self.birch_entities()
+            results.append(utils.Result("Birch + Entity extraction", labels, processing_time))
 
         if 'hdbscan_lda' in methods:
-            labels, n_estimated_topics, processing_time = self.hdbscan_lda()
-            results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics. processing_time))
+            labels, processing_time = self.hdbscan_lda()
+            results.append(utils.Result("HDBSCAN + LDA", labels, processing_time))
 
         if 'hdbscan_entities' in methods:
-            labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
+            labels, features, processing_time = self.hdbscan_entities()
             results.append(
-                utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
+                utils.Result("HDBSCAN + Entity extraction", labels, processing_time, features)
             )
 
         if 'hdbscan_keywords' in methods:
-            labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
+            labels, features, processing_time = self.hdbscan_keywords()
             results.append(
-                utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
+                utils.Result("HDBSCAN + Keyword extraction", labels, processing_time, features)
             )
 
         if 'hdbscan_cossim' in methods:
-            labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
+            labels, processing_time = self.hdbscan_cossim()
             results.append(
                 utils.Result(
-                    "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
+                    "HDBSCAN + Cosine Similarity Matrix", labels, processing_time
                 )
             )
 
         if 'hdbscan_soft_cossim' in methods:
             # Causes a MemoryError and is veeery slow with the current implementation.
-            labels, n_estimated_topics, processing_time = self.hdbscan_soft_cossim()
+            labels, processing_time = self.hdbscan_soft_cossim()
             results.append(
                 utils.Result(
-                    "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
+                    "HDBSCAN + Soft Cosine Similarity Matrix", labels, processing_time
                 )
             )
 
         if 'minhash_lsh' in methods:
-            labels, n_estimated_topics, processing_time = self.minhash_lsh()
-            results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
+            labels, processing_time = self.minhash_lsh()
+            results.append(utils.Result("MinHash + LSH", labels, processing_time))
 
         return results
 
