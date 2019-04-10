@@ -8,3 +8,4 @@ datasketch
 nltk
 pymysql
 python-dotenv
+textacy

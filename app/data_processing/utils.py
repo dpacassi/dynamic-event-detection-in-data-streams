@@ -146,7 +146,9 @@ def remove_common_words(text):
   return text
 
 
-def clean_text(text, remove_stopwords=True, use_stemming=False, use_lemmatization=False):
+def clean_text(text, keep_stopwords=False, use_stemming=False, use_lemmatization=False):
+    remove_stopwords = not keep_stopwords
+
     # Trim text.
     text = text.strip()
 
@@ -191,7 +193,7 @@ def load_test_data(nrows=1000, skip_rows=0, keep_stopwords=False, use_stemming=F
 
     names = ['id', 'title', 'url', 'publisher', 'category', 'story', 'hostname', 'date', 'newspaper_processed', 'newspaper_meta_language', 'newspaper_keywords', 'newspaper_text']
     test_data = pandas.read_csv(filepath, nrows=nrows, skiprows=skip_rows, header=None, names=names)
-    test_data['newspaper_text'] = test_data['newspaper_text'].apply(clean_text)
+    test_data['newspaper_text'] = test_data['newspaper_text'].apply(clean_text, args=(keep_stopwords, use_stemming, use_lemmatization))
 
     return test_data[test_data['newspaper_text'].notnull()]
 
@@ -227,7 +229,7 @@ def load_test_data_from_db(nrows=1000, skip_rows=0, keep_stopwords=False, use_st
 
     data = pandas.read_sql(sql=get_sql, con=connection, index_col='id', params=[skip_rows, nrows])
     connection.close()
-    data['newspaper_text'] = data['newspaper_text'].apply(clean_text)
+    data['newspaper_text'] = data['newspaper_text'].apply(clean_text, args=(keep_stopwords, use_stemming, use_lemmatization))
 
     return data
 
