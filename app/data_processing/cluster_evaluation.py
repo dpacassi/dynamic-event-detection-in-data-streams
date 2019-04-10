@@ -420,54 +420,64 @@ class ClusterEvaluation:
 
     ############################
 
-    def run(self):
+    def run(self, methods):
         # Run clusterings
         results = []
 
-        # labels, n_estimated_topics, processing_time = self.hdbscan()
-        # results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, processing_time))
+        if 'hdbscan' in methods:
+            labels, n_estimated_topics, processing_time = self.hdbscan()
+            results.append(utils.Result("HDBSCAN", labels, n_estimated_topics, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.optics()
-        # results.append(utils.Result("OPTICS", labels, n_estimated_topics, processing_time))
+        if 'optics' in methods:
+            labels, n_estimated_topics, processing_time = self.optics()
+            results.append(utils.Result("OPTICS", labels, n_estimated_topics, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.birch()
-        # results.append(utils.Result("BIRCH", labels, n_estimated_topics, processing_time))
+        if 'birch' in methods:
+            labels, n_estimated_topics, processing_time = self.birch()
+            results.append(utils.Result("BIRCH", labels, n_estimated_topics, processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.birch_entities()
-        # results.append(
-        #     utils.Result("Birch + Entity extraction", labels, n_estimated_topics, processing_time)
-        # )
-
-        # labels, n_estimated_topics, processing_time = self.hdbscan_lda()
-        # results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics. processing_time))
-
-        labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
-        results.append(
-            utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
+        if 'birch_entities' in methods:
+            labels, n_estimated_topics, processing_time = self.birch_entities()
+            results.append(
+                utils.Result("Birch + Entity extraction", labels, n_estimated_topics, processing_time)
         )
 
-        labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
-        results.append(
-            utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
-        )
+        if 'hdbscan_lda' in methods:
+            labels, n_estimated_topics, processing_time = self.hdbscan_lda()
+            results.append(utils.Result("HDBSCAN + LDA", labels, n_estimated_topics. processing_time))
 
-        # labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
-        # results.append(
-        #     utils.Result(
-        #         "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
-        #     )
-        # )
+        if 'hdbscan_entities' in methods:
+            labels, n_estimated_topics, features, processing_time = self.hdbscan_entities()
+            results.append(
+                utils.Result("HDBSCAN + Entity extraction", labels, n_estimated_topics, processing_time, features)
+            )
 
-        # Causes a MemoryError and is veeery slow with the current implementation.
-        # labels, n_estimated_topics, processing_time = self.hdbscan_soft_cossim()
-        # results.append(
-        #     utils.Result(
-        #         "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
-        #     )
-        # )
+        if 'hdbscan_keywords' in methods:
+            labels, n_estimated_topics, features, processing_time = self.hdbscan_keywords()
+            results.append(
+                utils.Result("HDBSCAN + Keyword extraction", labels, n_estimated_topics, processing_time, features)
+            )
 
-        labels, n_estimated_topics, processing_time = self.minhash_lsh()
-        results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
+        if 'hdbscan_cossim' in methods:
+            labels, n_estimated_topics, processing_time = self.hdbscan_cossim()
+            results.append(
+                utils.Result(
+                    "HDBSCAN + Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
+                )
+            )
+
+        if 'hdbscan_soft_cossim' in methods:
+            # Causes a MemoryError and is veeery slow with the current implementation.
+            labels, n_estimated_topics, processing_time = self.hdbscan_soft_cossim()
+            results.append(
+                utils.Result(
+                    "HDBSCAN + Soft Cosine Similarity Matrix", labels, n_estimated_topics, processing_time
+                )
+            )
+
+        if 'minhash_lsh' in methods:
+            labels, n_estimated_topics, processing_time = self.minhash_lsh()
+            results.append(utils.Result("MinHash + LSH", labels, n_estimated_topics, processing_time))
 
         return results
 
@@ -482,10 +492,11 @@ if __name__ == "__main__":
 
     # Handle arguments.
     ap = argparse.ArgumentParser()
-    ap.add_argument('--show-details', dest='show_details', action='store_true')
+    ap.add_argument('--methods', required=False, type=str, default="hdbscan_entities")
     ap.add_argument('--rows', required=False, type=int, default=1000)
     ap.add_argument('--skip-rows', required=False, type=int, default=0)
     ap.add_argument('--source', required=False, type=str, default='database')
+    ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
     args = vars(ap.parse_args())
 
@@ -501,7 +512,7 @@ if __name__ == "__main__":
         dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'])
 
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
-    results = ClusterEvaluation(dataset[content_column], dataset).run()
+    results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','))
 
     print("True number of clusters: %d" % len(set(labels_true)))
     print("")
