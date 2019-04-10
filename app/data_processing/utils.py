@@ -224,10 +224,10 @@ def load_test_data_from_db(nrows=1000, skip_rows=0):
         "     AND newspaper_text NOT LIKE '%%404%%'"
         "     AND newspaper_text NOT LIKE '%%cookie%%'"
         " ORDER BY id ASC"
-        " LIMIT %s"
+        " LIMIT %s, %s"
     )
 
-    data = pandas.read_sql(sql=get_sql, con=connection, index_col='id', params=[nrows])
+    data = pandas.read_sql(sql=get_sql, con=connection, index_col='id', params=[skip_rows, nrows])
     connection.close()
 
     return data
