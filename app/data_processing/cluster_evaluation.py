@@ -173,6 +173,7 @@ class ClusterEvaluation:
             self.data_matrix
         )
 
+        n_estimated_topics = len(set(hdbscan_labels)) - (1 if -1 in hdbscan_labels else 0)
         model = LatentDirichletAllocation(n_components=n_estimated_topics, max_iter=50).fit(
             self.data_matrix
         )
