@@ -486,6 +486,12 @@ if __name__ == "__main__":
     ap.add_argument('--source', required=False, type=str, default='database')
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
+    ap.add_argument('--keep-stopwords', dest='keep_stopwords', action='store_true')
+    ap.set_defaults(keep_stopwords=False)
+    ap.add_argument('--use-stemming', dest='use_stemming', action='store_true')
+    ap.set_defaults(use_stemming=False)
+    ap.add_argument('--use-lemmatization', dest='use_lemmatization', action='store_true')
+    ap.set_defaults(use_lemmatization=False)
     args = vars(ap.parse_args())
 
     # Load data and setup for evaluation
