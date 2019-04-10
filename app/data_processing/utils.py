@@ -197,6 +197,8 @@ def load_test_data_from_db(nrows=1000, skip_rows=0):
         " WHERE"
         "     newspaper_processed = 1"
         "     AND title_keywords_intersection = 1"
+        "     AND hostname != 'newsledge.com'"
+        "     AND hostname != 'www.newsledge.com'"
         "     AND newspaper_text IS NOT NULL"
         "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
         "     AND newspaper_text NOT LIKE '%%GDPR%%'"
