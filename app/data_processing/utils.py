@@ -85,21 +85,28 @@ def remove_short_words(text):
     return text
 
 
-def stem_text(text):
+def stem_text(text, remove_stopwords=True):
     stop = stopwords.words('english')
     sno = SnowballStemmer('english')
-    stemmed_words = []
+    sentences = text.split('.')
+    stemmed_text = []
 
-    for word in text.split():
-        if word not in stop:
-            stemmed_words.append(sno.stem(word))
+    for sentence in sentences:
+        sentence = sentence.strip()
 
-    text = ' '.join(stemmed_words)
+        for word in sentence.split():
+            if remove_stopwords and word not in stop:
+                stemmed_text.append(sno.stem(word))
+            elif not remove_stopwords:
+                stemmed_text.append(sno.stem(word))
+
+    text = ' '.join(stemmed_text)
 
     return text
 
 
-def lemmatize_text(text):
+def lemmatize_text(text, remove_stopwords=True):
+    stop = stopwords.words('english')
     nlp = spacy.load('en', disable=['parser', 'ner'])
     sentences = text.split('.')
     lemmatized_text = []
@@ -107,7 +114,12 @@ def lemmatize_text(text):
     for sentence in sentences:
         sentence = sentence.strip()
         doc = nlp(sentence)
-        lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.lower_ for token in doc])
+
+        if remove_stopwords:
+            lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' and token.lemma_ not in stop else token.lower_ for token in doc])
+        else:
+            lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.lower_ for token in doc])
+
         lemmatized_text.append(lemmatized_sentence)
 
     text = '.'.join(lemmatized_text)
@@ -128,7 +140,7 @@ def remove_common_words(text):
   return text
 
 
-def clean_text(text, use_stemming=False, use_lemmatization=False):
+def clean_text(text, remove_stopwords=True, use_stemming=False, use_lemmatization=False):
     # Trim text.
     text = text.strip()
 
@@ -141,9 +153,16 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
     # Remove any existing HTML tags.
     text = remove_html(text)
 
+    # Remove common words.
+    text = remove_common_words(text)
+
     # Text lemmatization with spaCy.
     if use_lemmatization:
-        text = lemmatize_text(text)
+        text = lemmatize_text(text, remove_stopwords)
+
+    # Text stemming.
+    if use_stemming:
+        text = stem_text(text, remove_stopwords)
 
     # Replace all non alphabetical characters with spaces.
     text = replace_non_alpha(text)
@@ -157,13 +176,6 @@ def clean_text(text, use_stemming=False, use_lemmatization=False):
 
     # Remove single characters.
     text = remove_short_words(text)
-
-    # Remove common words.
-    text = remove_common_words(text)
-
-    # Text stemming and stop words removal.
-    if use_stemming:
-        text = stem_text(text)
 
     return text
 
