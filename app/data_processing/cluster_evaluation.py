@@ -559,9 +559,9 @@ if __name__ == "__main__":
     story_column = "story"
 
     if args['source'] == 'csv':
-        dataset = utils.load_test_data(content_column=content_column, nrows=args['rows'], skip_rows=args['skip_rows'])
+        dataset = utils.load_test_data(nrows=args['rows'], skip_rows=args['skip_rows'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
     else:
-        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'])
+        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
 
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
     results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','))
@@ -572,7 +572,6 @@ if __name__ == "__main__":
     # Print resultsdataset
     for result in results:
         result.print_evaluation(labels_true)
-        print(result.labels)
 
         if args['show_details'] and result.features is not None:
             print(len(result.features))
