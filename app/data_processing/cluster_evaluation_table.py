@@ -23,6 +23,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import utils
 
 
+nlp = spacy.load("en_core_web_md")
+
+
 def hdbscan(data_matrix, **parameters):
     start = time.time()
     labels = HDBSCAN(**parameters).fit_predict(data_matrix)
@@ -163,37 +166,50 @@ parameters_by_method = {
     hdbscan: {'min_cluster_size': range(2, 6)},
     optics: {'eps': np.arange(0.1, 0.9, 0.1), 'min_cluster_size': range(2, 6)},
     birch: {'branching_factor': range(10, 100, 10), 'min_cluster_size': range(2, 6)},
-    hdbscan_lda: {'max_iter': range(10, 100, 10)},
+    # hdbscan_lda: {'max_iter': range(10, 100, 10)},
     # minhash_lsh: {'threshold': range(0.1, 0.9, 0.1), 'min_cluster_size': range(2, 6)},
 }
 
-documents = ''
-preprocessed_documents = ''
+
+def run_evaluation(documents, preprocessed_documents):
+    results = []
+
+    for vectorizer in vectorizers:
+        for tokenizer in tokenizers:
+
+            if tokenizers is None:
+                vectorizer.fit_transform(preprocessed_documents)
+            else:
+                vectorizer.set_params(tokenizer=tokenizer)
+                vectorizer.fit_transform(documents)
+
+            for method, parameters in parameters_by_method.items():
+                keys = list(parameters.keys())
+                values = list(parameters.values())
+                parameter_combinations = extract_parameters(keys, values, {}, 0)
+
+                for parameter_combination in parameter_combinations:
+                    labels, processing_time = method(parameter_combination)
+
+                    results.append(utils.Result(
+                        method.__name__,
+                        labels,
+                        processing_time,
+                        None,
+                        parameter_combination
+                    ))
+    return results
+
+
+number_of_runs = 5
+nrows = 1000
 results = []
+for run in range(number_of_runs):
+    print("Start run {}".format(run))
+    preprocessed_dataset = utils.load_test_data(nrows=nrows, skip_rows=run * nrows, keep_stopwords=False, use_stemming=True, use_lemmatization=True)
+    full_dataset = utils.load_test_data(nrows=nrows, skip_rows=run * nrows, keep_stopwords=True, use_stemming=False, use_lemmatization=False)
 
-for vectorizer in vectorizers:
-    for tokenizer in tokenizers:
+    labels_true = LabelEncoder().fit_transform(full_dataset["story"])
+    results.append((run_evaluation(full_dataset, preprocessed_dataset), labels_true))
 
-        if tokenizers is None:
-            vectorizer.fit_transform(preprocessed_documents)
-        else:
-            vectorizer.set_params(tokenizer=tokenizer)
-            vectorizer.fit_transform(documents)
-
-        for method, parameters in parameters_by_method.items():
-            keys = list(parameters.keys())
-            values = list(parameters.values())
-            parameter_combinations = extract_parameters(keys, values, {}, 0)
-
-            for parameter_combination in parameter_combinations:
-                labels, processing_time = method(parameter_combination)
-
-                results.append(utils.Result(
-                    method.__name__,
-                    labels,
-                    processing_time,
-                    None,
-                    parameter_combination
-                ))
-
-
+# TODO create dataframe from results and export as csv
