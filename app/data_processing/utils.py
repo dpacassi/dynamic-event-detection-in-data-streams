@@ -16,10 +16,11 @@ from nltk.stem.snowball import SnowballStemmer
 simplefilter(action='ignore', category=FutureWarning)
 
 class Result:
-    def __init__(self, title, labels, processing_time, features=None):
+    def __init__(self, title, labels, processing_time, features=None, parameters=None):
         self.title = title
         self.labels = labels
         self.features = features
+        self.parameters = parameters
         self.processing_time = processing_time
 
     def print_evaluation(self, y_true):

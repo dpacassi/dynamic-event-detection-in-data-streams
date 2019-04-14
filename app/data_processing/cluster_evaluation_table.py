@@ -130,6 +130,17 @@ def extract_keyterms_and_entities(data):
     return tokens
 
 
+def extract_parameters(keys, values, param_chain, i):
+    key = keys[i]
+    parameter_combinations = []
+    for value in values[i]:
+        param_chain[key] = value
+        new_chain = extract_parameters(keys, values, param_chain, i + 1) if i < len(keys) - 1 else param_chain
+        parameter_combinations.append(new_chain.copy())
+
+    return parameter_combinations
+
+
 # Setup experiment
 
 vectorizers = [
@@ -160,18 +171,6 @@ documents = ''
 preprocessed_documents = ''
 results = []
 
-
-def extract_parameters(keys, values, param_chain, i):
-    key = keys[i]
-    parameter_combinations = []
-    for value in values[i]:
-        param_chain[key] = value
-        new_chain = extract_parameters(keys, values, param_chain, i + 1) if i < len(keys) - 1 else param_chain
-        parameter_combinations.append(new_chain.copy())
-
-    return parameter_combinations
-
-
 for vectorizer in vectorizers:
     for tokenizer in tokenizers:
 
@@ -187,6 +186,14 @@ for vectorizer in vectorizers:
             parameter_combinations = extract_parameters(keys, values, {}, 0)
 
             for parameter_combination in parameter_combinations:
-                labels, runtime = method(parameter_combination)
+                labels, processing_time = method(parameter_combination)
+
+                results.append(utils.Result(
+                    method.__name__,
+                    labels,
+                    processing_time,
+                    None,
+                    parameter_combination
+                ))
 
 
