@@ -20,3 +20,21 @@ CREATE TABLE `data_database`.`news_article` (
 ALTER TABLE `data_database`.`news_article`
 ADD INDEX `idx_title` (`title` ASC),
 ADD INDEX `idx_date` (`date` ASC);
+
+CREATE TABLE `data_database`.`method_evaluation` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `method` VARCHAR(255) NOT NULL,
+  `sample_size` INT NOT NULL,
+  `vectorizer` VARCHAR(255) NOT NULL,
+  `tokenizer` VARCHAR(255) NULL,
+  `parameters` VARCHAR(1023) NULL,
+  `normalized_mutual_info_score` FLOAT NOT NULL,
+  `adjusted_mutual_info_score` FLOAT NOT NULL,
+  `completeness_score` FLOAT NOT NULL,
+  `estimated_clusters` INT NOT NULL,
+  `real_clusters` INT NOT NULL,
+  `n_noise` INT NOT NULL,
+  `processing_time` FLOAT NULL,
+  `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);

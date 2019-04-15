@@ -7,67 +7,97 @@ import pymysql
 from warnings import simplefilter
 
 from scipy.sparse import find
-from sklearn.metrics import completeness_score, homogeneity_score, v_measure_score, adjusted_rand_score, adjusted_mutual_info_score, silhouette_score
+from sklearn.metrics import (
+    completeness_score,
+    homogeneity_score,
+    v_measure_score,
+    adjusted_rand_score,
+    adjusted_mutual_info_score,
+    silhouette_score,
+)
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 
 # Ignore all future warnings.
-simplefilter(action='ignore', category=FutureWarning)
+simplefilter(action="ignore", category=FutureWarning)
+
 
 class Result:
-    def __init__(self, title, labels, processing_time, features=None, parameters=None):
+    def __init__(
+        self,
+        title,
+        labels,
+        processing_time,
+        features=None,
+        vectorizer=None,
+        tokenizer=None,
+        parameters=None,
+    ):
         self.title = title
         self.labels = labels
         self.features = features
         self.parameters = parameters
+        self.vectorizer = vectorizer
+        self.tokenizer = tokenizer
         self.processing_time = processing_time
 
-    def print_evaluation(self, y_true):
+    def create_evaluation(self, y_true):
         # Number of clusters in labels, ignoring noise if present.
-        n_clusters = len(set(self.labels)) - (1 if -1 in self.labels else 0)
-        n_noise = list(self.labels).count(-1)
+        return {
+            "n_clusters": len(set(self.labels)) - (1 if -1 in self.labels else 0),
+            "n_noise": list(self.labels).count(-1),
+            "homogeneity_score": homogeneity_score(y_true, self.labels),
+            "completeness_score": completeness_score(y_true, self.labels),
+            "v_measure_score": v_measure_score(y_true, self.labels),
+            "normalized_mutual_info_score": normalized_mutual_info_score(
+                y_true, self.labels, average_method="arithmetic"
+            ),
+            "adjusted_rand_score": adjusted_rand_score(y_true, self.labels),
+            "adjusted_mutual_info_score": adjusted_mutual_info_score(
+                y_true, self.labels
+            ),
+        }
 
+    def print_evaluation(self, y_true):
+        scores = self.create_evaluation(y_true)
         print("------------------------------")
         print(self.title)
         print()
-        print("Estimated number of clusters: %d" % n_clusters)
-        print("Estimated number of noise points: %d" % n_noise)
-        print("Homogeneity: %0.3f" % homogeneity_score(y_true, self.labels))
-        print("Completeness: %0.3f" % completeness_score(y_true, self.labels))
-        print("V-measure: %0.3f" % v_measure_score(y_true, self.labels))
+        print("Estimated number of clusters: %d" % scores["n_clusters"])
+        print("Estimated number of noise points: %d" % scores["n_noise"])
+        print("Homogeneity: %0.3f" % scores["homogeneity_score"])
+        print("Completeness: %0.3f" % scores["completeness_score"])
+        print("V-measure: %0.3f" % scores["v_measure_score"])
+        print("NMI score: %0.3f" % scores["normalized_mutual_info_score"])
+        print("Adjusted Rand Index: %0.3f" % scores["adjusted_rand_score"])
         print(
-            "NMI score: %0.3f"
-            % normalized_mutual_info_score(
-                y_true, self.labels, average_method="arithmetic"
-            )
+            "Adjusted Mutual Information: %0.3f" % scores["adjusted_mutual_info_score"]
         )
-        print("Adjusted Rand Index: %0.3f" % adjusted_rand_score(y_true, self.labels))
-        print("Adjusted Mutual Information: %0.3f" % adjusted_mutual_info_score(y_true, self.labels))
         print("Processing time: %0.2f seconds" % self.processing_time)
         print()
 
 
 def remove_html(text):
-    cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr, ' ', text)
+    cleanr = re.compile("<.*?>")
+    cleantext = re.sub(cleanr, " ", text)
 
     return cleantext
 
 
 def replace_non_alpha(text):
-    text = re.sub('[^a-zA-Z]+', ' ', text)
+    text = re.sub("[^a-zA-Z]+", " ", text)
 
     return text
 
 
 def replace_page_breaks(text):
-    return re.sub(r'(\\n)', r'', text)
+    return re.sub(r"(\\n)", r"", text)
 
 
 def remove_punctuation(text):
-    cleaned = re.sub(r'[?|!|\'|#]', r'', text)
-    cleaned = re.sub(r'[.|,|)|(|\|/]', r' ', cleaned)
+    cleaned = re.sub(r"[?|!|\'|#]", r"", text)
+    cleaned = re.sub(r"[.|,|)|(|\|/]", r" ", cleaned)
 
     return cleaned
 
@@ -87,15 +117,15 @@ def remove_short_words(text):
         else:
             continue
 
-    text = ' '.join(filtered_words)
+    text = " ".join(filtered_words)
 
     return text
 
 
 def stem_text(text, remove_stopwords=True):
-    stop = stopwords.words('english')
-    sno = SnowballStemmer('english')
-    sentences = text.split('.')
+    stop = stopwords.words("english")
+    sno = SnowballStemmer("english")
+    sentences = text.split(".")
     stemmed_text = []
 
     for sentence in sentences:
@@ -107,15 +137,15 @@ def stem_text(text, remove_stopwords=True):
             elif not remove_stopwords:
                 stemmed_text.append(sno.stem(word))
 
-    text = ' '.join(stemmed_text)
+    text = " ".join(stemmed_text)
 
     return text
 
 
 def lemmatize_text(text, remove_stopwords=True):
-    stop = stopwords.words('english')
-    nlp = spacy.load('en', disable=['parser', 'ner'])
-    sentences = text.split('.')
+    stop = stopwords.words("english")
+    nlp = spacy.load("en", disable=["parser", "ner"])
+    sentences = text.split(".")
     lemmatized_text = []
 
     for sentence in sentences:
@@ -123,28 +153,85 @@ def lemmatize_text(text, remove_stopwords=True):
         doc = nlp(sentence)
 
         if remove_stopwords:
-            lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' and token.lemma_ not in stop else token.lower_ for token in doc])
+            lemmatized_sentence = " ".join(
+                [
+                    token.lemma_
+                    if token.lemma_ != "-PRON-" and token.lemma_ not in stop
+                    else token.lower_
+                    for token in doc
+                ]
+            )
         else:
-            lemmatized_sentence = ' '.join([token.lemma_ if token.lemma_ != '-PRON-' else token.lower_ for token in doc])
+            lemmatized_sentence = " ".join(
+                [
+                    token.lemma_ if token.lemma_ != "-PRON-" else token.lower_
+                    for token in doc
+                ]
+            )
 
         lemmatized_text.append(lemmatized_sentence)
 
-    text = '.'.join(lemmatized_text)
+    text = ".".join(lemmatized_text)
 
     return text
 
 
 def remove_common_words(text):
-  common_words = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'year', 'years', 'month', 'months', 'day', 'days', 'hour', 'hours', 'minutes', 'minute', 'seconds', 'second', 'time', 'date', 'all', 'rights', 'reserved', 'story', 'reuters', 'first', 'second', 'third', 'soon', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'today', 'now']
-  doc = []
+    common_words = [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        "year",
+        "years",
+        "month",
+        "months",
+        "day",
+        "days",
+        "hour",
+        "hours",
+        "minutes",
+        "minute",
+        "seconds",
+        "second",
+        "time",
+        "date",
+        "all",
+        "rights",
+        "reserved",
+        "story",
+        "reuters",
+        "first",
+        "second",
+        "third",
+        "soon",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+        "today",
+        "now",
+    ]
+    doc = []
 
-  for word in text.split():
-      if word not in common_words:
-          doc.append(word)
+    for word in text.split():
+        if word not in common_words:
+            doc.append(word)
 
-  text = ' '.join(doc)
+    text = " ".join(doc)
 
-  return text
+    return text
 
 
 def clean_text(text, keep_stopwords=False, use_stemming=False, use_lemmatization=False):
@@ -189,25 +276,54 @@ def clean_text(text, keep_stopwords=False, use_stemming=False, use_lemmatization
     return text
 
 
-def load_test_data(nrows=1000, skip_rows=0, keep_stopwords=False, use_stemming=False, use_lemmatization=False):
+def load_test_data(
+    nrows=1000,
+    skip_rows=0,
+    keep_stopwords=False,
+    use_stemming=False,
+    use_lemmatization=False,
+):
     filepath = "test_data/clean_news_less_noisy.csv"
 
-    names = ['id', 'title', 'url', 'publisher', 'category', 'story', 'hostname', 'date', 'newspaper_processed', 'newspaper_meta_language', 'newspaper_keywords', 'newspaper_text']
-    test_data = pandas.read_csv(filepath, nrows=nrows, skiprows=skip_rows, header=None, names=names)
-    test_data['newspaper_text'] = test_data['newspaper_text'].apply(clean_text, args=(keep_stopwords, use_stemming, use_lemmatization))
+    names = [
+        "id",
+        "title",
+        "url",
+        "publisher",
+        "category",
+        "story",
+        "hostname",
+        "date",
+        "newspaper_processed",
+        "newspaper_meta_language",
+        "newspaper_keywords",
+        "newspaper_text",
+    ]
+    test_data = pandas.read_csv(
+        filepath, nrows=nrows, skiprows=skip_rows, header=None, names=names
+    )
+    test_data["newspaper_text"] = test_data["newspaper_text"].apply(
+        clean_text, args=(keep_stopwords, use_stemming, use_lemmatization)
+    )
 
-    return test_data[test_data['newspaper_text'].notnull()]
+    return test_data[test_data["newspaper_text"].notnull()]
 
 
-def load_test_data_from_db(nrows=1000, skip_rows=0, keep_stopwords=False, use_stemming=False, use_lemmatization=False):
+def load_test_data_from_db(
+    nrows=1000,
+    skip_rows=0,
+    keep_stopwords=False,
+    use_stemming=False,
+    use_lemmatization=False,
+):
     connection = pymysql.connect(
-        host=os.environ['MYSQL_HOSTNAME'],
-        port=int(os.environ['MYSQL_PORT']),
-        user=os.environ['MYSQL_USER'],
-        passwd=os.environ['MYSQL_PASSWORD'],
-        database=os.environ['MYSQL_DATABASE'],
-        charset='utf8mb4',
-        cursorclass=pymysql.cursors.DictCursor
+        host=os.environ["MYSQL_HOSTNAME"],
+        port=int(os.environ["MYSQL_PORT"]),
+        user=os.environ["MYSQL_USER"],
+        passwd=os.environ["MYSQL_PASSWORD"],
+        database=os.environ["MYSQL_DATABASE"],
+        charset="utf8mb4",
+        cursorclass=pymysql.cursors.DictCursor,
     )
 
     get_sql = (
@@ -228,14 +344,73 @@ def load_test_data_from_db(nrows=1000, skip_rows=0, keep_stopwords=False, use_st
         " LIMIT %s, %s"
     )
 
-    data = pandas.read_sql(sql=get_sql, con=connection, index_col='id', params=[skip_rows, nrows])
+    data = pandas.read_sql(
+        sql=get_sql, con=connection, index_col="id", params=[skip_rows, nrows]
+    )
     connection.close()
-    data['newspaper_text'] = data['newspaper_text'].apply(clean_text, args=(keep_stopwords, use_stemming, use_lemmatization))
+    data["newspaper_text"] = data["newspaper_text"].apply(
+        clean_text, args=(keep_stopwords, use_stemming, use_lemmatization)
+    )
 
     return data
 
 
-def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data, threshold=0.7):
+def write_evaluation_result_in_db(
+    method,
+    sample_size,
+    vectorizer,
+    tokenizer,
+    parameters,
+    normalized_mutual_info_score,
+    adjusted_mutual_info_score,
+    completeness_score,
+    estimated_clusters,
+    real_clusters,
+    n_noise,
+    processing_time,
+):
+
+    connection = pymysql.connect(
+        host=os.environ["MYSQL_HOSTNAME"],
+        port=int(os.environ["MYSQL_PORT"]),
+        user=os.environ["MYSQL_USER"],
+        passwd=os.environ["MYSQL_PASSWORD"],
+        database=os.environ["MYSQL_DATABASE"],
+        charset="utf8mb4",
+        cursorclass=pymysql.cursors.DictCursor,
+    )
+
+    insert_sql = (
+        "INSERT INTO method_evaluation"
+        " (method, sample_size, vectorizer, tokenizer, parameters, normalized_mutual_info_score, adjusted_mutual_info_score, completeness_score, estimated_clusters, real_clusters, n_noise, processing_time)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            insert_sql,
+            args=[
+                method,
+                sample_size,
+                vectorizer,
+                tokenizer,
+                parameters,
+                normalized_mutual_info_score,
+                adjusted_mutual_info_score,
+                completeness_score,
+                estimated_clusters,
+                real_clusters,
+                n_noise,
+                processing_time,
+            ],
+        )
+
+    return connection.commit()
+
+
+def get_labels_and_documents_from_distribution_matrix(
+    document_matrix, test_data, threshold=0.7
+):
     documents_by_topic = collections.defaultdict(list)
     labels = []
 
@@ -250,7 +425,9 @@ def get_labels_and_documents_from_distribution_matrix(document_matrix, test_data
         if max_topic_distribution_value < threshold:
             max_topic_distribution_index = -1
 
-        documents_by_topic[max_topic_distribution_index].append([max_topic_distribution_value, test_data.iloc[row]])
+        documents_by_topic[max_topic_distribution_index].append(
+            [max_topic_distribution_value, test_data.iloc[row]]
+        )
         labels.append(max_topic_distribution_index)
 
     return labels, documents_by_topic

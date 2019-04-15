@@ -7,3 +7,4 @@ app/neo4j/data/*
 export.csv
 clean_news.csv
 test_data/
+app/data_database/*

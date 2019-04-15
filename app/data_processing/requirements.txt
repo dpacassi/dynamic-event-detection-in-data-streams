@@ -9,3 +9,4 @@ nltk
 pymysql
 python-dotenv
 textacy
+ipdb
