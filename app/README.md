@@ -13,7 +13,7 @@ data is available before running the evaluation.
 
 * Create an .env file in the `data_processing` directory based on the .env.example
 * Start the required containers `docker-compose up mariadb phpmyadmin`
-* Run the evaluation `docker-compose run cluster_evaluation python cluster_evaluation_table.py`
+* Run the evaluation `docker-compose run cluster_evaluation python cluster_evaluation_table.py --rows 1000 -runs 10`
 
 ### Debugging
 

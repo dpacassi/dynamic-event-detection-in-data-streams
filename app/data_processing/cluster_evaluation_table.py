@@ -1,7 +1,7 @@
 import numpy as np
 import spacy
 import time
-
+import argparse
 import json
 
 from itertools import chain
@@ -171,9 +171,7 @@ class ClusterMethods:
         # Parameter arguments have to be a list
         parameters_by_method = {
             self.hdbscan: {"min_cluster_size": range(2, 6)},
-            self.meanshift: {
-                "cluster_all": [True, False],
-            },
+            self.meanshift: {"cluster_all": [True, False]},
             self.birch: {
                 "branching_factor": range(10, 100, 10),
                 # "threshold": range(2, 6),
@@ -186,9 +184,9 @@ class ClusterMethods:
             },
             self.spectral_clustering: {
                 "affinity": ["rbf"],
-                "assign_labels": ["kmeans", "discretize"]
+                "assign_labels": ["kmeans", "discretize"],
             },
-            # self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
+            self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
             # minhash_lsh: {'threshold': range(0.1, 0.9, 0.1), 'min_cluster_size': range(2, 6)},
         }
 
@@ -203,7 +201,8 @@ class ClusterMethods:
             for tokenizer in tokenizers:
                 print(
                     "Use vectorizer {} with tokenizer {}".format(
-                        vectorizer.__class__.__name__, "None" if tokenizer is None else tokenizer.__name__,
+                        vectorizer.__class__.__name__,
+                        "None" if tokenizer is None else tokenizer.__name__,
                     )
                 )
 
@@ -222,7 +221,9 @@ class ClusterMethods:
 
                     # Flatten combinations to only have a one dimensional list
                     while isinstance(parameter_combinations[0], list):
-                        parameter_combinations = list(chain.from_iterable(parameter_combinations))
+                        parameter_combinations = list(
+                            chain.from_iterable(parameter_combinations)
+                        )
 
                     for parameter_combination in parameter_combinations:
                         print(
@@ -231,7 +232,9 @@ class ClusterMethods:
                             )
                         )
                         try:
-                            labels, processing_time = method(data_matrix, **parameter_combination)
+                            labels, processing_time = method(
+                                data_matrix, **parameter_combination
+                            )
 
                             results.append(
                                 utils.Result(
@@ -271,57 +274,65 @@ class ClusterMethods:
         return parameter_combinations
 
 
-number_of_runs = 1
-nrows = 10
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
 
-load_dotenv()
+    ap.add_argument("--rows", required=False, type=int, default=1000)
+    ap.add_argument("--runs", required=False, type=int, default=1)
+    args = vars(ap.parse_args())
 
-start = time.time()
+    number_of_runs = args["runs"]
+    nrows = args["runs"]
 
-for run in range(number_of_runs):
-    print("Start run {}".format(run))
-    preprocessed_dataset = utils.load_test_data(
-        nrows=nrows,
-        skip_rows=run * nrows,
-        keep_stopwords=False,
-        use_stemming=True,
-        use_lemmatization=True,
-    )
-    full_dataset = utils.load_test_data(
-        nrows=nrows,
-        skip_rows=run * nrows,
-        keep_stopwords=True,
-        use_stemming=False,
-        use_lemmatization=False,
-    )
+    load_dotenv()
 
-    evaluation = ClusterMethods(full_dataset["newspaper_text"], preprocessed_dataset["newspaper_text"])
-    labels_true = LabelEncoder().fit_transform(full_dataset["story"])
-    results, errors = evaluation.run()
+    start = time.time()
 
-    for result in results:
-        scores = result.create_evaluation(labels_true)
-        utils.write_evaluation_result_in_db(
-            str(result.title),
-            int(nrows),
-            str(result.vectorizer),
-            str(result.tokenizer),
-            str(json.dumps(result.parameters)),
-            float(scores["normalized_mutual_info_score"].item()),
-            float(scores["completeness_score"]),
-            float(scores["adjusted_mutual_info_score"].item()),
-            int(scores["n_clusters"]),
-            int(len(set(labels_true)) - (1 if -1 in labels_true else 0)),
-            int(scores["n_noise"]),
-            float(result.processing_time),
+    for run in range(number_of_runs):
+        print("Start run {}".format(run))
+        preprocessed_dataset = utils.load_test_data(
+            nrows=nrows,
+            skip_rows=run * nrows,
+            keep_stopwords=False,
+            use_stemming=True,
+            use_lemmatization=True,
+        )
+        full_dataset = utils.load_test_data(
+            nrows=nrows,
+            skip_rows=run * nrows,
+            keep_stopwords=True,
+            use_stemming=False,
+            use_lemmatization=False,
         )
 
-    if len(errors) > 0:
-        print("Errors:")
-        print(errors)
-    print("Finished run {} with {} errors.".format(run, len(errors)))
+        evaluation = ClusterMethods(
+            full_dataset["newspaper_text"], preprocessed_dataset["newspaper_text"]
+        )
+        labels_true = LabelEncoder().fit_transform(full_dataset["story"])
+        results, errors = evaluation.run()
 
+        for result in results:
+            scores = result.create_evaluation(labels_true)
+            utils.write_evaluation_result_in_db(
+                str(result.title),
+                int(nrows),
+                str(result.vectorizer),
+                str(result.tokenizer),
+                str(json.dumps(result.parameters)),
+                float(scores["normalized_mutual_info_score"].item()),
+                float(scores["completeness_score"]),
+                float(scores["adjusted_mutual_info_score"].item()),
+                int(scores["n_clusters"]),
+                int(len(set(labels_true)) - (1 if -1 in labels_true else 0)),
+                int(scores["n_noise"]),
+                float(result.processing_time),
+            )
 
-end = time.time()
+        if len(errors) > 0:
+            print("Errors:")
+            print(errors)
+        print("Finished run {} with {} errors.".format(run, len(errors)))
 
-print("Finished Evaluation after {}s.".format(len(errors), end - start))
+    end = time.time()
+    runtime = end - start
+    print("Finished Evaluation after {}s.".format(len(errors), runtime))
