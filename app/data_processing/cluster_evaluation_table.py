@@ -61,9 +61,7 @@ class ClusterMethods:
 
     def hdbscan_lda(self, data_matrix, **parameters):
         start = time.time()
-        hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
-            data_matrix
-        )
+        hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
 
         n_estimated_topics = len(set(hdbscan_labels)) - (
             1 if -1 in hdbscan_labels else 0
@@ -170,7 +168,10 @@ class ClusterMethods:
 
         # Parameter arguments have to be a list
         parameters_by_method = {
-            self.hdbscan: {"min_cluster_size": range(2, 6)},
+            self.hdbscan: {
+                "min_cluster_size": range(2, 6),
+                "metric": ["cosine", "minkowski", "euclidean"]
+            },
             self.meanshift: {"cluster_all": [True, False]},
             self.birch: {
                 "branching_factor": range(10, 100, 10),
@@ -282,7 +283,7 @@ if __name__ == "__main__":
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]
-    nrows = args["runs"]
+    nrows = args["rows"]
 
     load_dotenv()
 
@@ -319,9 +320,9 @@ if __name__ == "__main__":
                 str(result.vectorizer),
                 str(result.tokenizer),
                 str(json.dumps(result.parameters)),
-                float(scores["normalized_mutual_info_score"].item()),
+                float(scores["normalized_mutual_info_score"]),
                 float(scores["completeness_score"]),
-                float(scores["adjusted_mutual_info_score"].item()),
+                float(scores["adjusted_mutual_info_score"]),
                 int(scores["n_clusters"]),
                 int(len(set(labels_true)) - (1 if -1 in labels_true else 0)),
                 int(scores["n_noise"]),
