@@ -42,8 +42,8 @@ CREATE TABLE `data_database`.`method_evaluation` (
 CREATE TABLE `data_database`.`cron_evaluation` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `method` VARCHAR(255) NOT NULL,
-  `rows` UNSIGNED INT NOT NULL,
-  `skip_rows` UNSIGNED INT NOT NULL,
+  `rows` INT UNSIGNED NOT NULL,
+  `skip_rows` INT UNSIGNED NOT NULL,
   `vectorizer` VARCHAR(255) NULL,
   `tokenizer` VARCHAR(255) NULL,
   `parameters` VARCHAR(1023) NULL,
