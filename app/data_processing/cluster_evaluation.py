@@ -544,12 +544,16 @@ if __name__ == "__main__":
     ap.add_argument('--source', required=False, type=str, default='database')
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
+    ap.add_argument('--skip-text-preprocessing', dest='skip_text_preprocessing', action='store_true')
+    ap.set_defaults(skip_text_preprocessing=False)
     ap.add_argument('--keep-stopwords', dest='keep_stopwords', action='store_true')
     ap.set_defaults(keep_stopwords=False)
     ap.add_argument('--use-stemming', dest='use_stemming', action='store_true')
     ap.set_defaults(use_stemming=False)
     ap.add_argument('--use-lemmatization', dest='use_lemmatization', action='store_true')
     ap.set_defaults(use_lemmatization=False)
+    ap.add_argument('--store-in-db', dest='store_in_db', action='store_true')
+    ap.set_defaults(store_in_db=False)
     args = vars(ap.parse_args())
 
     # Load data and setup for evaluation
@@ -559,19 +563,21 @@ if __name__ == "__main__":
     story_column = "story"
 
     if args['source'] == 'csv':
-        dataset = utils.load_test_data(nrows=args['rows'], skip_rows=args['skip_rows'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
+        dataset = utils.load_test_data(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
     else:
-        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
+        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
 
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
     results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','))
 
-    print("True number of clusters: %d" % len(set(labels_true)))
-    print("")
+    if args['show_details']:
+        print("True number of clusters: %d" % len(set(labels_true)))
+        print("")
 
     # Print resultsdataset
     for result in results:
-        result.print_evaluation(labels_true)
+        if args['show_details']:
+            result.print_evaluation(labels_true)
 
         if args['show_details'] and result.features is not None:
             print(len(result.features))
