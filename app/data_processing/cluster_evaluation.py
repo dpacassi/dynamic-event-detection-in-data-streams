@@ -462,7 +462,7 @@ class ClusterEvaluation:
 
     ############################
 
-    def run(self, methods):
+    def run(self, methods, vectorizer, tokenizer):
         # Run clusterings
         results = []
 
@@ -542,6 +542,8 @@ if __name__ == "__main__":
     ap.add_argument('--rows', required=False, type=int, default=1000)
     ap.add_argument('--skip-rows', required=False, type=int, default=0)
     ap.add_argument('--source', required=False, type=str, default='database')
+    ap.add_argument('--vectorizer', required=False, type=str, default='count')
+    ap.add_argument('--tokenizer', required=False, type=str, default='extract_entities')
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
     ap.add_argument('--skip-text-preprocessing', dest='skip_text_preprocessing', action='store_true')
@@ -568,7 +570,7 @@ if __name__ == "__main__":
         dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
 
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
-    results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','))
+    results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','), args['vectorizer'], args['tokenizer'])
 
     if args['show_details']:
         print("True number of clusters: %d" % len(set(labels_true)))

@@ -38,3 +38,26 @@ CREATE TABLE `data_database`.`method_evaluation` (
   `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `data_database`.`cron_evaluation` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `method` VARCHAR(255) NOT NULL,
+  `rows` UNSIGNED INT NOT NULL,
+  `skip_rows` UNSIGNED INT NOT NULL,
+  `vectorizer` VARCHAR(255) NULL,
+  `tokenizer` VARCHAR(255) NULL,
+  `parameters` VARCHAR(1023) NULL,
+  `normalized_mutual_info_score` DECIMAL(10, 8) NOT NULL,
+  `adjusted_mutual_info_score` DECIMAL(10, 8) NOT NULL,
+  `completeness_score` DECIMAL(10, 8) NOT NULL,
+  `estimated_clusters` INT NOT NULL,
+  `real_clusters` INT NOT NULL,
+  `n_noise` INT NOT NULL,
+  `time_clustering` INT NULL,
+  `time_preprocessing` INT NULL,
+  `time_total` INT NULL,
+  `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `processed` TINYINT UNSIGNED NOT NULL,
+  `failed` TINYINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`)
+);
