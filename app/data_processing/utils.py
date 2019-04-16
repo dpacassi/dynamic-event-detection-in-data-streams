@@ -93,7 +93,11 @@ class Result:
         update_sql = "UPDATE cron_evaluation SET normalized_mutual_info_score = %s, adjusted_mutual_info_score = %s, completeness_score = %s, estimated_clusters = %s, real_clusters = %s, n_noise = %s, time_clustering = %s, time_total = %s, processed=1 WHERE id = %s"
 
         with connection.cursor() as cursor:
-            cursor.execute(update_sql, (scores['normalized_mutual_info_score'], scores['adjusted_mutual_info_score'], scores['completeness_score'], scores['n_clusters'], real_clusters, scores['n_noise'], self.processing_time, time_total, db_id))
+            s1 = float("{0:.8f}".format(scores['normalized_mutual_info_score']))
+            s2 = float("{0:.8f}".format(scores['adjusted_mutual_info_score']))
+            s3 = float("{0:.8f}".format(scores['completeness_score']))
+
+            cursor.execute(update_sql, (s1, s2, s3, scores['n_clusters'], real_clusters, scores['n_noise'], self.processing_time, time_total, db_id))
             connection.commit()
 
         connection.close()
