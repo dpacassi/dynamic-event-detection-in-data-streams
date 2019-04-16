@@ -35,7 +35,7 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 ORDER BY id ASC LIMIT 100"
+get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 ORDER BY id ASC LIMIT 2"
 
 with connection.cursor() as cursor:
     cursor.execute(get_sql)
@@ -44,7 +44,7 @@ with connection.cursor() as cursor:
 
     for row in rows:
         args = [
-            '--store-in-db',
+            '--db-id=' + str(row['id']),
             '--method=' + str(row['method']),
             '--rows=' + str(row['rows']),
             '--skip-rows=' + str(row['skip_rows']),

@@ -283,7 +283,7 @@ def load_test_data(
     keep_stopwords=False,
     use_stemming=False,
     use_lemmatization=False,
-    store_in_db=False,
+    db_id=0,
 ):
     filepath = "test_data/clean_news_less_noisy.csv"
 
@@ -320,7 +320,7 @@ def load_test_data_from_db(
     keep_stopwords=False,
     use_stemming=False,
     use_lemmatization=False,
-    store_in_db=False,
+    db_id=0,
 ):
     connection = pymysql.connect(
         host=os.environ["MYSQL_HOSTNAME"],

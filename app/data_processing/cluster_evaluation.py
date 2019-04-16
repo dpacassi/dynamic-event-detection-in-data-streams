@@ -571,6 +571,7 @@ def main(passed_args=None):
     ap.add_argument('--max-df', required=False, type=float, default=0.9)
     ap.add_argument('--min-cluster-size', required=False, type=int, default=3)
     ap.add_argument('--leaf-size', required=False, type=int, default=40)
+    ap.add_argument('--db-id', required=False, type=int, default=0)
     ap.add_argument('--metric', required=False, type=str, default='euclidean')
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
@@ -582,8 +583,6 @@ def main(passed_args=None):
     ap.set_defaults(use_stemming=False)
     ap.add_argument('--use-lemmatization', dest='use_lemmatization', action='store_true')
     ap.set_defaults(use_lemmatization=False)
-    ap.add_argument('--store-in-db', dest='store_in_db', action='store_true')
-    ap.set_defaults(store_in_db=False)
     ap.add_argument('--allow-single-cluster', dest='allow_single_cluster', action='store_true')
     ap.set_defaults(allow_single_cluster=False)
 
@@ -599,9 +598,9 @@ def main(passed_args=None):
     story_column = "story"
 
     if args['source'] == 'csv':
-        dataset = utils.load_test_data(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
+        dataset = utils.load_test_data(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'], db_id=args['db_id'])
     else:
-        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'])
+        dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'], db_id=args['db_id'])
 
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
     results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','), args)
