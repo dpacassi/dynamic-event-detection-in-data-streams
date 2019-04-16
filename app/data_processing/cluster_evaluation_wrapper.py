@@ -1,6 +1,11 @@
-import subprocess
+import os
 import sys
+import pymysql
+import subprocess
+from dotenv import load_dotenv
 
+# Load environment variables.
+load_dotenv()
 script_names = ['cluster_evaluation_wrapper.py', 'cluster_evaluation.py']
 
 
@@ -19,10 +24,36 @@ for script_name in script_names:
 # Step 2: Retrieve open evaluations from the database.
 ######################################################################################
 
+connection = pymysql.connect(
+    host=os.environ['MYSQL_HOSTNAME'],
+    port=int(os.environ['MYSQL_PORT']),
+    user=os.environ['MYSQL_USER'],
+    passwd=os.environ['MYSQL_PASSWORD'],
+    database=os.environ['MYSQL_DATABASE'],
+    charset='utf8mb4',
+    cursorclass=pymysql.cursors.DictCursor
+)
 
-######################################################################################
-# Step 3: Run cluster_evaluation.py with the defined arguments in the database.
-######################################################################################
+get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 ORDER BY id ASC LIMIT 1"
 
-# p = subprocess.Popen(['python', 'script.py', 'arg1', 'arg2'])
-# p.terminate()
+with connection.cursor() as cursor:
+    cursor.execute(get_sql)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        args = [
+            'python3',
+            'cluster_evaluation.py',
+            '--store-in-db',
+            '--method=' + str(row['method']),
+            '--rows=' + str(row['rows']),
+            '--skip-rows=' + str(row['skip_rows']),
+        ] + row['parameters'].split()
+        connection.close()
+
+        ######################################################################################
+        # Step 3: Run cluster_evaluation.py with the defined arguments in the database.
+        ######################################################################################
+
+        p = subprocess.Popen(args)
+        p.terminate()

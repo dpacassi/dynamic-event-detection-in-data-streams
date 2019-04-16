@@ -1,14 +1,9 @@
 import os
-import argparse
 import pymysql
-import utils
 from dotenv import load_dotenv
 
 # Load environment variables.
 load_dotenv()
-
-# Check for command line arguments.
-parser = argparse.ArgumentParser()
 
 connection = pymysql.connect(
     host=os.environ['MYSQL_HOSTNAME'],
