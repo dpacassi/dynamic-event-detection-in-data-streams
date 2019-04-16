@@ -480,7 +480,7 @@ class ClusterEvaluation:
                 analyzer="word",
                 stop_words="english",
             )
-        else:
+        elif args['vectorizer'] == 'tfidf':
             vectorizer = TfidfVectorizer(
                 min_df=args['min_df'],
                 max_df=args['max_df'],
