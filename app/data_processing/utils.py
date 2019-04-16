@@ -78,6 +78,26 @@ class Result:
         print("Processing time: %0.2f seconds" % self.processing_time)
         print()
 
+    def write_evaluation_to_db(self, y_true, db_id, time_total, real_clusters):
+        scores = self.create_evaluation(y_true)
+        connection = pymysql.connect(
+            host=os.environ["MYSQL_HOSTNAME"],
+            port=int(os.environ["MYSQL_PORT"]),
+            user=os.environ["MYSQL_USER"],
+            passwd=os.environ["MYSQL_PASSWORD"],
+            database=os.environ["MYSQL_DATABASE"],
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        update_sql = "UPDATE cron_evaluation SET normalized_mutual_info_score = %s, adjusted_mutual_info_score = %s, completeness_score = %s, estimated_clusters = %s, real_clusters = %s, n_noise = %s, time_clustering = %s, time_total = %s, processed=1 WHERE id = %s"
+
+        with connection.cursor() as cursor:
+            cursor.execute(update_sql, (scores['normalized_mutual_info_score'], scores['adjusted_mutual_info_score'], scores['completeness_score'], scores['n_clusters'], real_clusters, scores['n_noise'], self.processing_time, time_total, db_id))
+            connection.commit()
+
+        connection.close()
+
 
 def remove_html(text):
     cleanr = re.compile("<.*?>")

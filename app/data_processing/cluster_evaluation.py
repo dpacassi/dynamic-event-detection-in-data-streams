@@ -596,6 +596,7 @@ def main(passed_args=None):
     content_column = "newspaper_text"
     headline_column = "title"
     story_column = "story"
+    start = time.time()
 
     if args['source'] == 'csv':
         dataset = utils.load_test_data(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'], db_id=args['db_id'])
@@ -604,6 +605,7 @@ def main(passed_args=None):
 
     labels_true = LabelEncoder().fit_transform(dataset[story_column])
     results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','), args)
+    end = time.time()
 
     if args['show_details']:
         print("True number of clusters: %d" % len(set(labels_true)))
@@ -631,6 +633,9 @@ def main(passed_args=None):
 
             print(result.labels)
             print(result.n_topics)
+
+        if args['db_id'] > 0:
+            result.write_evaluation_to_db(labels_true, args['db_id'], (end - start), len(set(labels_true)))
 
 
 if __name__ == "__main__":
