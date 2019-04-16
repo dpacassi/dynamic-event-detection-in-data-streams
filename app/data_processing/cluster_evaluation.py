@@ -56,9 +56,14 @@ class ClusterEvaluation:
     # of clusters beforehand as opposed to kmeans. Additionally hdbscan is supposed to solve
     # the issues regarding clusters of varying density of its predecessor dbscan.
 
-    def hdbscan(self):
+    def hdbscan(self, args):
         start = time.time()
-        labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
+        labels = HDBSCAN(
+            min_cluster_size=args['min_cluster_size'],
+            metric=args['metric'],
+            leaf_size=args['leaf_size'],
+            allow_single_cluster=args['allow_single_cluster'],
+        ).fit_predict(
             self.data_matrix
         )
         end = time.time()
@@ -485,7 +490,7 @@ class ClusterEvaluation:
             )
 
         if 'hdbscan' in methods:
-            labels, processing_time = self.hdbscan()
+            labels, processing_time = self.hdbscan(args)
             results.append(utils.Result("HDBSCAN", labels, processing_time))
 
         if 'optics' in methods:
@@ -564,6 +569,9 @@ if __name__ == "__main__":
     ap.add_argument('--tokenizer', required=False, type=str, default='extract_entities')
     ap.add_argument('--min-df', required=False, type=float, default=3)
     ap.add_argument('--max-df', required=False, type=float, default=0.9)
+    ap.add_argument('--min-cluster-size', required=False, type=int, default=3)
+    ap.add_argument('--leaf-size', required=False, type=int, default=40)
+    ap.add_argument('--metric', required=False, type=str, default='euclidean')
     ap.add_argument('--show-details', dest='show_details', action='store_true')
     ap.set_defaults(show_details=False)
     ap.add_argument('--skip-text-preprocessing', dest='skip_text_preprocessing', action='store_true')
@@ -576,6 +584,8 @@ if __name__ == "__main__":
     ap.set_defaults(use_lemmatization=False)
     ap.add_argument('--store-in-db', dest='store_in_db', action='store_true')
     ap.set_defaults(store_in_db=False)
+    ap.add_argument('--allow-single-cluster', dest='allow_single_cluster', action='store_true')
+    ap.set_defaults(allow_single_cluster=False)
     args = vars(ap.parse_args())
 
     # Load data and setup for evaluation
