@@ -3,6 +3,7 @@ import sys
 import pymysql
 import subprocess
 from dotenv import load_dotenv
+import cluster_evaluation
 
 # Load environment variables.
 load_dotenv()
@@ -34,26 +35,23 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 ORDER BY id ASC LIMIT 1"
+get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 ORDER BY id ASC LIMIT 100"
 
 with connection.cursor() as cursor:
     cursor.execute(get_sql)
     rows = cursor.fetchall()
+    connection.close()
 
     for row in rows:
         args = [
-            'python3',
-            'cluster_evaluation.py',
             '--store-in-db',
             '--method=' + str(row['method']),
             '--rows=' + str(row['rows']),
             '--skip-rows=' + str(row['skip_rows']),
         ] + row['parameters'].split()
-        connection.close()
 
         ######################################################################################
         # Step 3: Run cluster_evaluation.py with the defined arguments in the database.
         ######################################################################################
 
-        p = subprocess.Popen(args)
-        p.terminate()
+        cluster_evaluation.main(args)

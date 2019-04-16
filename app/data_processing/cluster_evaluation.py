@@ -551,7 +551,7 @@ class ClusterEvaluation:
         return results
 
 
-if __name__ == "__main__":
+def main(passed_args=None):
     # Note: Download nlp datasets the first time you run this script.
     # python -m spacy download en_core_web_md
     # python -m gensim.downloader --download fasttext-wiki-news-subwords-300
@@ -586,7 +586,11 @@ if __name__ == "__main__":
     ap.set_defaults(store_in_db=False)
     ap.add_argument('--allow-single-cluster', dest='allow_single_cluster', action='store_true')
     ap.set_defaults(allow_single_cluster=False)
-    args = vars(ap.parse_args())
+
+    if passed_args is not None:
+        args = vars(ap.parse_args(passed_args))
+    else:
+        args = vars(ap.parse_args())
 
     # Load data and setup for evaluation
     id_column = "id"
@@ -628,3 +632,7 @@ if __name__ == "__main__":
 
             print(result.labels)
             print(result.n_topics)
+
+
+if __name__ == "__main__":
+    main()
