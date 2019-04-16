@@ -28,7 +28,14 @@ insert_sql = (
 ######################################################################################
 
 rows = [1000, 2000, 3000]
-chunks = 4
+chunks = 3
+preprocessings = [
+    {'skip_text_preprocessing': True},
+    {'skip_text_preprocessing': False, 'use_stemming': True, 'use_lemmatization': False, 'keep_stopwords': False},
+    {'skip_text_preprocessing': False, 'use_stemming': True, 'use_lemmatization': False, 'keep_stopwords': True},
+    {'skip_text_preprocessing': False, 'use_stemming': False, 'use_lemmatization': True, 'keep_stopwords': False},
+    {'skip_text_preprocessing': False, 'use_stemming': False, 'use_lemmatization': True, 'keep_stopwords': True},
+]
 
 
 ######################################################################################
@@ -43,52 +50,64 @@ with connection.cursor() as cursor:
     # HDBSCAN.
     ######################################################################################
 
-    min_cluster_sizes = [2, 3, 4, 5, 6, 7]
+    min_cluster_sizes = [3, 4, 5, 6]
     metrics = ['cosine', 'minkowski', 'euclidean']
-    leaf_sizes = [10, 20, 30, 40, 50, 60, 70]
+    leaf_sizes = [20, 30, 40, 50, 60]
     allow_single_clusters = [True, False]
 
     for row in rows:
         for skip_rows in range(0, chunks):
-            for min_cluster_size in min_cluster_sizes:
-                for metric in metrics:
-                    for leaf_size in leaf_sizes:
-                        for allow_single_cluster in allow_single_clusters:
-                            parameters = [
-                                '--rows=' + str(row),
-                                '--skip-rows=' + str(skip_rows),
-                                '--min-cluster-size=' + str(min_cluster_size),
-                                '--metric=' + str(metric),
-                                '--leaf-size=' + str(leaf_size),
-                            ]
+            for preprocessing in preprocessings:
+                for min_cluster_size in min_cluster_sizes:
+                    for metric in metrics:
+                        for leaf_size in leaf_sizes:
+                            for allow_single_cluster in allow_single_clusters:
+                                parameters = [
+                                    '--rows=' + str(row),
+                                    '--skip-rows=' + str(skip_rows),
+                                    '--min-cluster-size=' + str(min_cluster_size),
+                                    '--metric=' + str(metric),
+                                    '--leaf-size=' + str(leaf_size),
+                                ]
 
-                            if allow_single_cluster:
-                                parameters.append('--allow-single-cluster')
+                                if preprocessing['skip_text_preprocessing']:
+                                    parameters.append('--skip-text-preprocessing')
+                                else:
+                                    if preprocessing['use_stemming']:
+                                        parameters.append('--use-stemming')
+                                    elif preprocessing['use_lemmatization']:
+                                        parameters.append('--use-lemmatization')
 
-                            parameters = ' '.join(parameters)
+                                    if preprocessing['keep_stopwords']:
+                                        parameters.append('--keep-stopwords')
 
-                            cursor.execute(
-                                insert_sql,
-                                args=[
-                                    'hdbscan',
-                                    row,
-                                    (skip_rows * row),
-                                    None,
-                                    None,
-                                    parameters,
-                                    None,
-                                    None,
-                                    None,
-                                    None,
-                                    None,
-                                    None,
-                                    None,
-                                    None,
-                                    None,
-                                    0,
-                                    None,
-                                ],
-                            )
+                                if allow_single_cluster:
+                                    parameters.append('--allow-single-cluster')
 
-                            connection.commit()
+                                parameters = ' '.join(parameters)
+
+                                cursor.execute(
+                                    insert_sql,
+                                    args=[
+                                        'hdbscan',
+                                        row,
+                                        (skip_rows * row),
+                                        None,
+                                        None,
+                                        parameters,
+                                        None,
+                                        None,
+                                        None,
+                                        None,
+                                        None,
+                                        None,
+                                        None,
+                                        None,
+                                        None,
+                                        0,
+                                        None,
+                                    ],
+                                )
+
+                                connection.commit()
     connection.close()
