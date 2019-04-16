@@ -1,9 +1,10 @@
 import collections
+import pymysql
 import pandas
 import spacy
+import time
 import re
 import os
-import pymysql
 from warnings import simplefilter
 
 from scipy.sparse import find
@@ -276,6 +277,27 @@ def clean_text(text, keep_stopwords=False, use_stemming=False, use_lemmatization
     return text
 
 
+def write_preprocessing_time_to_db(db_id, preprocessing_time):
+    if db_id > 0:
+        connection = pymysql.connect(
+            host=os.environ["MYSQL_HOSTNAME"],
+            port=int(os.environ["MYSQL_PORT"]),
+            user=os.environ["MYSQL_USER"],
+            passwd=os.environ["MYSQL_PASSWORD"],
+            database=os.environ["MYSQL_DATABASE"],
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        update_sql = "UPDATE cron_evaluation SET time_preprocessing = %s WHERE id = %s"
+
+        with connection.cursor() as cursor:
+            cursor.execute(update_sql, (preprocessing_time, db_id))
+            connection.commit()
+
+        connection.close()
+
+
 def load_test_data(
     nrows=1000,
     skip_rows=0,
@@ -306,9 +328,14 @@ def load_test_data(
     )
 
     if not skip_text_preprocessing:
+        start = time.time()
         test_data["newspaper_text"] = test_data["newspaper_text"].apply(
             clean_text, args=(keep_stopwords, use_stemming, use_lemmatization)
         )
+        end = time.time()
+        write_preprocessing_time_to_db(db_id, (end - start))
+    else:
+        write_preprocessing_time_to_db(db_id, 0)
 
     return test_data[test_data["newspaper_text"].notnull()]
 
@@ -356,9 +383,14 @@ def load_test_data_from_db(
     connection.close()
 
     if not skip_text_preprocessing:
+        start = time.time()
         data["newspaper_text"] = data["newspaper_text"].apply(
             clean_text, args=(keep_stopwords, use_stemming, use_lemmatization)
         )
+        end = time.time()
+        write_preprocessing_time_to_db(db_id, (end - start))
+    else:
+        write_preprocessing_time_to_db(db_id, 0)
 
     return data
 
