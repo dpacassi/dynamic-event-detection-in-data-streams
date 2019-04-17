@@ -51,7 +51,7 @@ with connection.cursor() as cursor:
     ######################################################################################
 
     min_cluster_sizes = [3, 4, 5, 6]
-    metrics = ['cosine', 'minkowski', 'euclidean']
+    metrics = ['cosine', 'euclidean']
     leaf_sizes = [20, 30, 40, 50, 60]
     allow_single_clusters = [True, False]
 
