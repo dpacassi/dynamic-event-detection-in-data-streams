@@ -97,7 +97,7 @@ class Result:
             s2 = float("{0:.8f}".format(scores['adjusted_mutual_info_score']))
             s3 = float("{0:.8f}".format(scores['completeness_score']))
 
-            cursor.execute(update_sql, (s1, s2, s3, scores['n_clusters'], real_clusters, scores['n_noise'], self.processing_time, time_total, db_id))
+            cursor.execute(update_sql, (s1, s2, s3, scores['n_clusters'], real_clusters, scores['n_noise'], (self.processing_time * 1000), (time_total * 1000), db_id))
             connection.commit()
 
         connection.close()
@@ -337,7 +337,7 @@ def write_preprocessing_time_to_db(db_id, preprocessing_time):
         update_sql = "UPDATE cron_evaluation SET time_preprocessing = %s WHERE id = %s"
 
         with connection.cursor() as cursor:
-            cursor.execute(update_sql, (preprocessing_time, db_id))
+            cursor.execute(update_sql, ((preprocessing_time * 1000), db_id))
             connection.commit()
 
         connection.close()
