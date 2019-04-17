@@ -603,9 +603,13 @@ def main(passed_args=None):
     else:
         dataset = utils.load_test_data_from_db(nrows=args['rows'], skip_rows=args['skip_rows'], skip_text_preprocessing=args['skip_text_preprocessing'], keep_stopwords=args['keep_stopwords'], use_stemming=args['use_stemming'], use_lemmatization=args['use_lemmatization'], db_id=args['db_id'])
 
-    labels_true = LabelEncoder().fit_transform(dataset[story_column])
-    results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','), args)
-    end = time.time()
+    try:
+        labels_true = LabelEncoder().fit_transform(dataset[story_column])
+        results = ClusterEvaluation(dataset[content_column], dataset).run(args['methods'].split(','), args)
+        end = time.time()
+    except:
+        if args['db_id'] > 0:
+            utils.write_failed_to_db(args['db_id'])
 
     if args['show_details']:
         print("True number of clusters: %d" % len(set(labels_true)))

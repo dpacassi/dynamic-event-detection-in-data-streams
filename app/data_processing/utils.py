@@ -301,6 +301,27 @@ def clean_text(text, keep_stopwords=False, use_stemming=False, use_lemmatization
     return text
 
 
+def write_failed_to_db(db_id):
+    if db_id > 0:
+        connection = pymysql.connect(
+            host=os.environ["MYSQL_HOSTNAME"],
+            port=int(os.environ["MYSQL_PORT"]),
+            user=os.environ["MYSQL_USER"],
+            passwd=os.environ["MYSQL_PASSWORD"],
+            database=os.environ["MYSQL_DATABASE"],
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        update_sql = "UPDATE cron_evaluation SET failed = 1 WHERE id = %s"
+
+        with connection.cursor() as cursor:
+            cursor.execute(update_sql, db_id)
+            connection.commit()
+
+        connection.close()
+
+
 def write_preprocessing_time_to_db(db_id, preprocessing_time):
     if db_id > 0:
         connection = pymysql.connect(

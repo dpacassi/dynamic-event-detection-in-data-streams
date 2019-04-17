@@ -35,7 +35,7 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 ORDER BY id ASC"
+get_sql = "SELECT * FROM cron_evaluation WHERE processed = 0 AND failed IS NULL ORDER BY id ASC"
 
 with connection.cursor() as cursor:
     cursor.execute(get_sql)
