@@ -61,3 +61,45 @@ CREATE TABLE `data_database`.`cron_evaluation` (
   `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER `newspaper_text`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_without_stopwords` INT NULL DEFAULT NULL AFTER `text_without_stopwords`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_keyterms` LONGTEXT NULL DEFAULT NULL AFTER `time_without_stopwords`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_keyterms` INT NULL DEFAULT NULL AFTER `text_keyterms`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_entities` LONGTEXT NULL DEFAULT NULL AFTER `time_keyterms`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_entities` INT NULL DEFAULT NULL AFTER `text_entities`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_keyterms_and_entities` LONGTEXT NULL DEFAULT NULL AFTER `time_entities`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_keyterms_and_entities` INT NULL DEFAULT NULL AFTER `text_keyterms_and_entities`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_stemmed` LONGTEXT NULL DEFAULT NULL AFTER `time_keyterms_and_entities`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_stemmed` INT NULL DEFAULT NULL AFTER `text_stemmed`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_lemmatized` LONGTEXT NULL DEFAULT NULL AFTER `time_stemmed`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_lemmatized` INT NULL DEFAULT NULL AFTER `text_lemmatized`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `preprocessed` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `title_keywords_intersection`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `preprocessing_failed` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `preprocessed`;
