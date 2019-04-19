@@ -10,3 +10,4 @@ pymysql
 python-dotenv
 textacy
 ipdb
+newspaper3k
