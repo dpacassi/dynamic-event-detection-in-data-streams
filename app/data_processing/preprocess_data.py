@@ -39,7 +39,6 @@ get_sql = (
     "     AND preprocessed = 0"
     "     AND preprocessing_failed = 0"
     " ORDER BY id ASC"
-    " LIMIT 1"
 )
 
 update_sql = (
