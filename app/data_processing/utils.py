@@ -147,6 +147,23 @@ def remove_short_words(text):
     return text
 
 
+def f_remove_stopwords(text):
+    stop = stopwords.words("english")
+    sentences = text.split(".")
+    new_text = []
+
+    for sentence in sentences:
+        sentence = sentence.strip()
+
+        for word in sentence.split():
+            if word not in stop:
+                new_text.append(word)
+
+    new_text = " ".join(new_text)
+
+    return new_text
+
+
 def stem_text(text, remove_stopwords=True):
     stop = stopwords.words("english")
     sno = SnowballStemmer("english")

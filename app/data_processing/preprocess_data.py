@@ -1,4 +1,6 @@
 import os
+import time
+import utils
 import pymysql
 from newspaper import Article
 from dotenv import load_dotenv
@@ -82,11 +84,15 @@ with connection.cursor() as cursor:
         article.download()
         article.parse()
 
-        # New data.
+        # Publish date.
         newspaper_publish_date = article.publish_date
 
-        text_without_stopwords = None
-        time_without_stopwords = None
+        # Text without stopwords.
+        start = time.time()
+        text_without_stopwords = utils.f_remove_stopwords(row['newspaper_text'])
+        end = time.time()
+        time_without_stopwords = (end - start) * 1000
+
         text_keyterms = None
         time_keyterms = None
         text_entities = None
