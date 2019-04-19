@@ -6,6 +6,7 @@ import time
 import re
 import os
 from warnings import simplefilter
+from textacy import extract, keyterms, Doc
 
 from scipy.sparse import find
 from sklearn.metrics import (
@@ -19,6 +20,8 @@ from sklearn.metrics import (
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
+
+nlp = spacy.load("en_core_web_md")
 
 # Ignore all future warnings.
 simplefilter(action="ignore", category=FutureWarning)
@@ -541,3 +544,42 @@ def map_features_to_word_vectors(data_matrix, features):
         row_indices, column_indices, values = find(sparse_row)
         features_by_document.append([features[index] for index in column_indices])
     return features_by_document
+
+
+def extract_keyterms(data):
+    tokens = []
+    doc = Doc(data, lang="en_core_web_md")
+    res = keyterms.sgrank(doc, n_keyterms=100)
+
+    for r in res:
+        tokens.append(str(r[0]))
+
+    if len(tokens) == 0:
+        tokens = ["empty"]
+
+    return tokens
+
+
+def extract_entities(data):
+    tokens = []
+    doc = Doc(data, lang="en_core_web_md")
+    res = extract.named_entities(doc, include_types=["PERSON", "ORG", "LOC"])
+
+    for r in res:
+        tokens.append(str(r[0]))
+
+    if len(tokens) == 0:
+        tokens = ["empty"]
+
+    return tokens
+
+
+def extract_keyterms_and_entities(data):
+    tokens = extract_keyterms(data)
+    tokens += extract_entities(data)
+
+    # Remove duplicates.
+    tokens = list(dict.fromkeys(tokens))
+
+    return tokens
+

@@ -43,30 +43,37 @@ get_sql = (
 )
 
 update_sql = (
-    "UPDATE news_article"
-    " SET newspaper_publish_date = %s,"
-    " SET text_without_stopwords = %s,"
-    " SET time_without_stopwords = %s,"
-    " SET text_keyterms = %s,"
-    " SET time_keyterms = %s,"
-    " SET text_entities = %s,"
-    " SET time_entities = %s,"
-    " SET text_keyterms_and_entities = %s,"
-    " SET time_keyterms_and_entities = %s,"
-    " SET text_stemmed = %s,"
-    " SET time_stemmed = %s,"
-    " SET text_stemmed_without_stopwords = %s,"
-    " SET time_stemmed_without_stopwords = %s,"
-    " SET text_stemmed_without_stopwords_aggr = %s,"
-    " SET time_stemmed_without_stopwords_aggr = %s,"
-    " SET text_lemmatized = %s,"
-    " SET time_lemmatized = %s,"
-    " SET text_lemmatized_without_stopwords = %s,"
-    " SET time_lemmatized_without_stopwords = %s,"
-    " SET text_lemmatized_without_stopwords_aggr = %s,"
-    " SET time_lemmatized_without_stopwords_aggr = %s,"
-    " SET preprocessed = %s,"
-    " SET preprocessing_failed = %s"
+    "UPDATE news_article SET"
+    " newspaper_publish_date = %s,"
+    " text_without_stopwords = %s,"
+    " time_without_stopwords = %s,"
+    " text_keyterms = %s,"
+    " time_keyterms = %s,"
+    " text_entities = %s,"
+    " time_entities = %s,"
+    " text_keyterms_and_entities = %s,"
+    " time_keyterms_and_entities = %s,"
+    " text_stemmed = %s,"
+    " time_stemmed = %s,"
+    " text_stemmed_without_stopwords = %s,"
+    " time_stemmed_without_stopwords = %s,"
+    " text_stemmed_without_stopwords_aggr = %s,"
+    " time_stemmed_without_stopwords_aggr = %s,"
+    " text_lemmatized = %s,"
+    " time_lemmatized = %s,"
+    " text_lemmatized_without_stopwords = %s,"
+    " time_lemmatized_without_stopwords = %s,"
+    " text_lemmatized_without_stopwords_aggr = %s,"
+    " time_lemmatized_without_stopwords_aggr = %s,"
+    " preprocessed = 1,"
+    " preprocessing_failed = 0"
+    " WHERE id = %s"
+)
+
+update_failed_sql = (
+    "UPDATE news_article SET"
+    " preprocessed = 0,"
+    " preprocessing_failed = 1"
     " WHERE id = %s"
 )
 
@@ -80,36 +87,103 @@ with connection.cursor() as cursor:
     rows = cursor.fetchall()
 
     for row in rows:
-        article = Article(row['url'])
-        article.download()
-        article.parse()
+        try:
+            article = Article(row['url'])
+            article.download()
+            article.parse()
 
-        # Publish date.
-        newspaper_publish_date = article.publish_date
+            # Publish date.
+            newspaper_publish_date = article.publish_date
 
-        # Text without stopwords.
-        start = time.time()
-        text_without_stopwords = utils.f_remove_stopwords(row['newspaper_text'])
-        end = time.time()
-        time_without_stopwords = (end - start) * 1000
+            # Text without stopwords.
+            start = time.time()
+            text_without_stopwords = utils.f_remove_stopwords(row['newspaper_text'])
+            end = time.time()
+            time_without_stopwords = (end - start) * 1000
 
-        text_keyterms = None
-        time_keyterms = None
-        text_entities = None
-        time_entities = None
-        text_keyterms_and_entities = None
-        time_keyterms_and_entities = None
-        text_stemmed = None
-        time_stemmed = None
-        text_stemmed_without_stopwords = None
-        time_stemmed_without_stopwords = None
-        text_stemmed_without_stopwords_aggr = None
-        time_stemmed_without_stopwords_aggr = None
-        text_lemmatized = None
-        time_lemmatized = None
-        text_lemmatized_without_stopwords = None
-        time_lemmatized_without_stopwords = None
-        text_lemmatized_without_stopwords_aggr = None
-        time_lemmatized_without_stopwords_aggr = None
-        preprocessed = None
-        preprocessing_failed = None
+            # Text keyterms.
+            start = time.time()
+            text_keyterms_list = utils.extract_keyterms(row['newspaper_text'])
+            text_keyterms = ",".join(text_keyterms_list)
+            end = time.time()
+            time_keyterms = (end - start) * 1000
+
+            # Text entities.
+            start = time.time()
+            text_entities_list = utils.extract_entities(row['newspaper_text'])
+            text_entities = ",".join(text_entities_list)
+            end = time.time()
+            time_entities = (end - start) * 1000
+
+            # Text keyterms and entities.
+            text_keyterms_and_entities_list = text_keyterms_list + text_entities_list
+            text_keyterms_and_entities_list = list(dict.fromkeys(text_keyterms_and_entities_list))
+            text_keyterms_and_entities = ",".join(text_keyterms_and_entities_list)
+            time_keyterms_and_entities = time_keyterms + time_entities
+
+            # Text stemming.
+            start = time.time()
+            text_stemmed = utils.stem_text(row['newspaper_text'], False)
+            end = time.time()
+            time_stemmed = (end - start) * 1000
+
+            # Text stemming without stopwords.
+            start = time.time()
+            text_stemmed_without_stopwords = utils.stem_text(row['newspaper_text'], True)
+            end = time.time()
+            time_stemmed_without_stopwords = (end - start) * 1000
+
+            # Text stemming without stopwords and aggressive cleaning.
+            start = time.time()
+            text_stemmed_without_stopwords_aggr = utils.clean_text(row['newspaper_text'], keep_stopwords=False, use_stemming=True, use_lemmatization=False)
+            end = time.time()
+            time_stemmed_without_stopwords_aggr = (end - start) * 1000
+
+            # Text lemmatization.
+            start = time.time()
+            text_lemmatized = utils.lemmatize_text(row['newspaper_text'], False)
+            end = time.time()
+            time_lemmatized = (end - start) * 1000
+
+            # Text lemmatization without stopwords.
+            start = time.time()
+            text_lemmatized_without_stopwords = utils.lemmatize_text(row['newspaper_text'], True)
+            end = time.time()
+            time_lemmatized_without_stopwords = (end - start) * 1000
+
+            # Text lemmatization without stopwords and aggressive cleaning.
+            start = time.time()
+            text_lemmatized_without_stopwords_aggr = utils.clean_text(row['newspaper_text'], keep_stopwords=False, use_stemming=False, use_lemmatization=True)
+            end = time.time()
+            time_lemmatized_without_stopwords_aggr = (end - start) * 1000
+
+            # Write to database.
+            cursor.execute(update_sql, (
+                newspaper_publish_date,
+                text_without_stopwords,
+                time_without_stopwords,
+                text_keyterms,
+                time_keyterms,
+                text_entities,
+                time_entities,
+                text_keyterms_and_entities,
+                time_keyterms_and_entities,
+                text_stemmed,
+                time_stemmed,
+                text_stemmed_without_stopwords,
+                time_stemmed_without_stopwords,
+                text_stemmed_without_stopwords_aggr,
+                time_stemmed_without_stopwords_aggr,
+                text_lemmatized,
+                time_lemmatized,
+                text_lemmatized_without_stopwords,
+                time_lemmatized_without_stopwords,
+                text_lemmatized_without_stopwords_aggr,
+                time_lemmatized_without_stopwords_aggr,
+                row["id"])
+            )
+            connection.commit()
+        except:
+            # Write to database.
+            cursor.execute(update_failed_sql, (row["id"]))
+            connection.commit()
