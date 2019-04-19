@@ -1,12 +1,25 @@
 import os
+import sys
 import time
 import utils
 import pymysql
+import subprocess
 from newspaper import Article
 from dotenv import load_dotenv
 
 # Load environment variables.
 load_dotenv()
+
+# Define script names.
+script_names = ['preprocess_data.py']
+
+# Abort if already running.
+for script_name in script_names:
+    status = subprocess.getstatusoutput(
+        "ps aux | grep -e '%s' | grep -v grep | awk '{print $2}'| awk '{print $2}'" % script_name
+    )
+    if status[1]:
+        sys.exit(0)
 
 connection = pymysql.connect(
     host=os.environ['MYSQL_HOSTNAME'],
