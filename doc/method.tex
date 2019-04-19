@@ -1,0 +1,50 @@
+\section{Method}
+
+% TODO define proper outline
+
+% TODO introductionary paragraph
+
+\subsection{Test Data}
+
+The first important step is to create a test data set to run the evaluations with and verify them.
+
+% TODO explain the source and structrue
+
+\subsection{News Clustering}
+
+To be able to find stories in a wide range of different news articles, we decided to use a clustering approach. News articles with similar content will be grouped together in a cluster, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
+
+\subsubsection{HDBSCAN}
+
+HDBSCAN is a hierarchical density-based clustering algorithm. It extends the well known [insert citation] DBSCAN algorithm and reduces its sensitivity for clusters of varying densities. Another important quality of HDBSCAN is, that it does not need to know the number of clusters up front.
+
+% TODO explain some more
+
+Our first experiments have shown HDBSCAN to be significantly faster and usually more accurate with our dataset than other well established clustering algorithms. Based on this fact in combination with the previously advantages of the algorithm, we decided to focus further on HDBSCAN for the news clustering task.
+[show table with different algorithms and their speed]
+
+\subsubsection{KMeans}
+
+KMeans is a centroid-based clustering algorithm. 
+
+% TODO explain some more
+
+Since KMeans is one of the most commonly used clustering algorithms across a large range of different application areas [insert citation], we used it as a baseline in the final cluster evaluation.
+
+\subsubsection{Preprocessing}
+
+% raw text
+% with entity extraction
+% word embeddings?
+
+\subsubsection{Score}
+
+\subsubsection{Evaluation}
+
+
+
+
+\subsection{Online Clustering}
+
+* time based sliding window
+
