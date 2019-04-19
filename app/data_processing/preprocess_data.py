@@ -16,4 +16,37 @@ connection = pymysql.connect(
 )
 
 # Get news articles to preprocess.
-get_sql = 'SELECT * FROM news_article WHERE preprocessed = 0 AND failed IS NULL ORDER BY id ASC'
+get_sql = (
+    "SELECT *"
+    " FROM news_article"
+    " WHERE"
+    "     newspaper_processed = 1"
+    "     AND title_keywords_intersection = 1"
+    "     AND hostname != 'newsledge.com'"
+    "     AND hostname != 'www.newsledge.com'"
+    "     AND newspaper_text IS NOT NULL"
+    "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+    "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+    "     AND newspaper_text NOT LIKE '%%javascript%%'"
+    "     AND newspaper_text NOT LIKE '%%404%%'"
+    "     AND newspaper_text NOT LIKE '%%cookie%%'"
+    "     AND newspaper_keywords NOT LIKE '%%GDPR%%'"
+    "     AND newspaper_keywords NOT LIKE '%%javascript%%'"
+    "     AND newspaper_keywords NOT LIKE '%%404%%'"
+    "     AND newspaper_keywords NOT LIKE '%%cookie%%'"
+    "     AND preprocessed = 0"
+    "     AND preprocessing_failed = 0"
+    " ORDER BY id ASC"
+    " LIMIT 1"
+)
+
+######################################################################################
+# Preprocess texts.
+######################################################################################
+
+with connection.cursor() as cursor:
+    cursor.execute(get_sql)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        row = row
