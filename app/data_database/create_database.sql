@@ -106,3 +106,15 @@ ADD COLUMN `preprocessing_failed` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `pre
 
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `newspaper_publish_date` DATETIME NULL DEFAULT NULL AFTER `newspaper_processed`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_stemmed_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER `time_stemmed`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_stemmed_without_stopwords` INT NULL DEFAULT NULL AFTER `text_stemmed_without_stopwords`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_lemmatized_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER `time_lemmatized`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_lemmatized_without_stopwords` INT NULL DEFAULT NULL AFTER `text_lemmatized_without_stopwords`;

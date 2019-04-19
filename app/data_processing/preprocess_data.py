@@ -16,7 +16,6 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-# Get news articles to preprocess.
 get_sql = (
     "SELECT *"
     " FROM news_article"
@@ -54,12 +53,17 @@ update_sql = (
     " SET time_keyterms_and_entities = %s,"
     " SET text_stemmed = %s,"
     " SET time_stemmed = %s,"
+    " SET text_stemmed_without_stopwords = %s,"
+    " SET time_stemmed_without_stopwords = %s,"
     " SET text_lemmatized = %s,"
     " SET time_lemmatized = %s,"
+    " SET text_lemmatized_without_stopwords = %s,"
+    " SET time_lemmatized_without_stopwords = %s,"
     " SET preprocessed = %s,"
     " SET preprocessing_failed = %s"
     " WHERE id = %s"
 )
+
 
 ######################################################################################
 # Preprocess texts.
@@ -85,7 +89,11 @@ with connection.cursor() as cursor:
         time_keyterms_and_entities = None
         text_stemmed = None
         time_stemmed = None
+        text_stemmed_without_stopwords = None
+        time_stemmed_without_stopwords = None
         text_lemmatized = None
         time_lemmatized = None
+        text_lemmatized_without_stopwords = None
+        time_lemmatized_without_stopwords = None
         preprocessed = None
         preprocessing_failed = None
