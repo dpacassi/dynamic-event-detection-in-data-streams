@@ -55,10 +55,14 @@ update_sql = (
     " SET time_stemmed = %s,"
     " SET text_stemmed_without_stopwords = %s,"
     " SET time_stemmed_without_stopwords = %s,"
+    " SET text_stemmed_without_stopwords_aggr = %s,"
+    " SET time_stemmed_without_stopwords_aggr = %s,"
     " SET text_lemmatized = %s,"
     " SET time_lemmatized = %s,"
     " SET text_lemmatized_without_stopwords = %s,"
     " SET time_lemmatized_without_stopwords = %s,"
+    " SET text_lemmatized_without_stopwords_aggr = %s,"
+    " SET time_lemmatized_without_stopwords_aggr = %s,"
     " SET preprocessed = %s,"
     " SET preprocessing_failed = %s"
     " WHERE id = %s"
@@ -78,7 +82,9 @@ with connection.cursor() as cursor:
         article.download()
         article.parse()
 
+        # New data.
         newspaper_publish_date = article.publish_date
+
         text_without_stopwords = None
         time_without_stopwords = None
         text_keyterms = None
@@ -91,9 +97,13 @@ with connection.cursor() as cursor:
         time_stemmed = None
         text_stemmed_without_stopwords = None
         time_stemmed_without_stopwords = None
+        text_stemmed_without_stopwords_aggr = None
+        time_stemmed_without_stopwords_aggr = None
         text_lemmatized = None
         time_lemmatized = None
         text_lemmatized_without_stopwords = None
         time_lemmatized_without_stopwords = None
+        text_lemmatized_without_stopwords_aggr = None
+        time_lemmatized_without_stopwords_aggr = None
         preprocessed = None
         preprocessing_failed = None

@@ -118,3 +118,15 @@ ADD COLUMN `text_lemmatized_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER 
 
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `time_lemmatized_without_stopwords` INT NULL DEFAULT NULL AFTER `text_lemmatized_without_stopwords`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_stemmed_without_stopwords_aggr` LONGTEXT NULL DEFAULT NULL AFTER `time_stemmed_without_stopwords`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_stemmed_without_stopwords_aggr` INT NULL DEFAULT NULL AFTER `text_stemmed_without_stopwords_aggr`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `text_lemmatized_without_stopwords_aggr` LONGTEXT NULL DEFAULT NULL AFTER `time_lemmatized_without_stopwords`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `time_lemmatized_without_stopwords_aggr` INT NULL DEFAULT NULL AFTER `text_lemmatized_without_stopwords_aggr`;
