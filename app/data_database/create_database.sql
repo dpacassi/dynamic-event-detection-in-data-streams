@@ -103,3 +103,6 @@ ADD COLUMN `preprocessed` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `title_keywo
 
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `preprocessing_failed` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `preprocessed`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `newspaper_publish_date` DATETIME NULL DEFAULT NULL AFTER `newspaper_processed`;

@@ -1,5 +1,6 @@
 import os
 import pymysql
+from newspaper import Article
 from dotenv import load_dotenv
 
 # Load environment variables.
@@ -40,6 +41,26 @@ get_sql = (
     " LIMIT 1"
 )
 
+update_sql = (
+    "UPDATE news_article"
+    " SET newspaper_publish_date = %s,"
+    " SET text_without_stopwords = %s,"
+    " SET time_without_stopwords = %s,"
+    " SET text_keyterms = %s,"
+    " SET time_keyterms = %s,"
+    " SET text_entities = %s,"
+    " SET time_entities = %s,"
+    " SET text_keyterms_and_entities = %s,"
+    " SET time_keyterms_and_entities = %s,"
+    " SET text_stemmed = %s,"
+    " SET time_stemmed = %s,"
+    " SET text_lemmatized = %s,"
+    " SET time_lemmatized = %s,"
+    " SET preprocessed = %s,"
+    " SET preprocessing_failed = %s"
+    " WHERE id = %s"
+)
+
 ######################################################################################
 # Preprocess texts.
 ######################################################################################
@@ -49,4 +70,22 @@ with connection.cursor() as cursor:
     rows = cursor.fetchall()
 
     for row in rows:
-        row = row
+        article = Article(row['url'])
+        article.download()
+        article.parse()
+
+        newspaper_publish_date = article.publish_date
+        text_without_stopwords = None
+        time_without_stopwords = None
+        text_keyterms = None
+        time_keyterms = None
+        text_entities = None
+        time_entities = None
+        text_keyterms_and_entities = None
+        time_keyterms_and_entities = None
+        text_stemmed = None
+        time_stemmed = None
+        text_lemmatized = None
+        time_lemmatized = None
+        preprocessed = None
+        preprocessing_failed = None
