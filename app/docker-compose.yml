@@ -48,6 +48,7 @@ services:
     volumes:
       - ./data_database/data:/var/lib/mysql
       - ./data_database/create_database.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: on-failure
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -67,3 +68,4 @@ services:
       - ./data_processing:/usr/local/src/data_processing
     links:
       - mariadb
+    restart: on-failure
