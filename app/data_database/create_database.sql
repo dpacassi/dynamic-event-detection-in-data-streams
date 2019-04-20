@@ -165,7 +165,7 @@ ADD COLUMN `newspaper_publish_date` DATETIME NULL DEFAULT NULL AFTER `newspaper_
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `text_stemmed_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER `time_stemmed`;
 
-ALTER TABLE `data_database`.`news_article`text_keyterms
+ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `time_stemmed_without_stopwords` INT NULL DEFAULT NULL AFTER `text_stemmed_without_stopwords`;
 
 ALTER TABLE `data_database`.`news_article`
