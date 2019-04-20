@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
 
   neo4j: 
@@ -18,7 +18,7 @@ services:
       - ./data_collection:/usr/local/src/data_collection
     command: python runner.py twitter
     restart: on-failure
-    links:
+    depends_on:
       - neo4j
     environment:
       NEO4J_URI: bolt://neo4j:7687
@@ -50,6 +50,7 @@ services:
       - ./data_database/create_database.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data_database/conf:/etc/mysql/conf.d
     restart: on-failure
+    network_mode: "host"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -60,13 +61,15 @@ services:
     restart: always
     ports:
         - 8080:80
-    links:
+    depends_on:
         - mariadb
+    network_mode: "host"
 
   cluster_evaluation:
     build: ./data_processing
     volumes:
       - ./data_processing:/usr/local/src/data_processing
-    links:
+    depends_on:
       - mariadb
     restart: on-failure
+    network_mode: "host"
