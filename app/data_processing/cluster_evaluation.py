@@ -142,9 +142,6 @@ def main(passed_args=None):
     ap.add_argument("--db-id", required=False, type=int, default=0)
     ap.add_argument("--metric", required=False, type=str, default="euclidean")
     ap.add_argument("--verbosity", required=False, type=int, default=0)
-    ap.add_argument("--show-details", dest="show_details", action="store_true")
-    ap.set_defaults(show_features=False)
-    ap.set_defaults(show_details=False)
     ap.add_argument(
         "--skip-text-preprocessing", dest="skip_text_preprocessing", action="store_true"
     )

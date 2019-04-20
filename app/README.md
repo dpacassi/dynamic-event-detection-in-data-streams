@@ -12,8 +12,8 @@ data is available before running the evaluation.
 ### Setup
 
 * Create an .env file in the `data_processing` directory based on the .env.example
-* Start the required containers `docker-compose up mariadb phpmyadmin`
-* Run the evaluation `docker-compose run cluster_evaluation python cluster_evaluation_table.py --rows 1000 --runs 10`
+* Start the required containers `docker-compose up -d mariadb`
+* Run the evaluation `docker-compose run -d cluster_evaluation python cluster_evaluation_table.py --rows 1000 --runs 10`
 
 ### Debugging
 
@@ -25,4 +25,4 @@ To run on the zhaw cluster upload the app first and then run as described above:
 `rsync -avz --exclude 'data_collection' --exclude 'neo4j' --exclude 'data_database/data'  --exclude 'data_database/test_data/wikiref' . ubuntu@160.85.252.135:~/app`
 
 Export collected data with mysqldump:
-`mysqldump -u username -p -h 0.0.0.0 data_database  > export.sql`
+`mysqldump -u username -p -h 0.0.0.0 --no-create-info --skip-triggers data_database > export.sql`

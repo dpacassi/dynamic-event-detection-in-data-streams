@@ -21,7 +21,22 @@ HDBSCAN is a hierarchical density-based clustering algorithm. It extends the wel
 % TODO explain some more
 
 Our first experiments have shown HDBSCAN to be significantly faster and usually more accurate with our dataset than other well established clustering algorithms. Based on this fact in combination with the previously advantages of the algorithm, we decided to focus further on HDBSCAN for the news clustering task.
-[show table with different algorithms and their speed]
+
+\begin{table}[h]
+    \centering
+    \caption{}
+    \label{undefined}
+    \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Algorithm} & \textbf{NMI} & \textbf{Completeness}  & \textbf{Average Processing Time (in seconds)} \\ \hline
+    affinity\_propagation & \textbf{0.74} & 0.51 & 14.42 \\ \hline
+    hdbscan & 0.73 & \textbf{0.68} & \textbf{0.3} \\ \hline
+    birch & 0.64 & 0.14 & 1.27 \\ \hline
+    spectral\_clustering & 0.55 & 0.44  & 461.21 \\ \hline
+    hdbscan\_lda & 0.51 & 0.43 & 154.53 \\ \hline
+    meanshift & 0.33 & 0.06  & 440.74 \\ \hline
+    \end{tabular}
+\end{table}
 
 \subsubsection{KMeans}
 

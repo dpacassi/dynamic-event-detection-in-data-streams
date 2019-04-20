@@ -3,16 +3,16 @@ import spacy
 import time
 import argparse
 import json
+import math
 
 from itertools import chain
 from textacy import extract, keyterms, Doc
 from dotenv import load_dotenv
 from hdbscan import HDBSCAN
-from datasketch import MinHash, MinHashLSH
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.cluster import Birch, AffinityPropagation, MeanShift, SpectralClustering
+from sklearn.cluster import Birch, AffinityPropagation, MeanShift, SpectralClustering, KMeans
 
 import utils
 
@@ -78,39 +78,17 @@ class ClusterMethods:
 
         return lda_labels, (end - start)
 
-    # TODO make ready for experiment
-    # Keyterms + MinHash + LSH
-    # Ref: https://ekzhu.github.io/datasketch/lsh.html
-    def minhash_lsh(self, data_matrix, **parameters):
+    def kmeans(self, data_matrix, **parameters):
+        n_approx = int(math.sqrt(len(self.documents)))
         start = time.time()
-        hashes = []
 
-        # Create LSH index
-        lsh = MinHashLSH(num_perm=128, **parameters)
+        km = KMeans(
+            n_clusters=n_approx
+        ).fit(data_matrix)
+        labels = km.predict(data_matrix)
 
-        for index, document in enumerate(self.documents):
-            hash = MinHash(num_perm=128)
-            entities = []  # findKeywords(document, language="en")
-
-            for entity in entities:
-                hash.update(str.encode(entity, "utf-8"))
-
-            hashes.append(hash)
-            lsh.insert(index, hash)
-
-        # TODO: Check if n_estimated_topics is correctly build in utils.py
-        n_estimated_topics = 0
-        processed_indices = []
-        for index, hash in enumerate(hashes):
-            matches = lsh.query(hash)
-            if len(matches) > 1 and index not in processed_indices:
-                n_estimated_topics += 1
-                processed_indices += matches
-
-        # print("Approximate neighbours with Jaccard similarity > 0.5", result)
         end = time.time()
-
-        return range(len(hashes)), (end - start)
+        return labels, (end - start)
 
     def setup_evaluation(self):
         def extract_entities(data):
@@ -150,44 +128,48 @@ class ClusterMethods:
                 analyzer="word",
                 stop_words="english",
             ),
-            TfidfVectorizer(
-                min_df=3,
-                max_df=0.9,
-                lowercase=True,
-                analyzer="word",
-                stop_words="english",
-            ),
+            # TfidfVectorizer(
+            #     min_df=3,
+            #     max_df=0.9,
+            #     lowercase=True,
+            #     analyzer="word",
+            #     stop_words="english",
+            # ),
         ]
 
         tokenizers = [
             None,
-            extract_entities,
-            extract_keyterms_and_entities,
+            # extract_entities,
+            # extract_keyterms_and_entities,
             # TODO word2vec
         ]
 
         # Parameter arguments have to be a list
         parameters_by_method = {
+            self.kmeans: {
+                "n_range": [5]
+            },
             self.hdbscan: {
-                "min_cluster_size": range(2, 6),
-                "metric": ["cosine", "minkowski", "euclidean"]
+                "min_cluster_size": range(3, 7),
+                "metric": ["cosine"]
+                # "metric": ["cosine", "minkowski", "euclidean"]
             },
-            self.meanshift: {"cluster_all": [True, False]},
-            self.birch: {
-                "branching_factor": range(10, 100, 10),
-                # "threshold": range(2, 6),
-            },
-            self.affinity_propagation: {
-                "affinity": ["euclidean"],
-                "convergence_iter": [15],
-                "damping": np.arange(0.5, 0.9, 0.1),
-                "max_iter": [50, 100, 200, 500],
-            },
-            self.spectral_clustering: {
-                "affinity": ["rbf"],
-                "assign_labels": ["kmeans", "discretize"],
-            },
-            self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
+            # self.meanshift: {"cluster_all": [True, False]},
+            # self.birch: {
+            #     "branching_factor": range(10, 100, 10),
+            #     # "threshold": range(2, 6),
+            # },
+            # self.affinity_propagation: {
+            #     "affinity": ["euclidean"],
+            #     "convergence_iter": [15],
+            #     "damping": np.arange(0.5, 0.9, 0.1),
+            #     "max_iter": [50, 100, 200, 500],
+            # },
+            # self.spectral_clustering: {
+            #     "affinity": ["rbf"],
+            #     "assign_labels": ["kmeans", "discretize"],
+            # },
+            # self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
             # minhash_lsh: {'threshold': range(0.1, 0.9, 0.1), 'min_cluster_size': range(2, 6)},
         }
 

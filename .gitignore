@@ -8,3 +8,5 @@ export.csv
 clean_news.csv
 test_data/
 app/data_database/*
+!app/data_database/conf
+

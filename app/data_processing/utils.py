@@ -583,3 +583,10 @@ def extract_keyterms_and_entities(data):
 
     return tokens
 
+
+def group_data_by_label(labels):
+    grouped_indices = collections.defaultdict(list)
+    for index, value in enumerate(labels):
+        if value >= 0:
+            grouped_indices[value].append(index)
+    return grouped_indices

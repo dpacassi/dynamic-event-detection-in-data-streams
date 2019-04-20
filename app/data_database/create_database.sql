@@ -62,6 +62,61 @@ CREATE TABLE `data_database`.`cron_evaluation` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `data_database`.`script_execution` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `script` VARCHAR(255) NOT NULL,
+  `failed` TINYINT UNSIGNED NULL,
+  `log_message` LONGTEXT NULL,
+  `processing_time` FLOAT NULL,
+  `execution_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `data_database`.`cluster` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `identifier` TEXT NOT NULL,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `data_database`.`cluster_news_article` (
+  `cluster_id` INT UNSIGNED NOT NULL,
+  `news_article_id` INT UNSIGNED NOT NULL,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT `fk_cluster`
+    FOREIGN KEY (cluster_id) REFERENCES cluster (id)
+	ON DELETE CASCADE,
+  CONSTRAINT `fk_news_article`
+    FOREIGN KEY (news_article_id) REFERENCES news_article (id)
+	ON DELETE CASCADE,
+
+  PRIMARY KEY ( `cluster_id`, `news_article_id`)
+);
+
+CREATE TABLE `data_database`.`cron_evaluation` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `method` VARCHAR(255) NOT NULL,
+  `rows` INT UNSIGNED NOT NULL,
+  `skip_rows` INT UNSIGNED NOT NULL,
+  `vectorizer` VARCHAR(255) NULL,
+  `tokenizer` VARCHAR(255) NULL,
+  `parameters` VARCHAR(1023) NULL,
+  `normalized_mutual_info_score` DECIMAL(10, 8) NULL,
+  `adjusted_mutual_info_score` DECIMAL(10, 8) NULL,
+  `completeness_score` DECIMAL(10, 8) NULL,
+  `estimated_clusters` INT NULL,
+  `real_clusters` INT NULL,
+  `n_noise` INT NULL,
+  `time_clustering` INT NULL,
+  `time_preprocessing` INT NULL,
+  `time_total` INT NULL,
+  `processed` TINYINT UNSIGNED NOT NULL,
+  `failed` TINYINT UNSIGNED NULL,
+  `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `text_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER `newspaper_text`;
 
@@ -110,7 +165,7 @@ ADD COLUMN `newspaper_publish_date` DATETIME NULL DEFAULT NULL AFTER `newspaper_
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `text_stemmed_without_stopwords` LONGTEXT NULL DEFAULT NULL AFTER `time_stemmed`;
 
-ALTER TABLE `data_database`.`news_article`
+ALTER TABLE `data_database`.`news_article`text_keyterms
 ADD COLUMN `time_stemmed_without_stopwords` INT NULL DEFAULT NULL AFTER `text_stemmed_without_stopwords`;
 
 ALTER TABLE `data_database`.`news_article`
