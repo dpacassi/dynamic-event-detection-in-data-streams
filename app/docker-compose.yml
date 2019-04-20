@@ -48,6 +48,7 @@ services:
     volumes:
       - ./data_database/data:/var/lib/mysql
       - ./data_database/create_database.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data_database/conf:/etc/mysql/conf.d
     restart: on-failure
 
   phpmyadmin:
