@@ -105,9 +105,6 @@ while has_more:
     print("Start Batch {} with {} rows.".format(batch_count, nrows))
 
     for index, row in rows.iterrows():
-
-        import ipdb; ipdb.set_trace()
-
         try:
             article = Article(row['url'])
             article.download()
