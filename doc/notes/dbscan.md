@@ -1,5 +1,6 @@
 <!--
 https://medium.com/@elutins/dbscan-what-is-it-when-to-use-it-how-to-use-it-8bd506293818
+https://nbviewer.jupyter.org/github/scikit-learn-contrib/hdbscan/blob/master/notebooks/How%20HDBSCAN%20Works.ipynb
 -->
 
 # K-means clustering
@@ -53,3 +54,21 @@ if the distance from the point to the clusters don't differ.
 - Unable to cluster data sets with large differences in densities
 
 # HDBSCAN
+HDBSCAN is a extension of DBSCAN that converts DBSCAN into a hierarchical
+clustering algorithm.
+Therefor it only requires one parameter to be set:
+1. minPoints - The number of data points a neighborhood has to contain in order to be considered as a cluster.
+
+## How does HDBSCAN work
+- Transform the space according to the density/sparsity.
+- Build the minimum spanning tree of the distance weighted graph.
+- Construct a cluster hierarchy of connected components.
+- Condense the cluster hierarchy based on minimum cluster size.
+- Extract the stable clusters from the condensed tree.
+
+### Transforming the space
+The first thing HDBSCAN does is to calculate the **mutual reachability distance** between points.
+This is done by creating clusters of the size of *minPoints* for all data points and then
+calculating the distance of the clusters centroids.
+
+### Building the minimum spanning tree
