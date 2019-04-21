@@ -146,11 +146,11 @@ class ClusterMethods:
 
         # Parameter arguments have to be a list
         parameters_by_method = {
-            self.kmeans: {
-                "n_range": [5]
-            },
+            # self.kmeans: {
+            #     "n_range": [5]
+            # },
             self.hdbscan: {
-                "min_cluster_size": range(3, 7),
+                "min_cluster_size": [5],  # range(3, 7),
                 "metric": ["cosine"]
                 # "metric": ["cosine", "minkowski", "euclidean"]
             },
@@ -277,8 +277,8 @@ if __name__ == "__main__":
             nrows=nrows,
             skip_rows=run * nrows,
             keep_stopwords=False,
-            use_stemming=True,
-            use_lemmatization=True,
+            use_stemming=False,
+            use_lemmatization=False,
         )
         full_dataset = utils.load_test_data(
             nrows=nrows,
