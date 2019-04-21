@@ -45,7 +45,7 @@ def add_script_execution(name, failed, log_message, processing_time):
     return connection.commit()
 
 
-def get_clusters(name):
+def get_clusters():
     connection = get_connection()
     sql = "SELECT * FROM cluster ORDER BY id DESC"
 

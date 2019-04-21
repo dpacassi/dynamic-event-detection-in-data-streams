@@ -10,3 +10,5 @@ RUN python -m spacy download en
 RUN python -m nltk.downloader all
 
 COPY . .
+
+CMD ["python", "preprocess_data.py"]

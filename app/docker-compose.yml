@@ -49,7 +49,7 @@ services:
       - ./data_database/data:/var/lib/mysql
       - ./data_database/create_database.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data_database/conf:/etc/mysql/conf.d
-    restart: on-failure
+    restart: unless-stopped
     network_mode: "host"
 
   phpmyadmin:
@@ -58,7 +58,7 @@ services:
     environment:
         - PMA_ARBITRARY=1
         - PMA_HOST=mariadb
-    restart: always
+    restart: unless-stopped
     ports:
         - 8080:80
     depends_on:
@@ -71,5 +71,14 @@ services:
       - ./data_processing:/usr/local/src/data_processing
     depends_on:
       - mariadb
-    restart: on-failure
+    restart: unless-stopped
+    network_mode: "host"
+
+  preprocess_data:
+    build: ./data_processing
+    volumes:
+      - ./data_processing:/usr/local/src/data_processing
+    depends_on:
+      - mariadb
+    restart: unless-stopped
     network_mode: "host"
