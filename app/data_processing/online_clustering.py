@@ -152,10 +152,18 @@ db.add_script_execution(script_name, str(last_processed_date), failed, log_messa
 # Finally do a full cluster:  
 # * python data_processing/online_clustering.py --rows 5000
 
-
 # ToDos:
 # Detect type of change:
 # * addition
 # * change
 # * deletion
 # Add most important keyterms to name a cluster
+
+# Detect changes:
+# store news_id -> cluster_id in db
+# after new clustering:
+# fetch old news_id -> cluster_id
+# compare with new news_id -> cluster_id
+# A change was found if cluster_id is different.
+#
+# Subtract changed clusters from difference to get new clusters.
