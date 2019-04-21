@@ -4,6 +4,10 @@ import time
 import utils
 import pymysql
 import subprocess
+import pandas
+
+import db
+
 from newspaper import Article
 from dotenv import load_dotenv
 
@@ -12,6 +16,7 @@ load_dotenv()
 
 # Define script names.
 script_names = ['preprocess_data.py']
+batch_size = 1000
 
 # Abort if already running.
 for script_name in script_names:
@@ -20,16 +25,6 @@ for script_name in script_names:
     )
     if status[1]:
         sys.exit(0)
-
-connection = pymysql.connect(
-    host=os.environ['MYSQL_HOSTNAME'],
-    port=int(os.environ['MYSQL_PORT']),
-    user=os.environ['MYSQL_USER'],
-    passwd=os.environ['MYSQL_PASSWORD'],
-    database=os.environ['MYSQL_DATABASE'],
-    charset='utf8mb4',
-    cursorclass=pymysql.cursors.DictCursor
-)
 
 get_sql = (
     "SELECT *"
@@ -52,6 +47,7 @@ get_sql = (
     "     AND preprocessed = 0"
     "     AND preprocessing_failed = 0"
     " ORDER BY id ASC"
+    " LIMIT %s"
 )
 
 update_sql = (
@@ -94,11 +90,24 @@ update_failed_sql = (
 # Preprocess texts.
 ######################################################################################
 
-with connection.cursor() as cursor:
-    cursor.execute(get_sql)
-    rows = cursor.fetchall()
+has_more = True
+batch_count = 0
+while has_more:
+    batch_count += 1
+    connection = db.get_connection()
+    rows = pandas.read_sql(sql=get_sql, con=connection, index_col="id", params=[batch_size])
+    connection.close()
 
-    for row in rows:
+    nrows = len(rows)
+    if nrows < batch_size:
+        has_more = False
+
+    print("Start Batch {} with {} rows.".format(batch_count, nrows))
+
+    for index, row in rows.iterrows():
+
+        import ipdb; ipdb.set_trace()
+
         try:
             article = Article(row['url'])
             article.download()
@@ -169,33 +178,40 @@ with connection.cursor() as cursor:
             end = time.time()
             time_lemmatized_without_stopwords_aggr = (end - start) * 1000
 
-            # Write to database.
-            cursor.execute(update_sql, (
-                newspaper_publish_date,
-                text_without_stopwords,
-                time_without_stopwords,
-                text_keyterms,
-                time_keyterms,
-                text_entities,
-                time_entities,
-                text_keyterms_and_entities,
-                time_keyterms_and_entities,
-                text_stemmed,
-                time_stemmed,
-                text_stemmed_without_stopwords,
-                time_stemmed_without_stopwords,
-                text_stemmed_without_stopwords_aggr,
-                time_stemmed_without_stopwords_aggr,
-                text_lemmatized,
-                time_lemmatized,
-                text_lemmatized_without_stopwords,
-                time_lemmatized_without_stopwords,
-                text_lemmatized_without_stopwords_aggr,
-                time_lemmatized_without_stopwords_aggr,
-                row["id"])
-            )
-            connection.commit()
+            # Write to database with new connection.
+            connection = db.get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute(update_sql, (
+                    newspaper_publish_date,
+                    text_without_stopwords,
+                    time_without_stopwords,
+                    text_keyterms,
+                    time_keyterms,
+                    text_entities,
+                    time_entities,
+                    text_keyterms_and_entities,
+                    time_keyterms_and_entities,
+                    text_stemmed,
+                    time_stemmed,
+                    text_stemmed_without_stopwords,
+                    time_stemmed_without_stopwords,
+                    text_stemmed_without_stopwords_aggr,
+                    time_stemmed_without_stopwords_aggr,
+                    text_lemmatized,
+                    time_lemmatized,
+                    text_lemmatized_without_stopwords,
+                    time_lemmatized_without_stopwords,
+                    text_lemmatized_without_stopwords_aggr,
+                    time_lemmatized_without_stopwords_aggr,
+                    row["id"])
+                )
+                connection.commit()
+            connection.close()
         except:
-            # Write to database.
-            cursor.execute(update_failed_sql, (row["id"]))
+            # Write to database with new connection.
+            connection = db.get_connection()
+            with connection.cursor() as cursor:
+                cursor.execute(update_failed_sql, (row["id"]))
             connection.commit()
+            connection.close()
+
