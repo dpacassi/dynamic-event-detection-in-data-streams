@@ -95,11 +95,9 @@ while has_more:
     if nrows < batch_size:
         has_more = False
 
-
     print("Loaded {} rows.".format( nrows))
     for index, row in rows.iterrows():
         try:
-            import ipdb;ipdb.set_trace()
             article = Article(row['url'])
             article.download()
             article.parse()
