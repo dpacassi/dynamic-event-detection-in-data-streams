@@ -65,6 +65,7 @@ CREATE TABLE `data_database`.`cron_evaluation` (
 CREATE TABLE `data_database`.`script_execution` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `script` VARCHAR(255) NOT NULL,
+  `last_processed_date` DATETIME NOT NULL,
   `failed` TINYINT UNSIGNED NULL,
   `log_message` LONGTEXT NULL,
   `processing_time` FLOAT NULL,

@@ -20,7 +20,7 @@ def get_last_script_execution(name):
     sql = (
         "SELECT *"
         " FROM script_execution"
-        " WHERE script = %s"
+        " WHERE script = %s AND failed = 0"
         " ORDER BY execution_date DESC"
     )
 
@@ -30,17 +30,17 @@ def get_last_script_execution(name):
     return data
 
 
-def add_script_execution(name, failed, log_message, processing_time):
+def add_script_execution(name, last_processed_date, failed, log_message, processing_time):
     connection = get_connection()
 
     insert_sql = (
-        "INSERT INTO method_evaluation"
-        " (script, failed, log_message, processing_time)"
-        " VALUES ( %s, %s, %s, %s,)"
+        "INSERT INTO script_execution"
+        " (script, last_processed_date, failed, log_message, processing_time)"
+        " VALUES ( %s, %s, %s, %s, %s)"
     )
 
     with connection.cursor() as cursor:
-        cursor.execute(insert_sql, args=[name, failed, log_message, processing_time])
+        cursor.execute(insert_sql, args=[name, last_processed_date, failed, log_message, processing_time])
 
     return connection.commit()
 
@@ -55,7 +55,22 @@ def get_clusters():
     return data
 
 
-def get_news_articles(date, nrows=1000, skip_rows=0):
+def add_cluster(identifier):
+    connection = get_connection()
+
+    insert_sql = (
+        "INSERT INTO cluster"
+        " (identifier)"
+        " VALUES ( %s )"
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(insert_sql, args=[identifier])
+
+    return connection.commit()
+
+
+def get_news_articles(nrows=1000, skip_rows=0):
     connection = get_connection()
 
     get_sql = (
@@ -63,9 +78,30 @@ def get_news_articles(date, nrows=1000, skip_rows=0):
         " FROM news_article"
         " WHERE"
         "     newspaper_processed = 1"
-        "     AND title_keywords_intersection = 1"
-        "     AND newspaper_publish_date >= %s"
-        " ORDER BY newspaper_publish_date DESC"
+        "     AND newspaper_text != ''"
+        " ORDER BY date ASC"
+        " LIMIT %s, %s"
+    )
+
+    data = pandas.read_sql(
+        sql=get_sql, con=connection, index_col="id", params=[skip_rows, nrows]
+    )
+    connection.close()
+
+    return data
+
+
+def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
+    connection = get_connection()
+
+    get_sql = (
+        "SELECT *"
+        " FROM news_article"
+        " WHERE"
+        "     newspaper_processed = 1"
+        "     AND newspaper_text != ''"
+        "     AND date <= %s"
+        " ORDER BY date DESC"
         " LIMIT %s, %s"
     )
 
