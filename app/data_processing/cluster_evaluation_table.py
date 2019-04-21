@@ -128,13 +128,13 @@ class ClusterMethods:
                 analyzer="word",
                 stop_words="english",
             ),
-            # TfidfVectorizer(
-            #     min_df=3,
-            #     max_df=0.9,
-            #     lowercase=True,
-            #     analyzer="word",
-            #     stop_words="english",
-            # ),
+            TfidfVectorizer(
+                min_df=3,
+                max_df=0.9,
+                lowercase=True,
+                analyzer="word",
+                stop_words="english",
+            ),
         ]
 
         tokenizers = [
@@ -146,9 +146,9 @@ class ClusterMethods:
 
         # Parameter arguments have to be a list
         parameters_by_method = {
-            # self.kmeans: {
-            #     "n_range": [5]
-            # },
+            self.kmeans: {
+                "n_range": [5]
+            },
             self.hdbscan: {
                 "min_cluster_size": [5],  # range(3, 7),
                 "metric": ["cosine"]
@@ -280,13 +280,13 @@ if __name__ == "__main__":
             use_stemming=False,
             use_lemmatization=False,
         )
-        full_dataset = utils.load_test_data(
-            nrows=nrows,
-            skip_rows=run * nrows,
-            keep_stopwords=True,
-            use_stemming=False,
-            use_lemmatization=False,
-        )
+        full_dataset = preprocessed_dataset  # utils.load_test_data(
+        #     nrows=nrows,
+        #     skip_rows=run * nrows,
+        #     keep_stopwords=True,
+        #     use_stemming=False,
+        #     use_lemmatization=False,
+        # )
 
         evaluation = ClusterMethods(
             full_dataset["newspaper_text"], preprocessed_dataset["newspaper_text"]
