@@ -18,13 +18,6 @@ load_dotenv()
 script_names = ['preprocess_data.py']
 batch_size = 1000
 
-# Abort if already running.
-for script_name in script_names:
-    status = subprocess.getstatusoutput(
-        "ps aux | grep -e '%s' | grep -v grep | awk '{print $2}'| awk '{print $2}'" % script_name
-    )
-    if status[1]:
-        sys.exit(0)
 
 get_sql = (
     "SELECT *"
@@ -89,11 +82,11 @@ update_failed_sql = (
 ######################################################################################
 # Preprocess texts.
 ######################################################################################
-
 has_more = True
 batch_count = 0
 while has_more:
     batch_count += 1
+    print("Start Batch {}".format(batch_count))
     connection = db.get_connection()
     rows = pandas.read_sql(sql=get_sql, con=connection, index_col="id", params=[batch_size])
     connection.close()
@@ -102,10 +95,11 @@ while has_more:
     if nrows < batch_size:
         has_more = False
 
-    print("Start Batch {} with {} rows.".format(batch_count, nrows))
 
+    print("Loaded {} rows.".format( nrows))
     for index, row in rows.iterrows():
         try:
+            import ipdb;ipdb.set_trace()
             article = Article(row['url'])
             article.download()
             article.parse()
@@ -200,7 +194,7 @@ while has_more:
                     time_lemmatized_without_stopwords,
                     text_lemmatized_without_stopwords_aggr,
                     time_lemmatized_without_stopwords_aggr,
-                    row["id"])
+                    index)
                 )
                 connection.commit()
             connection.close()
@@ -208,7 +202,7 @@ while has_more:
             # Write to database with new connection.
             connection = db.get_connection()
             with connection.cursor() as cursor:
-                cursor.execute(update_failed_sql, (row["id"]))
+                cursor.execute(update_failed_sql, (index))
             connection.commit()
             connection.close()
 
