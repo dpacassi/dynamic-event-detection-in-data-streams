@@ -30,7 +30,9 @@ def get_last_script_execution(name):
     return data
 
 
-def add_script_execution(name, last_processed_date, failed, log_message, processing_time):
+def add_script_execution(
+    name, last_processed_date, failed, log_message, processing_time
+):
     connection = get_connection()
 
     insert_sql = (
@@ -40,7 +42,10 @@ def add_script_execution(name, last_processed_date, failed, log_message, process
     )
 
     with connection.cursor() as cursor:
-        cursor.execute(insert_sql, args=[name, last_processed_date, failed, log_message, processing_time])
+        cursor.execute(
+            insert_sql,
+            args=[name, last_processed_date, failed, log_message, processing_time],
+        )
 
     return connection.commit()
 
@@ -58,14 +63,33 @@ def get_clusters():
 def add_cluster(identifier):
     connection = get_connection()
 
-    insert_sql = (
-        "INSERT INTO cluster"
-        " (identifier)"
-        " VALUES ( %s )"
-    )
+    insert_sql = "INSERT INTO cluster" " (identifier)" " VALUES ( %s )"
 
     with connection.cursor() as cursor:
         cursor.execute(insert_sql, args=[identifier])
+
+    connection.commit()
+    return connection.insert_id()
+
+
+def update_cluster(cluster_id, identifier):
+    connection = get_connection()
+
+    update_sql = "UPDATE cluster" " SET identifier = %s" " WHERE id = %s"
+
+    with connection.cursor() as cursor:
+        cursor.execute(update_sql, args=[identifier, cluster_id])
+
+    return connection.commit()
+
+
+def add_event(event_type, cluster_id, additional_information=""):
+    connection = get_connection()
+
+    insert_sql = "INSERT INTO event" " (type, cluster_id, additional_information)" " VALUES ( %s, %s, %s )"
+
+    with connection.cursor() as cursor:
+        cursor.execute(insert_sql, args=[event_type, cluster_id, additional_information])
 
     return connection.commit()
 
@@ -112,3 +136,28 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
 
     return data
 
+
+def add_news_to_cluster(cluster_id, news_article_id):
+    connection = get_connection()
+
+    insert_sql = (
+        "INSERT INTO cluster_news_article"
+        " (cluster_id, news_article_id)"
+        " VALUES ( %s,  %s )"
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(insert_sql, args=[cluster_id, news_article_id])
+
+    return connection.commit()
+
+
+def get_news_id_by_cluster(news_ids):
+    connection = get_connection()
+
+    get_sql = "SELECT *" " FROM cluster_news_article" " WHERE news_article_id in (%s)"
+
+    data = pandas.read_sql(sql=get_sql, con=connection, params=[news_ids])
+    connection.close()
+
+    return data

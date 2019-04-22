@@ -80,6 +80,15 @@ CREATE TABLE `data_database`.`cluster` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `data_database`.`event` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type` INT UNSIGNED NOT NULL,
+  `cluster_id` INT UNSIGNED NOT NULL,
+  `additional_information` LONGTEXT NULL,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `data_database`.`cluster_news_article` (
   `cluster_id` INT UNSIGNED NOT NULL,
   `news_article_id` INT UNSIGNED NOT NULL,
