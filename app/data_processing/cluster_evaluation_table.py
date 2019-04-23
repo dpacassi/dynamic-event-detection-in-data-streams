@@ -149,8 +149,8 @@ class ClusterMethods:
                 "n_range": [5]
             },
             self.hdbscan: {
-                "min_cluster_size": [5],  # range(3, 7),
-                "metric": ["cosine"]
+                "min_cluster_size": [5, 6],  # range(3, 7),
+                "metric": ["cosine", "euclidean"]
                 # "metric": ["cosine", "minkowski", "euclidean"]
             },
             # self.meanshift: {"cluster_all": [True, False]},
