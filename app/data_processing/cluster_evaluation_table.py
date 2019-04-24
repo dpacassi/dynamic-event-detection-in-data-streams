@@ -145,9 +145,9 @@ class ClusterMethods:
 
         # Parameter arguments have to be a list
         parameters_by_method = {
-            self.kmeans: {
-                "n_range": [5]
-            },
+            #self.kmeans: {
+            #    "n_range": [5]
+            #},
             self.hdbscan: {
                 "min_cluster_size": [5, 6],  # range(3, 7),
                 "metric": ["cosine", "euclidean"]
