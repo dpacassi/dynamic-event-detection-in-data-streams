@@ -155,7 +155,7 @@ class ClusterMethods:
             #},
             self.hdbscan: {
                 "min_cluster_size": [5, 6],  # range(3, 7),
-                "metric": ["cosine", "euclidean", "manhattan"]
+                "metric": ["cosine", "euclidean"]#, "manhattan"]
                 # "metric": ["cosine", "minkowski", "euclidean"]
             },
             # self.meanshift: {"cluster_all": [True, False]},
@@ -198,9 +198,6 @@ class ClusterMethods:
                 else:
                     vectorizer.set_params(tokenizer=tokenizer)
                     data_matrix = vectorizer.fit_transform(self.documents)
-
-                print(len(vectorizer.get_feature_names()))
-                exit()
 
                 for method, parameters in parameters_by_method.items():
                     keys = list(parameters.keys())
