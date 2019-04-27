@@ -150,7 +150,7 @@ class ClusterMethods:
             #},
             self.hdbscan: {
                 "min_cluster_size": [5, 6],  # range(3, 7),
-                "metric": ["cosine", "euclidean"]
+                "metric": ["cosine", "euclidean", "cityblock", "manhattan", "l1", "l2"]
                 # "metric": ["cosine", "minkowski", "euclidean"]
             },
             # self.meanshift: {"cluster_all": [True, False]},
@@ -213,32 +213,32 @@ class ClusterMethods:
                                 method.__name__, str(parameter_combination)
                             )
                         )
-                        try:
-                            labels, processing_time = method(
-                                data_matrix, **parameter_combination
-                            )
+                        #try:
+                        labels, processing_time = method(
+                            data_matrix, **parameter_combination
+                        )
 
-                            results.append(
-                                utils.Result(
-                                    method.__name__,
-                                    labels,
-                                    processing_time,
-                                    None,
-                                    vectorizer.__class__.__name__,
-                                    "None" if tokenizer is None else tokenizer.__name__,
-                                    parameter_combination,
-                                )
+                        results.append(
+                            utils.Result(
+                                method.__name__,
+                                labels,
+                                processing_time,
+                                None,
+                                vectorizer.__class__.__name__,
+                                "None" if tokenizer is None else tokenizer.__name__,
+                                parameter_combination,
                             )
-                        except BaseException as error:
-                            errors.append(
-                                "Error while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; ".format(
-                                    method.__name__,
-                                    error,
-                                    vectorizer.__class__.__name__,
-                                    "None" if tokenizer is None else tokenizer.__name__,
-                                    str(parameter_combination),
-                                )
-                            )
+                        )
+                        # except BaseException as error:
+                        #     errors.append(
+                        #         "Error while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; ".format(
+                        #             method.__name__,
+                        #             error,
+                        #             vectorizer.__class__.__name__,
+                        #             "None" if tokenizer is None else tokenizer.__name__,
+                        #             str(parameter_combination),
+                        #         )
+                        #     )
         return results, errors
 
     def extract_parameters(self, keys, values, param_chain, i):
