@@ -3,6 +3,7 @@ import time
 import argparse
 import json
 import math
+import numpy as np
 
 from itertools import chain
 from textacy import extract, keyterms, Doc
@@ -126,6 +127,8 @@ class ClusterMethods:
                 lowercase=True,
                 analyzer="word",
                 stop_words="english",
+                max_features=100000,
+                dtype=np.int32
             ),
             TfidfVectorizer(
                 min_df=3,
@@ -133,6 +136,8 @@ class ClusterMethods:
                 lowercase=True,
                 analyzer="word",
                 stop_words="english",
+                max_features=100000,
+                dtype=np.int32
             ),
         ]
 
@@ -193,6 +198,9 @@ class ClusterMethods:
                 else:
                     vectorizer.set_params(tokenizer=tokenizer)
                     data_matrix = vectorizer.fit_transform(self.documents)
+
+                print(len(vectorizer.get_feature_names()))
+                exit()
 
                 for method, parameters in parameters_by_method.items():
                     keys = list(parameters.keys())
