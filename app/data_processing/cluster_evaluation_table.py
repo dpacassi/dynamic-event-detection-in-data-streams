@@ -155,7 +155,7 @@ class ClusterMethods:
             #},
             self.hdbscan: {
                 "min_cluster_size": [5, 6],  # range(3, 7),
-                "metric": ["cosine", "euclidean", "cityblock", "manhattan", "l1", "l2"]
+                "metric": ["cosine", "euclidean", "manhattan"]
                 # "metric": ["cosine", "minkowski", "euclidean"]
             },
             # self.meanshift: {"cluster_all": [True, False]},
