@@ -66,9 +66,14 @@ Therefor it only requires one parameter to be set:
 - Condense the cluster hierarchy based on minimum cluster size.
 - Extract the stable clusters from the condensed tree.
 
-### Transforming the space
-The first thing HDBSCAN does is to calculate the **mutual reachability distance** between points.
+### 1. Transforming the space
+Before HDBSCAN tries to cluster anything
+
+Before HDBSCAN 
+
+The first thing HDBSCAN does, is to calculate the **mutual reachability distance** between points.
+
 This is done by creating clusters of the size of *minPoints* for all data points and then
 calculating the distance of the clusters centroids.
 
-### Building the minimum spanning tree
+### 2. Building the minimum spanning tree
