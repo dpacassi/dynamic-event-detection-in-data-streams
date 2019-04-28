@@ -69,4 +69,5 @@ spectral_clustering	461.2059956267476
 SELECT n.title, c.id, n.story FROM news_article as n
 Join cluster_news_article as cn on cn.news_article_id = n.id
 Join cluster as c on c.id = cn.cluster_id
-Where c.method_evaluation_id = 1580
+Where c.method_evaluation_id = 1584
+order by n.story
