@@ -1,30 +1,41 @@
-import spacy
+# External modules
 import time
 import argparse
 import json
 import math
 import numpy as np
+import gc
 
+from datetime import datetime
 from itertools import chain
-from textacy import extract, keyterms, Doc
 from dotenv import load_dotenv
 from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.cluster import Birch, AffinityPropagation, MeanShift, SpectralClustering, KMeans
+from sklearn.cluster import (
+    Birch,
+    AffinityPropagation,
+    MeanShift,
+    SpectralClustering,
+    KMeans,
+)
 
+# Internal modules
+import db
 import utils
+import test_data
 
-
-nlp = spacy.load("en_core_web_md")
-
+from result import Result
 
 # Cluster methods inside a class (pun intended) since some methods rely on a global state e.g. documents
 class ClusterMethods:
-    def __init__(self, documents, preprocessed_documents):
+    def __init__(self, documents, number_of_clusters, labels_true):
         self.documents = documents
-        self.preprocessed_documents = preprocessed_documents
+        self.labels_true = labels_true
+        self.number_of_clusters = number_of_clusters
+        self.nrows = len(documents)
+        self.error_log = "error.log"
 
     def hdbscan(self, data_matrix, **parameters):
         start = time.time()
@@ -61,7 +72,9 @@ class ClusterMethods:
 
     def hdbscan_lda(self, data_matrix, **parameters):
         start = time.time()
-        hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(data_matrix)
+        hdbscan_labels = HDBSCAN(min_cluster_size=3, metric="cosine").fit_predict(
+            data_matrix
+        )
 
         n_estimated_topics = len(set(hdbscan_labels)) - (
             1 if -1 in hdbscan_labels else 0
@@ -79,47 +92,22 @@ class ClusterMethods:
         return lda_labels, (end - start)
 
     def kmeans(self, data_matrix, **parameters):
-        n_approx = int(math.sqrt(len(self.documents)))
+        n_clusters = 0
+
+        if parameters["n_cluster"] == "n_square":
+            n_clusters = int(math.sqrt(len(self.documents)))
+        if parameters["n_cluster"] == "n_true":
+            n_clusters = self.number_of_clusters
+
         start = time.time()
 
-        km = KMeans(
-            n_clusters=n_approx
-        ).fit(data_matrix)
+        km = KMeans(n_clusters=n_clusters).fit(data_matrix)
         labels = km.predict(data_matrix)
 
         end = time.time()
         return labels, (end - start)
 
     def setup_evaluation(self):
-        def extract_entities(data):
-            # https://spacy.io/usage/linguistic-features#named-entities
-            doc = nlp(data)
-            entities = []
-            for entity in doc.ents:
-                if entity.label_ not in ["CARDINAL", "ORDINAL", "QUANTITY"]:
-                    entities.append(entity.text)
-
-            if len(entities) == 0:
-                entities = ["empty"]
-
-            return entities
-
-        def extract_keyterms_and_entities(data):
-            tokens = []
-            doc = Doc(data, lang="en_core_web_md")
-            res = extract.named_entities(doc, include_types=["PERSON", "ORG", "LOC"])
-            for r in res:
-                tokens.append(str(r[0]))
-
-            res = keyterms.sgrank(doc, n_keyterms=100)
-            for r in res:
-                tokens.append(str(r[0]))
-
-            if len(tokens) == 0:
-                tokens = ["empty"]
-
-            return tokens
-
         vectorizers = [
             CountVectorizer(
                 min_df=3,
@@ -127,8 +115,8 @@ class ClusterMethods:
                 lowercase=True,
                 analyzer="word",
                 stop_words="english",
-                max_features=100000,
-                dtype=np.int32
+                max_features=50000,
+                dtype=np.int16,
             ),
             TfidfVectorizer(
                 min_df=3,
@@ -136,8 +124,7 @@ class ClusterMethods:
                 lowercase=True,
                 analyzer="word",
                 stop_words="english",
-                max_features=100000,
-                dtype=np.int32
+                max_features=50000,
             ),
         ]
 
@@ -150,13 +137,11 @@ class ClusterMethods:
 
         # Parameter arguments have to be a list
         parameters_by_method = {
-            #self.kmeans: {
-            #    "n_range": [5]
-            #},
+            self.kmeans: {"n_cluster": ["n_square", "n_true"]},
             self.hdbscan: {
-                "min_cluster_size": [5, 6],  # range(3, 7),
-                "metric": ["cosine", "euclidean"]#, "manhattan"]
-                # "metric": ["cosine", "minkowski", "euclidean"]
+                "min_cluster_size": range(3, 7),
+                "metric": ["cosine", "euclidean"]
+                # "metric": ["cosine", "manhattan", "euclidean"]
             },
             # self.meanshift: {"cluster_all": [True, False]},
             # self.birch: {
@@ -194,10 +179,9 @@ class ClusterMethods:
                 )
 
                 if tokenizer is None:
-                    data_matrix = vectorizer.fit_transform(self.preprocessed_documents)
-                else:
                     vectorizer.set_params(tokenizer=tokenizer)
-                    data_matrix = vectorizer.fit_transform(self.documents)
+
+                data_matrix = vectorizer.fit_transform(self.documents)
 
                 for method, parameters in parameters_by_method.items():
                     keys = list(parameters.keys())
@@ -218,33 +202,56 @@ class ClusterMethods:
                                 method.__name__, str(parameter_combination)
                             )
                         )
-                        #try:
-                        labels, processing_time = method(
-                            data_matrix, **parameter_combination
-                        )
+                        try:
+                            labels, processing_time = method(
+                                data_matrix, **parameter_combination
+                            )
 
-                        results.append(
-                            utils.Result(
+                            self.store_result_to_db(
+                                Result(
+                                    method.__name__,
+                                    labels,
+                                    processing_time,
+                                    None,
+                                    vectorizer.__class__.__name__,
+                                    "None" if tokenizer is None else tokenizer.__name__,
+                                    parameter_combination,
+                                )
+                            )
+                        except BaseException as error:
+                            error_message = "{} - {} while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; Nrows {};\n".format(
+                                datetime.now(),
+                                error.__class__.__name__,
                                 method.__name__,
-                                labels,
-                                processing_time,
-                                None,
+                                error,
                                 vectorizer.__class__.__name__,
                                 "None" if tokenizer is None else tokenizer.__name__,
-                                parameter_combination,
+                                str(parameter_combination),
+                                self.nrows,
                             )
-                        )
-                        # except BaseException as error:
-                        #     errors.append(
-                        #         "Error while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; ".format(
-                        #             method.__name__,
-                        #             error,
-                        #             vectorizer.__class__.__name__,
-                        #             "None" if tokenizer is None else tokenizer.__name__,
-                        #             str(parameter_combination),
-                        #         )
-                        #     )
-        return results, errors
+
+                            errors.append(error_message)
+                            with open(self.error_log, "a+") as log_file:
+                                log_file.write(error_message)
+
+        return errors
+
+    def store_result_to_db(self, result):
+        scores = result.create_evaluation(self.labels_true)
+        db.write_evaluation_result_in_db(
+            str(result.title),
+            int(self.nrows),
+            str(result.vectorizer),
+            str(result.tokenizer),
+            str(json.dumps(result.parameters)),
+            float(scores["normalized_mutual_info_score"]),
+            float(scores["completeness_score"]),
+            float(scores["adjusted_mutual_info_score"]),
+            int(scores["n_clusters"]),
+            int(self.number_of_clusters),
+            int(scores["n_noise"]),
+            float(result.processing_time),
+        )
 
     def extract_parameters(self, keys, values, param_chain, i):
         key = keys[i]
@@ -265,11 +272,13 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
 
     ap.add_argument("--rows", required=False, type=int, default=1000)
+    ap.add_argument("--stories", required=False, type=int, default=0)
     ap.add_argument("--runs", required=False, type=int, default=1)
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]
     nrows = args["rows"]
+    nstories = args["stories"]
 
     load_dotenv()
 
@@ -277,43 +286,26 @@ if __name__ == "__main__":
 
     for run in range(number_of_runs):
         print("Start run {}".format(run))
-        preprocessed_dataset = utils.load_test_data(
-            nrows=nrows,
-            skip_rows=run * nrows,
-            keep_stopwords=False,
-            use_stemming=False,
-            use_lemmatization=False,
-        )
-        full_dataset = preprocessed_dataset  # utils.load_test_data(
-        #     nrows=nrows,
-        #     skip_rows=run * nrows,
-        #     keep_stopwords=True,
-        #     use_stemming=False,
-        #     use_lemmatization=False,
-        # )
+
+        if nstories > 0:
+            dataset = test_data.load_from_db_by_stories(
+                nstories=nstories, skip_stories=run * nrows
+            )
+        else:
+            dataset = test_data.load_from_db(nrows=nrows, skip_rows=run * nrows)
+
+        labels_true = LabelEncoder().fit_transform(dataset["story"])
+        stories_in_dataset = len(set(labels_true)) - (1 if -1 in labels_true else 0)
 
         evaluation = ClusterMethods(
-            full_dataset["newspaper_text"], preprocessed_dataset["newspaper_text"]
+            dataset["newspaper_text"], stories_in_dataset, labels_true
         )
-        labels_true = LabelEncoder().fit_transform(full_dataset["story"])
-        results, errors = evaluation.run()
 
-        for result in results:
-            scores = result.create_evaluation(labels_true)
-            utils.write_evaluation_result_in_db(
-                str(result.title),
-                int(nrows),
-                str(result.vectorizer),
-                str(result.tokenizer),
-                str(json.dumps(result.parameters)),
-                float(scores["normalized_mutual_info_score"]),
-                float(scores["completeness_score"]),
-                float(scores["adjusted_mutual_info_score"]),
-                int(scores["n_clusters"]),
-                int(len(set(labels_true)) - (1 if -1 in labels_true else 0)),
-                int(scores["n_noise"]),
-                float(result.processing_time),
-            )
+        # delete full dataframe before evaluation to save some memory
+        del dataset
+        gc.collect()
+
+        errors = evaluation.run()
 
         if len(errors) > 0:
             print("Errors:")
