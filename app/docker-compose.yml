@@ -50,7 +50,6 @@ services:
       - ./data_database/create_database.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data_database/conf:/etc/mysql/conf.d
     restart: unless-stopped
-    network_mode: "host"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -63,7 +62,6 @@ services:
         - 8080:80
     depends_on:
         - mariadb
-    network_mode: "host"
 
   cluster_evaluation:
     build: ./data_processing
@@ -72,7 +70,6 @@ services:
     depends_on:
       - mariadb
     restart: unless-stopped
-    network_mode: "host"
 
   preprocess_data:
     build: ./data_processing
@@ -81,4 +78,3 @@ services:
     depends_on:
       - mariadb
     restart: unless-stopped
-    network_mode: "host"

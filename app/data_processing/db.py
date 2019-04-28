@@ -161,3 +161,73 @@ def get_news_id_by_cluster(news_ids):
     connection.close()
 
     return data
+
+
+def write_failed_to_db(db_id):
+    if db_id > 0:
+        connection = get_connection()
+
+        update_sql = "UPDATE cron_evaluation SET failed = 1 WHERE id = %s"
+
+        with connection.cursor() as cursor:
+            cursor.execute(update_sql, db_id)
+            connection.commit()
+
+        connection.close()
+
+
+def write_preprocessing_time_to_db(db_id, preprocessing_time):
+    if db_id > 0:
+        connection = get_connection()
+
+        update_sql = "UPDATE cron_evaluation SET time_preprocessing = %s WHERE id = %s"
+
+        with connection.cursor() as cursor:
+            cursor.execute(update_sql, ((preprocessing_time * 1000), db_id))
+            connection.commit()
+
+        connection.close()
+
+
+def write_evaluation_result_in_db(
+    method,
+    sample_size,
+    vectorizer,
+    tokenizer,
+    parameters,
+    normalized_mutual_info_score,
+    adjusted_mutual_info_score,
+    completeness_score,
+    estimated_clusters,
+    real_clusters,
+    n_noise,
+    processing_time,
+):
+    connection = get_connection()
+
+    insert_sql = (
+        "INSERT INTO method_evaluation"
+        " (method, sample_size, vectorizer, tokenizer, parameters, normalized_mutual_info_score, adjusted_mutual_info_score, completeness_score, estimated_clusters, real_clusters, n_noise, processing_time)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            insert_sql,
+            args=[
+                method,
+                sample_size,
+                vectorizer,
+                tokenizer,
+                parameters,
+                normalized_mutual_info_score,
+                adjusted_mutual_info_score,
+                completeness_score,
+                estimated_clusters,
+                real_clusters,
+                n_noise,
+                processing_time,
+            ],
+        )
+
+    return connection.commit()

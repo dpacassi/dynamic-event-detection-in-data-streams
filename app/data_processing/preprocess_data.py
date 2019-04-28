@@ -7,6 +7,7 @@ import subprocess
 import pandas
 
 import db
+import preprocessing
 
 from newspaper import Article
 from dotenv import load_dotenv
@@ -107,20 +108,20 @@ while has_more:
 
             # Text without stopwords.
             start = time.time()
-            text_without_stopwords = utils.f_remove_stopwords(row['newspaper_text'])
+            text_without_stopwords = preprocessing.f_remove_stopwords(row['newspaper_text'])
             end = time.time()
             time_without_stopwords = (end - start) * 1000
 
             # Text keyterms.
             start = time.time()
-            text_keyterms_list = utils.extract_keyterms(row['newspaper_text'])
+            text_keyterms_list = preprocessing.extract_keyterms(row['newspaper_text'])
             text_keyterms = ",".join(text_keyterms_list)
             end = time.time()
             time_keyterms = (end - start) * 1000
 
             # Text entities.
             start = time.time()
-            text_entities_list = utils.extract_entities(row['newspaper_text'])
+            text_entities_list = preprocessing.extract_entities(row['newspaper_text'])
             text_entities = ",".join(text_entities_list)
             end = time.time()
             time_entities = (end - start) * 1000
@@ -133,37 +134,37 @@ while has_more:
 
             # Text stemming.
             start = time.time()
-            text_stemmed = utils.stem_text(row['newspaper_text'], False)
+            text_stemmed = preprocessing.stem_text(row['newspaper_text'], False)
             end = time.time()
             time_stemmed = (end - start) * 1000
 
             # Text stemming without stopwords.
             start = time.time()
-            text_stemmed_without_stopwords = utils.stem_text(row['newspaper_text'], True)
+            text_stemmed_without_stopwords = preprocessing.stem_text(row['newspaper_text'], True)
             end = time.time()
             time_stemmed_without_stopwords = (end - start) * 1000
 
             # Text stemming without stopwords and aggressive cleaning.
             start = time.time()
-            text_stemmed_without_stopwords_aggr = utils.clean_text(row['newspaper_text'], keep_stopwords=False, use_stemming=True, use_lemmatization=False)
+            text_stemmed_without_stopwords_aggr = preprocessing.clean_text(row['newspaper_text'], keep_stopwords=False, use_stemming=True, use_lemmatization=False)
             end = time.time()
             time_stemmed_without_stopwords_aggr = (end - start) * 1000
 
             # Text lemmatization.
             start = time.time()
-            text_lemmatized = utils.lemmatize_text(row['newspaper_text'], False)
+            text_lemmatized = preprocessing.lemmatize_text(row['newspaper_text'], False)
             end = time.time()
             time_lemmatized = (end - start) * 1000
 
             # Text lemmatization without stopwords.
             start = time.time()
-            text_lemmatized_without_stopwords = utils.lemmatize_text(row['newspaper_text'], True)
+            text_lemmatized_without_stopwords = preprocessing.lemmatize_text(row['newspaper_text'], True)
             end = time.time()
             time_lemmatized_without_stopwords = (end - start) * 1000
 
             # Text lemmatization without stopwords and aggressive cleaning.
             start = time.time()
-            text_lemmatized_without_stopwords_aggr = utils.clean_text(row['newspaper_text'], keep_stopwords=False, use_stemming=False, use_lemmatization=True)
+            text_lemmatized_without_stopwords_aggr = preprocessing.clean_text(row['newspaper_text'], keep_stopwords=False, use_stemming=False, use_lemmatization=True)
             end = time.time()
             time_lemmatized_without_stopwords_aggr = (end - start) * 1000
 

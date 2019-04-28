@@ -12,6 +12,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import KMeans
 
 import utils
+import db
+import test_data
+from result import Result
 
 
 class ClusterEvaluation:
@@ -111,11 +114,11 @@ class ClusterEvaluation:
 
         if "kmeans" in methods:
             labels, processing_time = self.kmeans()
-            results.append(utils.Result("KMeans", labels, processing_time))
+            results.append(Result("KMeans", labels, processing_time))
 
         if "hdbscan" in methods:
             labels, processing_time = self.hdbscan(args)
-            results.append(utils.Result("HDBSCAN", labels, processing_time))
+            results.append(Result("HDBSCAN", labels, processing_time))
         return results
 
 
@@ -172,24 +175,21 @@ def main(passed_args=None):
     start = time.time()
 
     if args["source"] == "csv":
-        dataset = utils.load_test_data(
+        dataset = test_data.load_from_csv(
             nrows=args["rows"],
             skip_rows=args["skip_rows"],
-            skip_text_preprocessing=args["skip_text_preprocessing"],
-            keep_stopwords=args["keep_stopwords"],
-            use_stemming=args["use_stemming"],
-            use_lemmatization=args["use_lemmatization"],
             db_id=args["db_id"],
         )
     else:
-        dataset = utils.load_test_data_from_db(
+        dataset = test_data.load_from_db(
             nrows=args["rows"],
             skip_rows=args["skip_rows"],
-            skip_text_preprocessing=args["skip_text_preprocessing"],
-            keep_stopwords=args["keep_stopwords"],
-            use_stemming=args["use_stemming"],
-            use_lemmatization=args["use_lemmatization"],
             db_id=args["db_id"],
+        )
+
+    if args["skip_text_preprocessing"]:
+        dataset["newspaper_text"] = dataset["newspaper_text"].apply(
+            preprocseeing.clean_text, args=(args["keep_stopwords"], args["use_stemming"], args["use_lemmatization"])
         )
 
     try:
@@ -203,7 +203,7 @@ def main(passed_args=None):
         print(e)
         results = []
         if args["db_id"] > 0:
-            utils.write_failed_to_db(args["db_id"])
+            db.write_failed_to_db(args["db_id"])
 
     if args["verbosity"] >= 1:
         print("True number of clusters: %d" % len(set(labels_true)))
