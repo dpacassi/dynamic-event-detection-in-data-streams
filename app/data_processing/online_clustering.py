@@ -47,22 +47,9 @@ def cluster_news(news_articles):
 
     # Clusters are identified by a sorted string of news ids
     return (
-        convert_labels_to_cluster_identifier(labels, list(news_articles.index.values)),
+        utils.convert_labels_to_cluster_identifier(labels, list(news_articles.index.values)),
         news_articles["date"].values[0],
     )
-
-
-def convert_labels_to_cluster_identifier(labels, news_ids):
-    grouped_indices = utils.group_data_by_label(labels)
-    clusters = set()
-
-    for key, indicies in grouped_indices.items():
-        ids = [news_ids[index] for index in indicies]
-        ids.sort()
-        clusters.add(",".join(map(str, ids)))
-
-    return clusters
-
 
 def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
     changed_clusters = []

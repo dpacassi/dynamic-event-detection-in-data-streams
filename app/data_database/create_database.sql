@@ -76,7 +76,13 @@ CREATE TABLE `data_database`.`script_execution` (
 CREATE TABLE `data_database`.`cluster` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `identifier` TEXT NOT NULL,
+  `method_evaluation_id` INT UNSIGNED NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT `fk_method_evaluation_id`
+    FOREIGN KEY (method_evaluation_id) REFERENCES method_evaluation (id)
+	ON DELETE CASCADE,
+
   PRIMARY KEY (`id`)
 );
 

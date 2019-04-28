@@ -61,3 +61,12 @@ affinity_propagation	14.408452648669481
 hdbscan_lda	154.53434733549753	
 meanshift	440.7399781545003	
 spectral_clustering	461.2059956267476	
+
+## Analyze clusters
+
+### Find news belonging to clusters from a certain evaluation
+
+SELECT n.title, c.id, n.story FROM news_article as n
+Join cluster_news_article as cn on cn.news_article_id = n.id
+Join cluster as c on c.id = cn.cluster_id
+Where c.method_evaluation_id = 1580

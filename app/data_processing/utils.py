@@ -51,3 +51,15 @@ def group_data_by_label(labels):
         if value >= 0:
             grouped_indices[value].append(index)
     return grouped_indices
+
+
+def convert_labels_to_cluster_identifier(labels, news_ids):
+    grouped_indices = group_data_by_label(labels)
+    clusters = set()
+
+    for key, indicies in grouped_indices.items():
+        ids = [news_ids[index] for index in indicies]
+        ids.sort()
+        clusters.add(",".join(map(str, ids)))
+
+    return clusters

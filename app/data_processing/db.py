@@ -47,12 +47,13 @@ def add_script_execution(
             args=[name, last_processed_date, failed, log_message, processing_time],
         )
 
-    return connection.commit()
+    connection.commit()
+    connection.close()
 
 
 def get_clusters():
     connection = get_connection()
-    sql = "SELECT * FROM cluster ORDER BY id DESC"
+    sql = "SELECT * FROM cluster WHERE method_evaluation_id is NULL ORDER BY id DESC"
 
     data = pandas.read_sql(sql=sql, con=connection, index_col="id")
     connection.close()
@@ -60,16 +61,19 @@ def get_clusters():
     return data
 
 
-def add_cluster(identifier):
+def add_cluster(identifier, method_id=None):
     connection = get_connection()
 
-    insert_sql = "INSERT INTO cluster" " (identifier)" " VALUES ( %s )"
+    insert_sql = "INSERT INTO cluster" " (identifier, method_evaluation_id)" " VALUES ( %s, %s )"
 
+    insert_id = None
     with connection.cursor() as cursor:
-        cursor.execute(insert_sql, args=[identifier])
+        cursor.execute(insert_sql, args=[identifier, method_id])
+        insert_id = cursor.lastrowid
+        connection.commit()
 
-    connection.commit()
-    return connection.insert_id()
+    connection.close()
+    return insert_id
 
 
 def update_cluster(cluster_id, identifier):
@@ -80,7 +84,8 @@ def update_cluster(cluster_id, identifier):
     with connection.cursor() as cursor:
         cursor.execute(update_sql, args=[identifier, cluster_id])
 
-    return connection.commit()
+    connection.commit()
+    connection.close()
 
 
 def add_event(event_type, cluster_id, additional_information=""):
@@ -88,10 +93,15 @@ def add_event(event_type, cluster_id, additional_information=""):
 
     insert_sql = "INSERT INTO event" " (type, cluster_id, additional_information)" " VALUES ( %s, %s, %s )"
 
+    insert_id = None
     with connection.cursor() as cursor:
         cursor.execute(insert_sql, args=[event_type, cluster_id, additional_information])
 
-    return connection.commit()
+        insert_id = cursor.lastrowid
+        connection.commit()
+
+    connection.close()
+    return insert_id
 
 
 def get_news_articles(nrows=1000, skip_rows=0):
@@ -211,6 +221,7 @@ def write_evaluation_result_in_db(
         " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     )
 
+    insert_id = None
     with connection.cursor() as cursor:
         cursor.execute(
             insert_sql,
@@ -229,5 +240,8 @@ def write_evaluation_result_in_db(
                 processing_time,
             ],
         )
+        insert_id = cursor.lastrowid
+        connection.commit()
 
-    return connection.commit()
+    connection.close()
+    return insert_id

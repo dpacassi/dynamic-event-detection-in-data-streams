@@ -28,14 +28,15 @@ import test_data
 
 from result import Result
 
-# Cluster methods inside a class (pun intended) since some methods rely on a global state e.g. documents
+
 class ClusterMethods:
-    def __init__(self, documents, number_of_clusters, labels_true):
+    def __init__(self, documents, number_of_clusters, labels_true, document_ids):
         self.documents = documents
         self.labels_true = labels_true
         self.number_of_clusters = number_of_clusters
         self.nrows = len(documents)
         self.error_log = "error.log"
+        self.document_ids = document_ids
 
     def hdbscan(self, data_matrix, **parameters):
         start = time.time()
@@ -139,32 +140,33 @@ class ClusterMethods:
         parameters_by_method = {
             self.kmeans: {"n_cluster": ["n_square", "n_true"]},
             self.hdbscan: {
-                "min_cluster_size": range(3, 7),
-                "metric": ["cosine", "euclidean"]
+                "min_cluster_size": [6],
+                # "min_cluster_size": range(3, 7),
+                "metric": ["cosine"]
+                # "metric": ["cosine", "euclidean"]
                 # "metric": ["cosine", "manhattan", "euclidean"]
             },
-            # self.meanshift: {"cluster_all": [True, False]},
-            # self.birch: {
-            #     "branching_factor": range(10, 100, 10),
-            #     # "threshold": range(2, 6),
-            # },
-            # self.affinity_propagation: {
-            #     "affinity": ["euclidean"],
-            #     "convergence_iter": [15],
-            #     "damping": np.arange(0.5, 0.9, 0.1),
-            #     "max_iter": [50, 100, 200, 500],
-            # },
-            # self.spectral_clustering: {
-            #     "affinity": ["rbf"],
-            #     "assign_labels": ["kmeans", "discretize"],
-            # },
-            # self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
-            # minhash_lsh: {'threshold': range(0.1, 0.9, 0.1), 'min_cluster_size': range(2, 6)},
+            self.meanshift: {"cluster_all": [True, False]},
+            self.birch: {
+                "branching_factor": range(10, 100, 10),
+                # "threshold": range(2, 6),
+            },
+            self.affinity_propagation: {
+                "affinity": ["euclidean"],
+                "convergence_iter": [15],
+                "damping": np.arange(0.5, 0.9, 0.1),
+                "max_iter": [50, 100, 200, 500],
+            },
+            self.spectral_clustering: {
+                "affinity": ["rbf"],
+                "assign_labels": ["kmeans", "discretize"],
+            },
+            self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
         }
 
         return vectorizers, tokenizers, parameters_by_method
 
-    def run(self):
+    def run(self, methods):
         vectorizers, tokenizers, parameters_by_method = self.setup_evaluation()
         results = []
         errors = []
@@ -184,6 +186,9 @@ class ClusterMethods:
                 data_matrix = vectorizer.fit_transform(self.documents)
 
                 for method, parameters in parameters_by_method.items():
+                    if len(methods) > 0 and method.__name__ not in methods:
+                        continue
+                    
                     keys = list(parameters.keys())
                     values = list(parameters.values())
                     parameter_combinations = self.extract_parameters(
@@ -207,7 +212,7 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            self.store_result_to_db(
+                            method_id = self.store_result_to_db(
                                 Result(
                                     method.__name__,
                                     labels,
@@ -218,6 +223,9 @@ class ClusterMethods:
                                     parameter_combination,
                                 )
                             )
+
+                            self.create_clusters(method_id, labels)
+
                         except BaseException as error:
                             error_message = "{} - {} while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; Nrows {};\n".format(
                                 datetime.now(),
@@ -238,7 +246,7 @@ class ClusterMethods:
 
     def store_result_to_db(self, result):
         scores = result.create_evaluation(self.labels_true)
-        db.write_evaluation_result_in_db(
+        return db.write_evaluation_result_in_db(
             str(result.title),
             int(self.nrows),
             str(result.vectorizer),
@@ -252,6 +260,14 @@ class ClusterMethods:
             int(scores["n_noise"]),
             float(result.processing_time),
         )
+
+    def create_clusters(self, method_id, labels):
+        cluster_identifiers = utils.convert_labels_to_cluster_identifier(labels, self.document_ids)
+        for identifier in cluster_identifiers:
+            cluster_id = db.add_cluster(identifier, method_id)
+            document_ids = identifier.split(',')
+            for document_id in document_ids:
+                db.add_news_to_cluster(cluster_id, document_id)
 
     def extract_parameters(self, keys, values, param_chain, i):
         key = keys[i]
@@ -273,12 +289,14 @@ if __name__ == "__main__":
 
     ap.add_argument("--rows", required=False, type=int, default=1000)
     ap.add_argument("--stories", required=False, type=int, default=0)
+    ap.add_argument("--methods", required=False, type=str, default=None)
     ap.add_argument("--runs", required=False, type=int, default=1)
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]
     nrows = args["rows"]
     nstories = args["stories"]
+    methods = args["methods"].split(",") if args["methods"] is not None else list()
 
     load_dotenv()
 
@@ -298,14 +316,14 @@ if __name__ == "__main__":
         stories_in_dataset = len(set(labels_true)) - (1 if -1 in labels_true else 0)
 
         evaluation = ClusterMethods(
-            dataset["newspaper_text"], stories_in_dataset, labels_true
+            dataset["newspaper_text"], stories_in_dataset, labels_true, list(dataset.index.values)
         )
 
         # delete full dataframe before evaluation to save some memory
         del dataset
         gc.collect()
 
-        errors = evaluation.run()
+        errors = evaluation.run(methods)
 
         if len(errors) > 0:
             print("Errors:")
