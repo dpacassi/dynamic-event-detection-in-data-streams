@@ -391,7 +391,7 @@ if __name__ == "__main__":
 
         if nstories > 0:
             dataset = test_data.load_from_db_by_stories(
-                nstories=nstories, skip_stories=run * nrows
+                nstories=nstories, skip_stories=run * nstories
             )
         else:
             dataset = test_data.load_from_db(nrows=nrows, skip_rows=run * nrows)
