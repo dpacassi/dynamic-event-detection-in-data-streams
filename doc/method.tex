@@ -78,7 +78,7 @@ To get a more accurate score based on the documents inside a cluster, we develop
 Finding relevant values in the precision matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
 \begin{enumerate} 
 \item The higher the precision between two clusters is, the more likely it is, that both clusters are describing the same group of documents. 
-\item There are no overlaps between groups of documents, which means each cluster can be associated with a cluster from another clustering only once. 
+\item Each cluster can be associated with a cluster from another clustering only once.
 \end{enumerate}
 
 Based on those assumptions we select the highest precision value per row, whose column is not already associated with another row. Algorithm \ref{alg:selection} shows the selection process in more detail. 
@@ -89,7 +89,7 @@ Based on those assumptions we select the highest precision value per row, whose 
     \Procedure{SelectMaxPrecisionValues}{$P$}\Comment{Where P is the precision matrix}
     \State $unique\_precision\_values = dict()$
     \State $i = 0$
-    \While{$i <= rows(P)$}
+    \While{$i < rows(P)$}
         \While{$max\_precision\_found \not= True$}
             \State $ignore\_columns = []$
             \State $max\_precision = 0$
