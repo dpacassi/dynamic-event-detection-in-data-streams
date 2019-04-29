@@ -212,20 +212,20 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            self.calculate_precision(labels, self.labels_true)
-                            # method_id = self.store_result_to_db(
-                            #     Result(
-                            #         method.__name__,
-                            #         labels,
-                            #         processing_time,
-                            #         None,
-                            #         vectorizer.__class__.__name__,
-                            #         "None" if tokenizer is None else tokenizer.__name__,
-                            #         parameter_combination,
-                            #     )
-                            # )
+                            avg_unique_precision, avg_precision = self.calculate_precision(labels, self.labels_true)
+                            method_id = self.store_result_to_db(
+                                Result(
+                                    method.__name__,
+                                    labels,
+                                    processing_time,
+                                    None,
+                                    vectorizer.__class__.__name__,
+                                    "None" if tokenizer is None else tokenizer.__name__,
+                                    parameter_combination,
+                                ), avg_unique_precision, avg_precision
+                            )
 
-                            # self.create_clusters(method_id, labels)
+                            self.create_clusters(method_id, labels)
 
                         except BaseException as error:
                             error_message = "{} - {} while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; Nrows {};\n".format(
@@ -245,7 +245,7 @@ class ClusterMethods:
 
         return errors
 
-    def store_result_to_db(self, result):
+    def store_result_to_db(self, result, avg_unique_precision, avg_precision):
         scores = result.create_evaluation(self.labels_true)
         return db.write_evaluation_result_in_db(
             str(result.title),
@@ -253,6 +253,8 @@ class ClusterMethods:
             str(result.vectorizer),
             str(result.tokenizer),
             str(json.dumps(result.parameters)),
+            float(avg_unique_precision),
+            float(avg_precision),
             float(scores["normalized_mutual_info_score"]),
             float(scores["completeness_score"]),
             float(scores["adjusted_mutual_info_score"]),
@@ -339,11 +341,7 @@ class ClusterMethods:
 
         avg_unique_precision = sum_unique_precision / number_of_true_clusters
 
-        # print(np.matrix(np.array(precision_matrix)))
-        print("AVG Precision: ", avg_precision)
-        print("AVG Unique Precision: ", avg_unique_precision)
-
-        return avg_unique_precision
+        return avg_unique_precision, avg_precision
 
     def create_clusters(self, method_id, labels):
         cluster_identifiers = utils.convert_labels_to_cluster_identifier(
