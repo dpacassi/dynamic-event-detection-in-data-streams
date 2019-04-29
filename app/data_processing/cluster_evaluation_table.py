@@ -188,7 +188,7 @@ class ClusterMethods:
                 for method, parameters in parameters_by_method.items():
                     if len(methods) > 0 and method.__name__ not in methods:
                         continue
-                    
+
                     keys = list(parameters.keys())
                     values = list(parameters.values())
                     parameter_combinations = self.extract_parameters(
@@ -212,19 +212,20 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            method_id = self.store_result_to_db(
-                                Result(
-                                    method.__name__,
-                                    labels,
-                                    processing_time,
-                                    None,
-                                    vectorizer.__class__.__name__,
-                                    "None" if tokenizer is None else tokenizer.__name__,
-                                    parameter_combination,
-                                )
-                            )
+                            self.calculate_precision(labels, self.labels_true)
+                            # method_id = self.store_result_to_db(
+                            #     Result(
+                            #         method.__name__,
+                            #         labels,
+                            #         processing_time,
+                            #         None,
+                            #         vectorizer.__class__.__name__,
+                            #         "None" if tokenizer is None else tokenizer.__name__,
+                            #         parameter_combination,
+                            #     )
+                            # )
 
-                            self.create_clusters(method_id, labels)
+                            # self.create_clusters(method_id, labels)
 
                         except BaseException as error:
                             error_message = "{} - {} while running {}: Message {}; Vectorizer {}; Tokenizer {}; Parameters {}; Nrows {};\n".format(
@@ -261,11 +262,96 @@ class ClusterMethods:
             float(result.processing_time),
         )
 
+    def calculate_precision(self, labels, labels_true):
+        cluster_identifiers = utils.convert_labels_to_cluster_identifier(
+            labels, self.document_ids
+        )
+        true_identifiers = utils.convert_labels_to_cluster_identifier(
+            labels_true, self.document_ids
+        )
+        precision_matrix = []
+
+        for true_identifier in true_identifiers:
+            true_set = set(true_identifier.split(","))
+            precision_row = []
+            for cluster_identifier in cluster_identifiers:
+                cluster_set = set(cluster_identifier.split(","))
+
+                true_positives = float(len(true_set.intersection(cluster_set)))
+                false_positives = float(len(cluster_set - true_set))
+                precision = true_positives / (true_positives + false_positives)
+                precision_row.append(precision)
+
+            precision_matrix.append(precision_row)
+
+        # The following simple aggregation allows for duplicates, which means the same approximated cluster is
+        # used for different true clusters.
+        sum_precision = 0
+        number_of_true_clusters = len(true_identifiers)
+        for row in precision_matrix:
+            sum_precision += max(row)
+
+        avg_precision = sum_precision / number_of_true_clusters
+
+        # The following aggregation only considers a precision from an approximated cluster once.
+        unique_indicies = dict()
+        row_index = 0
+        while row_index < number_of_true_clusters:
+            ignore_indicies = set()
+            max_value_found = False
+
+            while not max_value_found:
+                max_value = 0
+                max_index = 0
+                for col_index, value in enumerate(precision_matrix[row_index]):
+                    if value >= max_value and col_index not in ignore_indicies:
+                        max_value = value
+                        max_index = col_index
+
+                if (
+                    max_index in unique_indicies
+                    and unique_indicies[max_index]["row_index"] != row_index
+                    and unique_indicies[max_index]["max_value"] > 0
+                ):
+                    if unique_indicies[max_index]["max_value"] < max_value:
+                        # The column is already used, but we found a better candidate.
+                        # We use the new candidate and the old one has to find a new max value.
+                        old_row_index = unique_indicies[max_index]["row_index"]
+                        unique_indicies[max_index]["row_index"] = row_index
+                        row_index = old_row_index
+                        unique_indicies[max_index]["max_value"] = max_value
+                        max_value_found = True
+                    else:
+                        # The column is already used with a better candidate.
+                        ignore_indicies.add(max_index)
+                else:
+                    # The column is free to use
+                    unique_indicies[max_index] = {
+                        "row_index": row_index,
+                        "max_value": max_value,
+                    }
+                    max_value_found = True
+                    row_index += 1
+
+        sum_unique_precision = 0
+        for key, value in unique_indicies.items():
+            sum_unique_precision += value["max_value"]
+
+        avg_unique_precision = sum_unique_precision / number_of_true_clusters
+
+        # print(np.matrix(np.array(precision_matrix)))
+        print("AVG Precision: ", avg_precision)
+        print("AVG Unique Precision: ", avg_unique_precision)
+
+        return avg_unique_precision
+
     def create_clusters(self, method_id, labels):
-        cluster_identifiers = utils.convert_labels_to_cluster_identifier(labels, self.document_ids)
+        cluster_identifiers = utils.convert_labels_to_cluster_identifier(
+            labels, self.document_ids
+        )
         for identifier in cluster_identifiers:
             cluster_id = db.add_cluster(identifier, method_id)
-            document_ids = identifier.split(',')
+            document_ids = identifier.split(",")
             for document_id in document_ids:
                 db.add_news_to_cluster(cluster_id, document_id)
 
@@ -316,7 +402,10 @@ if __name__ == "__main__":
         stories_in_dataset = len(set(labels_true)) - (1 if -1 in labels_true else 0)
 
         evaluation = ClusterMethods(
-            dataset["newspaper_text"], stories_in_dataset, labels_true, list(dataset.index.values)
+            dataset["newspaper_text"],
+            stories_in_dataset,
+            labels_true,
+            list(dataset.index.values),
         )
 
         # delete full dataframe before evaluation to save some memory

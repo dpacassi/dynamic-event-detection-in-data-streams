@@ -71,3 +71,11 @@ Join cluster_news_article as cn on cn.news_article_id = n.id
 Join cluster as c on c.id = cn.cluster_id
 Where c.method_evaluation_id = 1584
 order by n.story
+
+### Number of clusters per story (should be 1:1)
+SELECT n.story, count(DISTINCT c.id) as nclusters FROM news_article as n
+Join cluster_news_article as cn on cn.news_article_id = n.id
+Join cluster as c on c.id = cn.cluster_id
+Where c.method_evaluation_id = 1584
+group by n.story
+order by n.story
