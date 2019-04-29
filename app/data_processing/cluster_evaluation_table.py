@@ -317,7 +317,7 @@ class ClusterMethods:
                 ):
                     if unique_indicies[max_index]["max_value"] < max_value:
                         # The column is already used, but we found a better candidate.
-                        # We use the new candidate and the old one has to find a new max value.
+                        # We use the new candidate and set the cursor to the old one to find a new max value.
                         old_row_index = unique_indicies[max_index]["row_index"]
                         unique_indicies[max_index]["row_index"] = row_index
                         row_index = old_row_index

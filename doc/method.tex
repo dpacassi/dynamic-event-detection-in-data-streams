@@ -10,22 +10,16 @@ The first important step is to create a test data set to run the evaluations wit
 
 % TODO explain the source and structrue
 
-\subsection{News Clustering}
+\subsection{Clustering methods}
 
-To be able to find stories in a wide range of different news articles, we decided to use a clustering approach. News articles with similar content will be grouped together in a cluster, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
+Clustering finds similarities in different news articles based on their content and groups them together in so called clusters, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
 
-\subsubsection{HDBSCAN}
+An initial evaluation (Table \ref{tab:first_evaluation}) shows a selection of potential clustering methods. The selection was done based on the criteria, that the number of clusters is unkown. Many clustering methods as for example K-Means require to know the number of clusters, which we cannot provide once we work with dynamic data. Based on this first evaluation and its property to be able to handle noise, we decided to focus on HDBSCAN as our main clustering method. Further evaluations will be done in comparison with K-Means, since it is one of the most commonly used clustering algorithm [insert citation]. K-Means will be run with the true number of clusters and an approximation based on $\sqrt{n}$.
 
-HDBSCAN is a hierarchical density-based clustering algorithm. It extends the well known [insert citation] DBSCAN algorithm and reduces its sensitivity for clusters of varying densities. Another important quality of HDBSCAN is, that it does not need to know the number of clusters up front.
-
-% TODO explain some more
-
-Our first experiments have shown HDBSCAN to be significantly faster and usually more accurate with our dataset than other well established clustering algorithms. Based on this fact in combination with the previously advantages of the algorithm, we decided to focus further on HDBSCAN for the news clustering task.
-
+% add number of clusters into table
 \begin{table}[h]
     \centering
-    \caption{}
-    \label{undefined}
+    \label{tab:first_evaluation}
     \begin{tabular}{|l|l|l|l|}
     \hline
     \textbf{Algorithm} & \textbf{NMI} & \textbf{Completeness}  & \textbf{Average Processing Time (in seconds)} \\ \hline
@@ -36,27 +30,100 @@ Our first experiments have shown HDBSCAN to be significantly faster and usually 
     hdbscan\_lda & 0.51 & 0.43 & 154.53 \\ \hline
     meanshift & 0.33 & 0.06  & 440.74 \\ \hline
     \end{tabular}
+    \caption{Write a caption}
 \end{table}
 
-\subsubsection{KMeans}
+\subsubsection{HDBSCAN}
+
+HDBSCAN is a hierarchical density-based clustering algorithm \cite{McInnes2017}. It extends the well known [insert citation] DBSCAN algorithm and reduces its sensitivity for clusters of varying densities. Another important quality of HDBSCAN is, that it does not need to know the number of clusters up front.
+
+% TODO explain some more
+
+\subsubsection{K-means}
 
 KMeans is a centroid-based clustering algorithm. 
 
 % TODO explain some more
-
-Since KMeans is one of the most commonly used clustering algorithms across a large range of different application areas [insert citation], we used it as a baseline in the final cluster evaluation.
 
 \subsubsection{Preprocessing}
 
 % raw text
 % with entity extraction
 % word embeddings?
+% Tfidf
 
 \subsubsection{Score calculation}
 
+The scoring function is essential for measuring the result of a clustering method. The score should tell us how close the resulting clusters are to the ground truth and give us an intuitive understanding about the quality of the clusters. One of the challenges when comparing one clustering with the other, is that the differnet clusters do not share the same label across different clusterings. Which is why scoring functions used for clusterings typically ignore the labels and focus on the shape of a cluster.
+
+Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI calculates the mutual information between two clusterings and normalizes the result by dividing through a generalized mean of the entropy of each clustering. % TODO better description.
+The score proved to work well for our initial evaluations and manual samplings verified the score. Upon running evaluations with higher sample sizes the NMI score started to lose its reliability. An example is given in Table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless to the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
+
+% TODO explain the reason for the big difference
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{NMI}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
+    k-means & 19255 & 0.754 & 457 \\ \hline
+    hdbscan & 19255 & 0.742 & 2 \\ \hline
+    \end{tabular}
+    \caption{K-Means has a higher NMI score than HDBSCAN, while having a much larger difference in number of clusters.}
+    \label{tab:nmi_kmeans_example}
+\end{table}
+
+To get a more accurate score based on the documents inside a cluster, we developed our own scoring function. The scoring function first creates a matrix containg the precision values between each cluster of two different clusterings. As a next step a selection process is used to find relevant precision values from each row of the precision matrix. The sum of the selected values is then divided by the number of rows, which results in the average precision of the current clustering method to evaluate.  
+
+Finding relevant values in the precision matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
+\begin{enumerate} 
+\item The higher the precision between two clusters is, the more likely it is, that both clusters are describing the same group of documents. 
+\item There are no overlaps between groups of documents, which means each cluster can be associated with a cluster from another clustering only once. 
+\end{enumerate}
+
+Based on those assumptions we select the highest precision value per row, whose column is not already associated with another row. Algorithm \ref{alg:selection} shows the selection process in more detail. 
+
+\begin{algorithm}
+    \caption{Selection of precision values}\label{alg:selection}
+    \begin{algorithmic}[1]
+    \Procedure{SelectMaxPrecisionValues}{$P$}\Comment{Where P is the precision matrix}
+    \State $unique\_precision\_values = dict()$
+    \State $i = 0$
+    \While{$i <= rows(P)$}
+        \While{$max\_precision\_found \not= True$}
+            \State $ignore\_columns = []$
+            \State $max\_precision = 0$
+            \State $column = 0$
+            \For{j in $P[i]$}
+                \If{$P[i][j]$ $>$ $max\_precision$ \textbf{and} $j$ not in $ignore\_columns$}
+                \State $column = j$
+                \State $max\_precision = P[i][j]$
+                \EndIf
+            \EndFor
+
+            \If{$column$ in $unique\_precision\_values$ for different row with a value $>$ 0}
+                \If {$max\_precision > unique\_precision\_values[column]$}
+                    \State $(r, old\_precision)$ = $unique\_precision\_values[column]$
+                    \State $unique\_precision\_values[column] = (i, max\_precision)$
+                    \State $i = r$
+                    \State $max\_precision\_found = True$
+                \Else
+                    \State $ignore\_columns.add(column)$
+                \EndIf
+
+            \Else
+                \State $unique\_precision\_values[column] = (i, max\_precision)$
+                \State $i = i + 1$
+                \State $max\_precision\_found = True$
+            \EndIf
+    \EndWhile
+    \EndWhile
+    \State \textbf{return} $unique\_precision\_values$
+    \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+    
 \subsubsection{Evaluation}
-
-
 
 
 \subsection{Online Clustering}

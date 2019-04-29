@@ -7,9 +7,13 @@
 \usepackage{cite}
 \usepackage{fancyhdr}
 \usepackage[parfill]{parskip}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsmath}
+\usepackage{mathtools}
 
 % language
-\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
 
 % images
 \usepackage[font=small,skip=6pt]{caption}
@@ -27,7 +31,7 @@
 \fancyhf{}
 \lhead{\documenttitle}
 \rhead{\nouppercase{\leftmark}}
-\rfoot{Seite \thepage}
+\rfoot{Page \thepage}
 
 \begin{document}
 
@@ -35,7 +39,6 @@
 \tableofcontents\newpage
 \include{abstract}
 \include{introduction}
-% \include{theory} maybe?
 \include{method}
 \include{result}
 \include{conclusions} % Diskussion und Ausblick
