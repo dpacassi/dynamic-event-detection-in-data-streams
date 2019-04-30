@@ -14,6 +14,7 @@ from sklearn.cluster import KMeans
 import utils
 import db
 import test_data
+import preprocessing
 from result import Result
 
 
@@ -178,18 +179,16 @@ def main(passed_args=None):
         dataset = test_data.load_from_csv(
             nrows=args["rows"],
             skip_rows=args["skip_rows"],
-            db_id=args["db_id"],
         )
     else:
         dataset = test_data.load_from_db(
             nrows=args["rows"],
             skip_rows=args["skip_rows"],
-            db_id=args["db_id"],
         )
 
-    if args["skip_text_preprocessing"]:
+    if not args["skip_text_preprocessing"]:
         dataset["newspaper_text"] = dataset["newspaper_text"].apply(
-            preprocseeing.clean_text, args=(args["keep_stopwords"], args["use_stemming"], args["use_lemmatization"])
+            preprocessing.clean_text, args=(args["keep_stopwords"], args["use_stemming"], args["use_lemmatization"])
         )
 
     try:

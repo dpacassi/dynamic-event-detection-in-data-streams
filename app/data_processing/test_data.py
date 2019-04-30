@@ -2,7 +2,7 @@ import db
 import pandas
 
 
-def load_from_csv(nrows=1000, skip_rows=0, db_id=0):
+def load_from_csv(nrows=1000, skip_rows=0):
     filepath = "test_data/clean_news_less_noisy.csv"
 
     names = [
