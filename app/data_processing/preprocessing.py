@@ -1,4 +1,5 @@
 import spacy
+import re
 
 from textacy import extract, keyterms, Doc
 from nltk.corpus import stopwords
