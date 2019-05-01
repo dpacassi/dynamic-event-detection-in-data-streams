@@ -110,15 +110,15 @@ class ClusterMethods:
 
     def setup_evaluation(self):
         vectorizers = [
-            CountVectorizer(
-                min_df=3,
-                max_df=0.9,
-                lowercase=True,
-                analyzer="word",
-                stop_words="english",
-                max_features=50000,
-                dtype=np.int16,
-            ),
+            # CountVectorizer(
+            #     min_df=3,
+            #     max_df=0.9,
+            #     lowercase=True,
+            #     analyzer="word",
+            #     stop_words="english",
+            #     max_features=50000,
+            #     dtype=np.int16,
+            # ),
             TfidfVectorizer(
                 min_df=3,
                 max_df=0.9,
@@ -298,37 +298,39 @@ class ClusterMethods:
         # The following aggregation only considers a precision from an approximated cluster once.
         unique_indicies = dict()
         row_index = 0
+        print("Create Score")
         while row_index < number_of_true_clusters:
             ignore_indicies = set()
             max_value_found = False
 
             while not max_value_found:
                 max_value = 0
-                max_index = 0
+                column = 0
                 for col_index, value in enumerate(precision_matrix[row_index]):
                     if value >= max_value and col_index not in ignore_indicies:
                         max_value = value
-                        max_index = col_index
+                        column = col_index
 
                 if (
-                    max_index in unique_indicies
-                    and unique_indicies[max_index]["row_index"] != row_index
-                    and unique_indicies[max_index]["max_value"] > 0
+                    max_value > 0 
+                    and column in unique_indicies
+                    and unique_indicies[column]["row_index"] != row_index
+                    and unique_indicies[column]["max_value"] > 0
                 ):
-                    if unique_indicies[max_index]["max_value"] < max_value:
+                    if unique_indicies[column]["max_value"] < max_value:
                         # The column is already used, but we found a better candidate.
                         # We use the new candidate and set the cursor to the old one to find a new max value.
-                        old_row_index = unique_indicies[max_index]["row_index"]
-                        unique_indicies[max_index]["row_index"] = row_index
+                        old_row_index = unique_indicies[column]["row_index"]
+                        unique_indicies[column]["row_index"] = row_index
                         row_index = old_row_index
-                        unique_indicies[max_index]["max_value"] = max_value
+                        unique_indicies[column]["max_value"] = max_value
                         max_value_found = True
                     else:
                         # The column is already used with a better candidate.
-                        ignore_indicies.add(max_index)
+                        ignore_indicies.add(column)
                 else:
                     # The column is free to use
-                    unique_indicies[max_index] = {
+                    unique_indicies[column] = {
                         "row_index": row_index,
                         "max_value": max_value,
                     }
@@ -340,6 +342,7 @@ class ClusterMethods:
             sum_unique_precision += value["max_value"]
 
         avg_unique_precision = sum_unique_precision / number_of_true_clusters
+        print("Finish Score")
 
         return avg_unique_precision, avg_precision
 
