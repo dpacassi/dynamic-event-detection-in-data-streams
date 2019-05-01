@@ -275,8 +275,8 @@ class ClusterMethods:
         true_identifiers = utils.convert_labels_to_cluster_identifier(
             labels_true, self.document_ids
         )
-        precision_matrix = self.create_precision_matrix(cluster_identifiers, true_identifiers)
-        accuracy_matrix = self.create_accuracy_matrix(cluster_identifiers, true_identifiers)
+        precision_matrix = self.create_precision_matrix(true_identifiers, cluster_identifiers)
+        accuracy_matrix = self.create_accuracy_matrix(true_identifiers, cluster_identifiers)
         number_of_true_clusters = len(accuracy_matrix)
 
         # The following aggregation only considers a precision from an approximated cluster once.
@@ -321,10 +321,10 @@ class ClusterMethods:
         accuracy_matrix = []
         for true_identifier in true_identifiers:
             true_set = set(true_identifier.split(","))
+            n_true = float(len(true_set))
             row = []
             for cluster_identifier in cluster_identifiers:
                 cluster_set = set(cluster_identifier.split(","))
-                n_true = float(len(true_set))
                 false_negatives = float(len(true_set - cluster_set))
                 false_positives = float(len(cluster_set - true_set))
                 accuracy = n_true / (n_true + false_positives + false_negatives)
