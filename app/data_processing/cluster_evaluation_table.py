@@ -277,6 +277,7 @@ class ClusterMethods:
         )
         precision_matrix = self.create_precision_matrix(cluster_identifiers, true_identifiers)
         accuracy_matrix = self.create_accuracy_matrix(cluster_identifiers, true_identifiers)
+        number_of_true_clusters = len(accuracy_matrix)
 
         # The following aggregation only considers a precision from an approximated cluster once.
         unique_indicies = dict()
