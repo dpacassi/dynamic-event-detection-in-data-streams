@@ -29,7 +29,7 @@ CREATE TABLE `data_database`.`method_evaluation` (
   `tokenizer` VARCHAR(255) NULL,
   `parameters` VARCHAR(1023) NULL,
   `avg_unique_precision` FLOAT NOT NULL,
-  `avg_precision` FLOAT NOT NULL,
+  `avg_unique_accuracy` FLOAT NOT NULL,
   `normalized_mutual_info_score` FLOAT NOT NULL,
   `adjusted_mutual_info_score` FLOAT NOT NULL,
   `completeness_score` FLOAT NOT NULL,

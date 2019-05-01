@@ -126,7 +126,7 @@ class ClusterMethods:
                 analyzer="word",
                 stop_words="english",
                 max_features=50000,
-            ),
+            )
         ]
 
         tokenizers = [
@@ -212,7 +212,9 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            avg_unique_precision, avg_precision = self.calculate_precision(labels, self.labels_true)
+                            avg_unique_precision, avg_unique_accuracy = self.calculate_precision(
+                                labels, self.labels_true
+                            )
                             method_id = self.store_result_to_db(
                                 Result(
                                     method.__name__,
@@ -222,7 +224,9 @@ class ClusterMethods:
                                     vectorizer.__class__.__name__,
                                     "None" if tokenizer is None else tokenizer.__name__,
                                     parameter_combination,
-                                ), avg_unique_precision, avg_precision
+                                ),
+                                avg_unique_precision,
+                                avg_unique_accuracy,
                             )
 
                             self.create_clusters(method_id, labels)
@@ -271,36 +275,69 @@ class ClusterMethods:
         true_identifiers = utils.convert_labels_to_cluster_identifier(
             labels_true, self.document_ids
         )
-        precision_matrix = []
+        precision_matrix = create_precision_matrix(cluster_identifiers, true_identifiers)
+        accuracy_matrix = create_accuracy_matrix(cluster_identifiers, true_identifiers)
 
+        # The following aggregation only considers a precision from an approximated cluster once.
+        unique_indicies = dict()
+        print("Create Score")
+        start = time.time()
+
+        unique_indicies = select_max_values(precision_matrix)
+        avg_unique_precision = sum_unique_values(unique_indicies) / number_of_true_clusters
+
+        unique_indicies = select_max_values(accuracy_matrix)
+        avg_unique_accuracy = sum_unique_values(unique_indicies) / number_of_true_clusters
+
+        end = time.time()
+        print("Finished  score calculation in ", (end - start))
+
+        return avg_unique_precision, avg_unique_accuracy
+
+    def sum_unique_values(unique_indicies):
+        sum_unique_precision = 0
+        for key, value in unique_indicies.items():
+            sum_unique_precision += value["max_value"]
+        return sum_unique_precision
+
+    def create_precision_matrix(self, true_identifiers, cluster_identifiers):
+        precision_matrix = []
         for true_identifier in true_identifiers:
             true_set = set(true_identifier.split(","))
-            precision_row = []
+            row = []
             for cluster_identifier in cluster_identifiers:
                 cluster_set = set(cluster_identifier.split(","))
 
                 true_positives = float(len(true_set.intersection(cluster_set)))
                 false_positives = float(len(cluster_set - true_set))
                 precision = true_positives / (true_positives + false_positives)
-                precision_row.append(precision)
+                row.append(precision)
 
-            precision_matrix.append(precision_row)
+            precision_matrix.append(row)
+        return precision_matrix
 
-        # The following simple aggregation allows for duplicates, which means the same approximated cluster is
-        # used for different true clusters.
-        sum_precision = 0
-        number_of_true_clusters = len(true_identifiers)
-        for row in precision_matrix:
-            sum_precision += max(row)
+    def create_accuracy_matrix(self, true_identifiers, cluster_identifiers):
+        accuracy_matrix = []
+        for true_identifier in true_identifiers:
+            true_set = set(true_identifier.split(","))
+            row = []
+            for cluster_identifier in cluster_identifiers:
+                cluster_set = set(cluster_identifier.split(","))
+                n_true = float(len(cluster_set))
+                false_negatives = float(len(true_set - cluster_set))
+                false_positives = float(len(cluster_set - true_set))
+                accuracy = n_true / (n_true + false_positives + false_negatives)
+                row.append(accuracy)
 
-        avg_precision = sum_precision / number_of_true_clusters
+            accuracy_matrix.append(row)
+        return accuracy_matrix
 
-        # The following aggregation only considers a precision from an approximated cluster once.
+    def select_max_values(self, precision_matrix):
         unique_indicies = dict()
         row_index = 0
-        print("Create Score")
-        start = time.time()
-        while row_index < number_of_true_clusters:
+        nrows = len(precision_matrix)
+
+        while row_index < nrows:
             ignore_indicies = set()
             max_value_found = False
 
@@ -319,8 +356,9 @@ class ClusterMethods:
                     and unique_indicies[column]["max_value"] > 0
                 ):
                     if unique_indicies[column]["max_value"] < max_value:
-                        # The column is already used, but we found a better candidate.
-                        # We use the new candidate and set the cursor to the old one to find a new max value.
+                        # The column is already used, but we found a better
+                        # candidate. We use the new candidate and set the
+                        # cursor to the old one to find a new max value.
                         old_row_index = unique_indicies[column]["row_index"]
                         unique_indicies[column]["row_index"] = row_index
                         row_index = old_row_index
@@ -330,9 +368,10 @@ class ClusterMethods:
                         # The column is already used by a better candidate.
                         ignore_indicies.add(column)
                 else:
-                    # If max_value is greater than 0, we store the value as a new candiate. Otherwise
-                    # either the row does not match any other column or the max_value was low and
-                    # overriden by previous tries and no other match is available. 
+                    # If max_value is greater than 0, we store the value as a
+                    # new candiate. Otherwise either the row does not match
+                    # any other column or the max_value was low and got
+                    # overriden by previous tries and no other match is available.
                     if max_value > 0:
                         # The column is free to use
                         unique_indicies[column] = {
@@ -342,15 +381,7 @@ class ClusterMethods:
                     max_value_found = True
                     row_index += 1
 
-        sum_unique_precision = 0
-        for key, value in unique_indicies.items():
-            sum_unique_precision += value["max_value"]
-
-        avg_unique_precision = sum_unique_precision / number_of_true_clusters
-        end = time.time()
-        print("Finished  score calculation in ", (end-start))
-
-        return avg_unique_precision, avg_precision
+        return unique_indicies
 
     def create_clusters(self, method_id, labels):
         cluster_identifiers = utils.convert_labels_to_cluster_identifier(
