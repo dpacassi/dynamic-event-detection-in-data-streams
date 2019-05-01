@@ -1,6 +1,21 @@
 import os
+import sys
 import pymysql
+import subprocess
 from dotenv import load_dotenv
+
+######################################################################################
+# Check if the script is already running.
+######################################################################################
+
+script_names = ['define_cluster_evaluations.py']
+
+for script_name in script_names:
+    status = subprocess.getstatusoutput(
+        "ps aux | grep -e '%s' | grep -v grep | awk '{print $2}'| awk '{print $2}'" % script_name
+    )
+    if status[1]:
+        sys.exit(0)
 
 # Load environment variables.
 load_dotenv()
