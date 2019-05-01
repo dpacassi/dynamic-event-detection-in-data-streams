@@ -312,13 +312,9 @@ class ClusterMethods:
                         max_value = value
                         column = col_index
 
-                if max_value == 0:
-                    # If the max_value equal 0, either the row does not match any other column
-                    # or the max_value was low and overriden by a previous try and no other match
-                    # is available.
-                    max_value_found = True
-                elif (
-                    column in unique_indicies
+                if (
+                    max_value > 0
+                    and column in unique_indicies
                     and unique_indicies[column]["row_index"] != row_index
                     and unique_indicies[column]["max_value"] > 0
                 ):
@@ -331,14 +327,18 @@ class ClusterMethods:
                         unique_indicies[column]["max_value"] = max_value
                         max_value_found = True
                     else:
-                        # The column is already used with a better candidate.
+                        # The column is already used by a better candidate.
                         ignore_indicies.add(column)
                 else:
-                    # The column is free to use
-                    unique_indicies[column] = {
-                        "row_index": row_index,
-                        "max_value": max_value,
-                    }
+                    # If max_value is greater than 0, we store the value as a new candiate. Otherwise
+                    # either the row does not match any other column or the max_value was low and
+                    # overriden by previous tries and no other match is available. 
+                   if max_value > 0:
+                        # The column is free to use
+                        unique_indicies[column] = {
+                            "row_index": row_index,
+                            "max_value": max_value,
+                        }
                     max_value_found = True
                     row_index += 1
 
