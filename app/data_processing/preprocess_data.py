@@ -5,18 +5,29 @@ import utils
 import pymysql
 import subprocess
 import pandas
-
 import db
 import preprocessing
-
 from newspaper import Article
 from dotenv import load_dotenv
+
+######################################################################################
+# Check if the script is already running.
+######################################################################################
+
+script_names = ['preprocess_data.py']
+
+for script_name in script_names:
+    status = subprocess.getstatusoutput(
+        "ps aux | grep -e '%s' | grep -v grep | awk '{print $2}'| awk '{print $2}'" % script_name
+    )
+    if status[1]:
+        sys.exit(0)
+
 
 # Load environment variables.
 load_dotenv()
 
-# Define script names.
-script_names = ['preprocess_data.py']
+# State.
 batch_size = 1000
 
 
@@ -87,7 +98,6 @@ has_more = True
 batch_count = 0
 while has_more:
     batch_count += 1
-    print("Start Batch {}".format(batch_count))
     connection = db.get_connection()
     rows = pandas.read_sql(sql=get_sql, con=connection, index_col="id", params=[batch_size])
     connection.close()
@@ -96,7 +106,6 @@ while has_more:
     if nrows < batch_size:
         has_more = False
 
-    print("Loaded {} rows.".format( nrows))
     for index, row in rows.iterrows():
         try:
             article = Article(row['url'])
