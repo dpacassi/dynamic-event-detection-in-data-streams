@@ -333,7 +333,7 @@ class ClusterMethods:
                     # If max_value is greater than 0, we store the value as a new candiate. Otherwise
                     # either the row does not match any other column or the max_value was low and
                     # overriden by previous tries and no other match is available. 
-                   if max_value > 0:
+                    if max_value > 0:
                         # The column is free to use
                         unique_indicies[column] = {
                             "row_index": row_index,
