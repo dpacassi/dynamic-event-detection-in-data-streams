@@ -275,26 +275,26 @@ class ClusterMethods:
         true_identifiers = utils.convert_labels_to_cluster_identifier(
             labels_true, self.document_ids
         )
-        precision_matrix = create_precision_matrix(cluster_identifiers, true_identifiers)
-        accuracy_matrix = create_accuracy_matrix(cluster_identifiers, true_identifiers)
+        precision_matrix = self.create_precision_matrix(cluster_identifiers, true_identifiers)
+        accuracy_matrix = self.create_accuracy_matrix(cluster_identifiers, true_identifiers)
 
         # The following aggregation only considers a precision from an approximated cluster once.
         unique_indicies = dict()
         print("Create Score")
         start = time.time()
 
-        unique_indicies = select_max_values(precision_matrix)
-        avg_unique_precision = sum_unique_values(unique_indicies) / number_of_true_clusters
+        unique_indicies = self.select_max_values(precision_matrix)
+        avg_unique_precision = self.sum_unique_values(unique_indicies) / number_of_true_clusters
 
-        unique_indicies = select_max_values(accuracy_matrix)
-        avg_unique_accuracy = sum_unique_values(unique_indicies) / number_of_true_clusters
+        unique_indicies = self.select_max_values(accuracy_matrix)
+        avg_unique_accuracy = self.sum_unique_values(unique_indicies) / number_of_true_clusters
 
         end = time.time()
         print("Finished  score calculation in ", (end - start))
 
         return avg_unique_precision, avg_unique_accuracy
 
-    def sum_unique_values(unique_indicies):
+    def sum_unique_values(self, unique_indicies):
         sum_unique_precision = 0
         for key, value in unique_indicies.items():
             sum_unique_precision += value["max_value"]
