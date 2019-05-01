@@ -299,6 +299,7 @@ class ClusterMethods:
         unique_indicies = dict()
         row_index = 0
         print("Create Score")
+        start = time.time()
         while row_index < number_of_true_clusters:
             ignore_indicies = set()
             max_value_found = False
@@ -342,7 +343,8 @@ class ClusterMethods:
             sum_unique_precision += value["max_value"]
 
         avg_unique_precision = sum_unique_precision / number_of_true_clusters
-        print("Finish Score")
+        end = time.time()
+        print("Finished  score calculation in ", (end-start))
 
         return avg_unique_precision, avg_precision
 
