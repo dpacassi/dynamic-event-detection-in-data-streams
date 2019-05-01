@@ -324,7 +324,7 @@ class ClusterMethods:
             row = []
             for cluster_identifier in cluster_identifiers:
                 cluster_set = set(cluster_identifier.split(","))
-                n_true = float(len(cluster_set))
+                n_true = float(len(true_set))
                 false_negatives = float(len(true_set - cluster_set))
                 false_positives = float(len(cluster_set - true_set))
                 accuracy = n_true / (n_true + false_positives + false_negatives)
