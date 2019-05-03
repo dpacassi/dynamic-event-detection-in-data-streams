@@ -1,19 +1,32 @@
+% Der Umfang des Abstracts sollte nicht mehr als eine A4-Seite sein
+% (nach DIN / ISO / ANSI beschränkt sich ein Abstract auf ca. 250 Wörter, also eine halbe A4-Seite).
+
 \section{Abstract}
 
-How can events be recognized in a data stream? When searching for new events in data streams,
-there is always the problem of what exactly an event is.
-Once this first question has been clarified, however, further questions arise.
-Usually it is not enough to define an event statically, but the definition develops dynamically over time.
-However, most procedures for event recognition are set statically when the system is started.
-Furthermore, the dynamics of the stream must always be taken into account,
-otherwise blockages and overflow in the system can occur.
+% Einleitung: definiert die Problematik und begründet die Relevanz der Arbeit.
+How can events be recognized in a data streams?
+And what is the definition of an event?
+Current event recognition procedures define possible events (or event types) statically when the system starts.
+However, in data streams, the definition should develop dynamically over time as the data and their focus changes over time.
 
-The aim of this thesis is to develop a methodology how the mentioned aspects can be implemented on suitable data streams.
+% Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit.
+The first goal of this bachelor thesis is to define what an event is and how events can be recognized from static data.
+Depending on the definition, a suitable dataset has to be found and chosen in order to create a system
+which is capable of recognizing events.
+In the second part, the events should be recognized from a data stream and therefor support dynamic event recognition.
 
-The tasks of this thesis are as following:
-\begin{itemize}
-  \item Literature research on the topic of event recognition
-  \item Learning tools like Spark DataFrames, TensorFrames and Spark Streaming
-  \item Conception of a use case and an approach to event recognition
-  \item Evaluation of the results
-\end{itemize}
+% Vorgehen: informiert exemplarisch über die Untersuchungsanlage.
+This work uses news API's as data streams and tries to assign the received news articles to different events.
+An event is defined as a list of different news articles writing about the same story.
+A possible event could be "Brexit" or an upcoming election.
+It's important to keep in mind that new events can and should be created over time.
+
+% Ergebnis: beschreibt die wichtigsten Resultate, Erkenntnisse, offenen Fragen.
+Assigning news articles to an event can be done by clustering the news articles.
+In order to achieve best possible results, a comparison between different clustering techniques has been completed.
+It was revealed that HDBSCAN is a promising candidate for our use case as it delivered the best results.
+
+Unfortunately HDBSCAN was not made for data coming from data streams but this thesis will show
+one possible solution on how to deal with this.
+This work as able to process up to 20'000 news articles with HDBSCAN.
+A possible continuation of this work could try to extend this number to process more data at once.
