@@ -60,20 +60,23 @@ Therefor it only requires one parameter to be set:
 1. minPoints - The number of data points a neighborhood has to contain in order to be considered as a cluster.
 
 ## How does HDBSCAN work
-- Transform the space according to the density/sparsity.
-- Build the minimum spanning tree of the distance weighted graph.
-- Construct a cluster hierarchy of connected components.
-- Condense the cluster hierarchy based on minimum cluster size.
-- Extract the stable clusters from the condensed tree.
+1. Transform the space according to the density/sparsity.
+2. Build the minimum spanning tree of the distance weighted graph.
+3. Construct a cluster hierarchy of connected components.
+4. Condense the cluster hierarchy based on minimum cluster size.
+5. Extract the stable clusters from the condensed tree.
 
 ### 1. Transforming the space
-Before HDBSCAN tries to cluster anything
+One reason why HDBSCAN works so well, is that it is aware of noise.
+This is very important as real life data is often messy and sometimes even corrupt.
 
-Before HDBSCAN 
+Because of this, the very first thing HDBSCAN does, is to remove such data noise.
+In order to identify noise, the **mutual reachability distance** score between
+points is calculated. The mutual reachability distance score is defined as
 
-The first thing HDBSCAN does, is to calculate the **mutual reachability distance** between points.
+TODO: Formula
 
-This is done by creating clusters of the size of *minPoints* for all data points and then
-calculating the distance of the clusters centroids.
+whereas corek(x) stands for the core distance for a point x and a defined parameter k.
 
 ### 2. Building the minimum spanning tree
+
