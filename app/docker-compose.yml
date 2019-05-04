@@ -70,7 +70,6 @@ services:
       - ./data_processing:/usr/local/src/data_processing
     depends_on:
       - mariadb
-    restart: unless-stopped
     network_mode: "host"
 
   preprocess_data:

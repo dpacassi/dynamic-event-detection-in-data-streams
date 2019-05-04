@@ -12,7 +12,7 @@ def plot_processing_time_samples():
 
     sql = (
         "select avg(m.processing_time) as processing_time, m.sample_size, m.method from method_evaluation as m"
-        " where m.method in ('kmeans', 'hdbscan') and m.avg_unique_accuracy is not null"
+        " where m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null"
         " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
         " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
         " group by m.sample_size, m.method"
@@ -25,6 +25,7 @@ def plot_processing_time_samples():
     Y_hdbscan = data[data['method']=='hdbscan']["processing_time"].values
     Y_kmeans = data[data['method']=='kmeans']["processing_time"].values
 
+    fig = plt.figure()
     plt.plot(X, Y_hdbscan, label='HDBSCAN')
     plt.plot(X, Y_kmeans, label='K-means')
     plt.xlabel('Sample Size')
@@ -32,15 +33,16 @@ def plot_processing_time_samples():
     plt.title("Average Processing Time by number of samples")
     plt.legend()
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.show()
+    plt.savefig('../../doc/images/processing_time_kmeans_hdbscan.png')
+    plt.close(fig)
 
 # Accuracy by number of samples with hdbscan and kmeans
 def plot_accuracy_samples():
     connection = db.get_connection()
 
     sql = (
-        "select max(m.avg_unique_accuracy) as accuracy, m.sample_size, m.method from method_evaluation as m"
-        " where m.method in ('kmeans', 'hdbscan') and m.avg_unique_accuracy is not null"
+        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.sample_size, m.method from method_evaluation as m"
+        " where m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null"
         " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
         " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
         " group by m.sample_size, m.method"
@@ -53,6 +55,7 @@ def plot_accuracy_samples():
     Y_hdbscan = data[data['method']=='hdbscan']["accuracy"].values
     Y_kmeans = data[data['method']=='kmeans']["accuracy"].values
 
+    fig = plt.figure()
     plt.plot(X, Y_hdbscan, label='HDBSCAN')
     plt.plot(X, Y_kmeans, label='K-means')
     plt.xlabel('Sample Size')
@@ -61,15 +64,16 @@ def plot_accuracy_samples():
     plt.title("Accuracy by number of samples")
     plt.legend()
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.show()
+    plt.savefig('../../doc/images/accuracy_kmeans_hdbscan.png')
+    plt.close(fig)
 
 # TODO Accuracy by different parameters with hdbscan
 def plot_hdbscan_parameters():
     connection = db.get_connection()
 
     sql = (
-        "select max(m.avg_unique_accuracy) as accuracy, m.parameters from method_evaluation as m"
-        " where m.method = 'hdbscan' and m.avg_unique_accuracy is not null"
+        "select avg(m.corrected_avg_unique_accuracy) as accuracy, m.parameters from method_evaluation as m"
+        " where m.method = 'hdbscan' and m.corrected_avg_unique_accuracy is not null"
         " group by m.parameters"
     )
 
@@ -88,11 +92,66 @@ def plot_hdbscan_parameters():
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
     plt.show()
 
-# TODO Accuracy by different vectorizer with hdbscan
-# TODO Noise ratio with hdbscan
-# TODO Accuracy by different preprocessing and vectorizer with hdbscan
 
+# HDBSCAN Noise ratio with number of samples
+def plot_noise_ratio_samples():
+    connection = db.get_connection()
+
+    # TODO with different min_cluster_sizes
+    sql = (
+        "select avg(m.n_noise) as n_noise, m.sample_size from method_evaluation as m"
+        " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
+        " group by m.sample_size"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["sample_size"].unique()
+    Y_hdbscan = data["n_noise"].values
+
+    fig = plt.figure()
+    plt.plot(X, Y_hdbscan, label='HDBSCAN')
+    plt.xlabel('Sample Size')
+    plt.ylabel('Noise')
+    plt.title("Noise Ratio")
+    plt.legend()
+    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.savefig('../../doc/images/noise_ratio_samples.png')
+    plt.close(fig)
+
+# HDBSCAN cluster difference
+def plot_cluster_difference_samples():
+    connection = db.get_connection()
+
+    sql = (
+        "select min(abs(m.real_clusters - m.estimated_clusters)) as diff, m.sample_size from method_evaluation as m"
+        " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
+        " group by m.sample_size"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["sample_size"].unique()
+    Y_hdbscan = data["diff"].values
+
+    fig = plt.figure()
+    plt.plot(X, Y_hdbscan, label='HDBSCAN')
+    plt.xlabel('Sample Size')
+    plt.ylabel('|n_true - n_predicted|')
+    plt.title("Difference in predicted number of clusters")
+    plt.legend()
+    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.savefig('../../doc/images/cluster_difference_samples.png')
+    plt.close(fig)
+
+
+# TODO Accuracy by different vectorizer with hdbscan
+# TODO Accuracy by different preprocessing and vectorizer with hdbscan
 
 plot_accuracy_samples()
 plot_processing_time_samples()
+plot_cluster_difference_samples()
+plot_noise_ratio_samples()
 # plot_hdbscan_parameters()
