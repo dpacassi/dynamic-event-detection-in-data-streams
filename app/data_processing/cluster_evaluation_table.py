@@ -166,12 +166,15 @@ class ClusterMethods:
 
         return vectorizers, tokenizers, parameters_by_method
 
-    def run(self, methods):
+    def run(self, methods, whitelist_vectorizer):
         vectorizers, tokenizers, parameters_by_method = self.setup_evaluation()
         results = []
         errors = []
 
         for vectorizer in vectorizers:
+            if len(whitelist_vectorizer) > 0 and vectorizer.__class__.__name__ not in whitelist_vectorizer:
+                continue
+
             for tokenizer in tokenizers:
                 print(
                     "Use vectorizer {} with tokenizer {}".format(
@@ -403,12 +406,14 @@ if __name__ == "__main__":
     ap.add_argument("--rows", required=False, type=int, default=1000)
     ap.add_argument("--stories", required=False, type=str, default=None)
     ap.add_argument("--methods", required=False, type=str, default=None)
+    ap.add_argument("--vectorizers", required=False, type=str, default=None)
     ap.add_argument("--runs", required=False, type=int, default=1)
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]
     nrows = args["rows"]
     methods = args["methods"].split(",") if args["methods"] is not None else list()
+    vectorizers = args["vectorizers"].split(",") if args["vectorizers"] is not None else list()
     story_runs = map(int, args["stories"].split(",")) if args["stories"] is not None else [0]
 
     load_dotenv()
@@ -441,7 +446,7 @@ if __name__ == "__main__":
             del dataset
             gc.collect()
 
-            errors = evaluation.run(methods)
+            errors = evaluation.run(methods, vectorizers)
 
             if len(errors) > 0:
                 print("Errors:")
