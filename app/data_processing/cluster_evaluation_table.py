@@ -110,15 +110,15 @@ class ClusterMethods:
 
     def setup_evaluation(self):
         vectorizers = [
-            # CountVectorizer(
-            #     min_df=3,
-            #     max_df=0.9,
-            #     lowercase=True,
-            #     analyzer="word",
-            #     stop_words="english",
-            #     max_features=50000,
-            #     dtype=np.int16,
-            # ),
+            CountVectorizer(
+                min_df=3,
+                max_df=0.9,
+                lowercase=True,
+                analyzer="word",
+                stop_words="english",
+                max_features=50000,
+                dtype=np.int16,
+            ),
             TfidfVectorizer(
                 min_df=3,
                 max_df=0.9,
@@ -140,10 +140,10 @@ class ClusterMethods:
         parameters_by_method = {
             self.kmeans: {"n_cluster": ["n_square", "n_true"]},
             self.hdbscan: {
-                "min_cluster_size": [6],
-                # "min_cluster_size": range(3, 7),
-                "metric": ["cosine"]
-                # "metric": ["cosine", "euclidean"]
+                #"min_cluster_size": [6],
+                "min_cluster_size": range(2, 10),
+                # "metric": ["cosine"]
+                "metric": ["cosine", "euclidean"]
                 # "metric": ["cosine", "manhattan", "euclidean"]
             },
             self.meanshift: {"cluster_all": [True, False]},
@@ -161,7 +161,7 @@ class ClusterMethods:
                 "affinity": ["rbf"],
                 "assign_labels": ["kmeans", "discretize"],
             },
-            self.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
+            # sself.hdbscan_lda: {"max_iter": [50, 100, 200, 500]},
         }
 
         return vectorizers, tokenizers, parameters_by_method
@@ -212,7 +212,7 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            avg_unique_precision, avg_unique_accuracy = self.calculate_precision(
+                            corrected_avg_unique_accuracy, avg_unique_accuracy = self.calculate_precision(
                                 labels, self.labels_true
                             )
                             method_id = self.store_result_to_db(
@@ -225,7 +225,7 @@ class ClusterMethods:
                                     "None" if tokenizer is None else tokenizer.__name__,
                                     parameter_combination,
                                 ),
-                                avg_unique_precision,
+                                corrected_avg_unique_accuracy,
                                 avg_unique_accuracy,
                             )
 
@@ -249,7 +249,7 @@ class ClusterMethods:
 
         return errors
 
-    def store_result_to_db(self, result, avg_unique_precision, avg_precision):
+    def store_result_to_db(self, result, corrected_avg_unique_accuracy, avg_unique_precision):
         scores = result.create_evaluation(self.labels_true)
         return db.write_evaluation_result_in_db(
             str(result.title),
@@ -257,8 +257,8 @@ class ClusterMethods:
             str(result.vectorizer),
             str(result.tokenizer),
             str(json.dumps(result.parameters)),
+            float(corrected_avg_unique_accuracy),
             float(avg_unique_precision),
-            float(avg_precision),
             float(scores["normalized_mutual_info_score"]),
             float(scores["completeness_score"]),
             float(scores["adjusted_mutual_info_score"]),
@@ -275,47 +275,35 @@ class ClusterMethods:
         true_identifiers = utils.convert_labels_to_cluster_identifier(
             labels_true, self.document_ids
         )
-        precision_matrix = self.create_precision_matrix(true_identifiers, cluster_identifiers)
         accuracy_matrix = self.create_accuracy_matrix(true_identifiers, cluster_identifiers)
-        number_of_true_clusters = len(accuracy_matrix)
+        number_of_true_clusters = len(true_identifiers)
+        number_of_predicted_clusters = len(cluster_identifiers)
 
-        # The following aggregation only considers a precision from an approximated cluster once.
-        unique_indicies = dict()
         print("Create Score")
         start = time.time()
 
-        unique_indicies = self.select_max_values(precision_matrix)
-        avg_unique_precision = self.sum_unique_values(unique_indicies) / number_of_true_clusters
-
         unique_indicies = self.select_max_values(accuracy_matrix)
+
         avg_unique_accuracy = self.sum_unique_values(unique_indicies) / number_of_true_clusters
+        
+        # Add the difference between predicted and true number of clusters if larger than 0. This way both cases with 
+        # too many and too few predicted clusters will be reflected in the score. By simply averaging by number of true clustes
+        # only too few predicted clusters will have an effect on the score, since clusters without a pairing are counted as 0. 
+        # But too many will not change the score, since each true cluster found a predicted cluster accuracy, therefore leading
+        # to a good score, eventhough there might be a big difference in number of predicted clusters vs. true clusters.
+        corrected_avg_unique_accuracy = self.sum_unique_values(unique_indicies) / (number_of_true_clusters + max(0, number_of_predicted_clusters - number_of_true_clusters))
 
         end = time.time()
         print("Finished  score calculation in ", (end - start))
 
-        return avg_unique_precision, avg_unique_accuracy
+        # Return both for validation of corrected accuracy
+        return corrected_avg_unique_accuracy, avg_unique_accuracy
 
     def sum_unique_values(self, unique_indicies):
         sum_unique_precision = 0
         for key, value in unique_indicies.items():
             sum_unique_precision += value["max_value"]
         return sum_unique_precision
-
-    def create_precision_matrix(self, true_identifiers, cluster_identifiers):
-        precision_matrix = []
-        for true_identifier in true_identifiers:
-            true_set = set(true_identifier.split(","))
-            row = []
-            for cluster_identifier in cluster_identifiers:
-                cluster_set = set(cluster_identifier.split(","))
-
-                true_positives = float(len(true_set.intersection(cluster_set)))
-                false_positives = float(len(cluster_set - true_set))
-                precision = true_positives / (true_positives + false_positives)
-                row.append(precision)
-
-            precision_matrix.append(row)
-        return precision_matrix
 
     def create_accuracy_matrix(self, true_identifiers, cluster_identifiers):
         accuracy_matrix = []
@@ -413,50 +401,52 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
 
     ap.add_argument("--rows", required=False, type=int, default=1000)
-    ap.add_argument("--stories", required=False, type=int, default=0)
+    ap.add_argument("--stories", required=False, type=str, default=None)
     ap.add_argument("--methods", required=False, type=str, default=None)
     ap.add_argument("--runs", required=False, type=int, default=1)
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]
     nrows = args["rows"]
-    nstories = args["stories"]
     methods = args["methods"].split(",") if args["methods"] is not None else list()
+    story_runs = map(int, args["stories"].split(",")) if args["stories"] is not None else [0]
 
     load_dotenv()
 
     start = time.time()
 
-    for run in range(number_of_runs):
-        print("Start run {}".format(run))
+    for nstories in story_runs:
+        print("Use {} stories".format(nstories))
+        for run in range(number_of_runs):
+            print("Start run {}".format(run))
 
-        if nstories > 0:
-            dataset = test_data.load_from_db_by_stories(
-                nstories=nstories, skip_stories=run * nstories
+            if nstories > 0:
+                dataset = test_data.load_from_db_by_stories(
+                    nstories=nstories, skip_stories=run * nstories
+                )
+            else:
+                dataset = test_data.load_from_db(nrows=nrows, skip_rows=run * nrows)
+
+            labels_true = LabelEncoder().fit_transform(dataset["story"])
+            stories_in_dataset = len(set(labels_true)) - (1 if -1 in labels_true else 0)
+
+            evaluation = ClusterMethods(
+                dataset["newspaper_text"],
+                stories_in_dataset,
+                labels_true,
+                list(dataset.index.values),
             )
-        else:
-            dataset = test_data.load_from_db(nrows=nrows, skip_rows=run * nrows)
 
-        labels_true = LabelEncoder().fit_transform(dataset["story"])
-        stories_in_dataset = len(set(labels_true)) - (1 if -1 in labels_true else 0)
+            # delete full dataframe before evaluation to save some memory
+            del dataset
+            gc.collect()
 
-        evaluation = ClusterMethods(
-            dataset["newspaper_text"],
-            stories_in_dataset,
-            labels_true,
-            list(dataset.index.values),
-        )
+            errors = evaluation.run(methods)
 
-        # delete full dataframe before evaluation to save some memory
-        del dataset
-        gc.collect()
-
-        errors = evaluation.run(methods)
-
-        if len(errors) > 0:
-            print("Errors:")
-            print(errors)
-        print("Finished run {} with {} errors.".format(run, len(errors)))
+            if len(errors) > 0:
+                print("Errors:")
+                print(errors)
+            print("Finished run {} with {} errors.".format(run, len(errors)))
 
     end = time.time()
     runtime = end - start
