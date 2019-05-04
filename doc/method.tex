@@ -12,10 +12,11 @@ The first important step is to create a test data set to run the evaluations wit
 
 \subsection{Clustering methods}
 
-Clustering finds similarities in different news articles based on their content and groups them together in so called clusters, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
+Clustering finds similarities in different news articles based on their content and groups them together, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
 
 An initial evaluation (Table \ref{tab:first_evaluation}) shows a selection of potential clustering methods. The selection was done based on the criteria, that the number of clusters is unkown. Many clustering methods as for example K-Means require to know the number of clusters, which we cannot provide once we work with dynamic data. Based on this first evaluation and its property to be able to handle noise, we decided to focus on HDBSCAN as our main clustering method. Further evaluations will be done in comparison with K-Means, since it is one of the most commonly used clustering algorithm [insert citation]. K-Means will be run with the true number of clusters and an approximation based on $\sqrt{n}$.
 
+% TODO update numbers. and 
 % add number of clusters into table
 \begin{table}[h]
     \centering
@@ -80,7 +81,7 @@ To get a more accurate score based on the documents inside a cluster, we develop
         \frac{n_{true}}{n_{true} + fp + fn}
     \end{equation}
 
-where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. As a next step a selection process is used to find relevant accuracy values from each row of the accuracy matrix. The sum of the selected values is then divided by the number of rows, which results in the average accuracy of the current clustering method to evaluate. 
+where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. As a next step a selection process is used to find relevant accuracy values from each row of the accuracy matrix. 
 
 Finding relevant values in the accuracy matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
 \begin{enumerate} 
@@ -143,6 +144,16 @@ def select_max_values(self, accuracy_matrix):
     return unique_indicies
 \end{lstlisting}
 
+As a final step the average is calculated from the sum of the accuracy with respect to the difference in predicted clusters to the true amount of clusters. In case the predicted amount is lower a normal average will already result in a lower score, since each real cluster without a matching predicted cluster counts as zero. However if there are more predicted clusters than true ones, each true cluster will have a value and the score would appear the same as if there was a perfect prediction in the amount of clusters. To take this into account, the difference is added to the number of true clusters as shown in Equation \ref{equ:avg_accuracy}.
+
+\begin{equation}
+    \label{equ:avg_accuracy}
+        \frac{s_{accuracy}}{c_{true} + max(0, c_{predicted} - c_{true})}
+\end{equation}
+
+Where $s_{accuracy}$ is the sum of the accuracy values, $c_{predicted}$ is the number of predicted clusters and $c_{true}$ is the number of true clusters.
+
+
 After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a second time using the average accuracy per clustering, the score (Table \ref{tab:avg_predict_kmeans_example}) for K-means is much lower than HDBSCAN. This reflects what we would expect based on the big difference in the amount of predicted clusters.
 
 \begin{table}[h]
@@ -163,4 +174,4 @@ After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a sec
 * Near duplicate detection for clusters with MinHash and LSH O(log n)
 * Jaccard Coefficient: number of common elements / (total number of elements - number of common elements)
 * source https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134
-
+* defining events -> new story, changes in story (additions/deletions)
