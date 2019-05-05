@@ -58,7 +58,21 @@ def load_from_db(nrows=1000, skip_rows=0):
 def load_from_db_by_stories(nstories, skip_stories=0):
     connection = db.get_connection()
 
-    story_sql = "SELECT story" " FROM news_article" " GROUP BY story" " LIMIT %s, %s"
+    story_sql = (
+        "SELECT story" 
+        " FROM news_article" 
+        " WHERE"
+        "     newspaper_processed = 1"
+        "     AND title_keywords_intersection = 1"
+        "     AND hostname != 'newsledge.com'"
+        "     AND hostname != 'www.newsledge.com'"
+        "     AND newspaper_text IS NOT NULL"
+        "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "     AND newspaper_text NOT LIKE '%%404%%'"
+        "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        " GROUP BY story" " LIMIT %s, %s"
 
     stories = pandas.read_sql(
         sql=story_sql, con=connection, params=[skip_stories, nstories]
