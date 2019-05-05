@@ -79,3 +79,29 @@ Join cluster as c on c.id = cn.cluster_id
 Where c.method_evaluation_id = 1584
 group by n.story
 order by n.story
+
+### Find news articles classified as noise
+
+-- This query can take a couple of minutes.
+
+SELECT * from news_article as nn where nn.story in (
+	SELECT n.story FROM news_article as n
+	Join cluster_news_article as cn on cn.news_article_id = n.id
+	Join cluster as c on c.id = cn.cluster_id
+	Where c.method_evaluation_id = 1610 
+	group by n.story )
+and not exists (
+	SELECT c.id FROM cluster_news_article as cna
+	Join cluster as c on c.id = cna.cluster_id
+	Where c.method_evaluation_id = 1610 and cna.news_article_id = nn.id
+)
+and newspaper_processed = 1
+AND title_keywords_intersection = 1
+AND hostname != 'newsledge.com'
+AND hostname != 'www.newsledge.com'
+AND newspaper_text IS NOT NULL
+AND TRIM(COALESCE(newspaper_text, '')) != ''
+AND newspaper_text NOT LIKE '%%GDPR%%'
+AND newspaper_text NOT LIKE '%%javascript%%'
+AND newspaper_text NOT LIKE '%%404%%'
+     

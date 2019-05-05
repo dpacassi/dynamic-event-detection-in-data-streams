@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
+import json
 import db
+import collections
 from dotenv import load_dotenv
 
 # Load environment variables.
@@ -104,30 +106,68 @@ def plot_accuracy_samples():
     plt.savefig('../../doc/images/accuracy_kmeans_hdbscan.png')
     plt.close(fig)
 
-# TODO Accuracy by different parameters with hdbscan
+# Accuracy by different parameters with hdbscan
 def plot_hdbscan_parameters():
     connection = db.get_connection()
 
     sql = (
-        "select avg(m.corrected_avg_unique_accuracy) as accuracy, m.parameters from method_evaluation as m"
+        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.parameters, m.sample_size from method_evaluation as m"
         " where m.method = 'hdbscan' and m.corrected_avg_unique_accuracy is not null"
-        " group by m.parameters"
+        " group by m.parameters, m.sample_size"
+        " order by m.sample_size"
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
 
-    X = data["accuracy"].values
-    Y = data["parameters"].values
+    X = data["sample_size"].unique()
 
-    plt.barh(X, Y, label='HDBSCAN')
-    plt.xlabel('Parameters')
+    cosine_values = collections.defaultdict(list)
+    euclidean_values = collections.defaultdict(list)
+    Y_min_cluster_sizes = dict()
+
+    for index, row in data.iterrows():
+        parameters = json.loads(row["parameters"])
+        if parameters["metric"] == "cosine":
+            cosine_values[row["sample_size"]].append(row["accuracy"])
+        if parameters["metric"] == "euclidean":
+            euclidean_values[row["sample_size"]].append(row["accuracy"])
+
+        if parameters["min_cluster_size"] not in Y_min_cluster_sizes:
+            Y_min_cluster_sizes[parameters["min_cluster_size"]] = collections.defaultdict(list)
+        
+        Y_min_cluster_sizes[parameters["min_cluster_size"]][row["sample_size"]].append(row["accuracy"])
+        
+    fig = plt.figure(figsize=(15,5))
+
+    Y_cosine = [max(x) for x in cosine_values.values()]
+    Y_euclidean = [max(x) for x in euclidean_values.values()]
+
+    plt.subplot(1, 2, 1)
+    plt.plot(X, Y_cosine, label='Cosine')
+    plt.plot(X, Y_euclidean, label='Euclidean')
+    plt.xlabel('Number of news articles')
     plt.ylabel('Average Accuracy')
-    plt.xlim(right=1, left=0)
-    plt.title("HDBSCAN Parameters")
+    plt.ylim(top=1, bottom=0)
+    plt.title("HDBSCAN Metrics")
     plt.legend()
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.show()
+
+    plt.subplot(1, 2, 2)
+
+    for size, values in Y_min_cluster_sizes.items():
+        Y = [max(x) for x in values.values()]
+        plt.plot(X, Y, label="m = {}".format(size))
+
+    plt.xlabel('Number of news articles')
+    plt.ylabel('Average Accuracy')
+    plt.ylim(top=1, bottom=0)
+    plt.title("HDBSCAN Min cluster sizes")
+    plt.legend()
+    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+
+    plt.savefig('../../doc/images/hdbscan_parameters.png')
+    plt.close(fig)
 
 
 # HDBSCAN Noise ratio with number of samples
@@ -194,4 +234,4 @@ plot_processing_time_samples()
 plot_cluster_difference_samples()
 plot_noise_ratio_samples()
 plot_different_clusterings()
-# plot_hdbscan_parameters()
+plot_hdbscan_parameters()
