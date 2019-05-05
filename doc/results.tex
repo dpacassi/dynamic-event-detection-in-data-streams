@@ -27,7 +27,9 @@ Increasing the sample size results for both HDBSCAN and K-means in a small loss 
     \label{fig:accuracy_kmeans_hdbscan}
 \end{figure}
 
-While HDBSCAN and K-means provide a similar accuracy, the biggest difference can be noted in the processing time in relation to an increasing number of samples. K-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$, which is demonstrated by figure \ref{fig:processing_time_kmeans_hdbscan}.
+While HDBSCAN and K-means provide a similar accuracy, the biggest difference can be noted in the processing time in relation to an increasing number of samples. K-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$, which is demonstrated by figure \ref{fig:processing_time_kmeans_hdbscan}. Although running the evaluation has also shown the space complexity for HDBSCAN to be substantially higher for larger amounts of samples than with K-means. Trying to run HDBSCAN with 100'000 news articles caused in a memory error, even with 64GB of RAM, while K-means was able to complete the clustering.
+
+% TODO measure memory?
 
 \begin{figure}[h]
     \centering
@@ -45,7 +47,19 @@ Figure \ref{fig:cluster_difference_samples} shows, that the difference between p
     \label{fig:cluster_difference_samples}
 \end{figure}
 
-Being able to handle noise is one of the advantages of HDBSCAN has over the other previously tested clustering algorithms. It is reasonable to expect to have a lot of noise in the incoming stream of news articles, once the algorithm is applied in an online setting. However this evaluation is done with a labeled static dataset, containing a minimum amount of noise. The noise ratio shown in Figure \ref{fig:noise_ratio_samples} is much higher, than we would expect from the test data. 
+So far we have looked at data provided by the most accurate parameter combination. Figure \ref{fig:hdbscan_parameters} shows the accuracies of two essential parameters when working with HDBSCAN. The metric is used when calculating the distances between instances in a feature array. For this evaluation we only consider the metrics $cosine$ and $euclidean$, since other available metrics are either unable to work with sparse matrices or the score was too low, while taking significantly longer to calculate. The comparison in figure \ref{fig:hdbscan_parameters} clearly shows the difference in accuracy between both metrics. Additionally we found that the vectorizer used for the feature matrix, has an big impact on the $euclidean$ metric, while the scores using $cosine$ were relatively stable. Using the $CountVectorizer$ caused the accuracy to drop significantly in combination with the $euclidean$ metric, while using $TFIDF$ gives the accuracies as shown in Figure \ref{fig:hdbscan_parameters}. The second parameter defines the minimum size of a cluster and depends heavily on the dataset. In our case we have clusters with sizes ranging from 1 to 450. We consider clusters with size one as noise, which is why we start with two and evaluate sizes up to nine. The evaluation shows, that a score too low such as $min\_cluster\_size=2$, will lead to an low accuracy, since the granularity of clustering starts to get too small. Increasing the $min\_cluster\_size$ eventually leads to another drop in accuracy, since we start to loose more clusters the higher the minimum size is set to. The optimum results are achieved with a $min\_cluster\_size$ of 4 or 5.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{hdbscan_parameters}
+    \caption{Accuracies for different parameters}
+    \label{fig:hdbscan_parameters}
+\end{figure}
+
+
+Being able to handle noise is one of the advantages of HDBSCAN has over the other clustering algorithms. It is reasonable to expect to have a lot of noise in the incoming stream of news articles, once the algorithm is applied in an online setting. However this evaluation is done with a labeled static dataset, containing a minimum amount of noise. The noise ratio shown in Figure \ref{fig:noise_ratio_samples} is much higher, than we would expect from the test data. One reason is that clusters lower than the threshold $min\_cluster\_size$ will be classified as noise. Although considering the optimum accuracy can be obtained by using $min\_cluster\_size=5$ only approximately $2\%$ of clusters will drop out due to the minimum size. This does explain the noise ratio of up to $50\%$. Another possibility is that the data does contain a high number of noisy news articles, but considering the initial substantial effort into cleaning the test data, we estimate the noise ratio to be in the single digit range, rather than anywhere near $40\%$ to $50\%$. 
+
+% experiment with min_samples
 
 \begin{figure}[h]
     \centering
@@ -54,15 +68,5 @@ Being able to handle noise is one of the advantages of HDBSCAN has over the othe
     \label{fig:noise_ratio_samples}
 \end{figure}
 
-% Explain the high noise rate
 
-% Show different samples
-
-So far we have looked at data provided by the most accurate parameter combination. Figure \ref{fig:hdbscan_parameters} shows the accuracies of two essential parameters for using HDBSCAN. 
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{hdbscan_parameters}
-    \caption{Accuracies for different parameters}
-    \label{fig:hdbscan_parameters}
-\end{figure}
+The evaluation has shown HDBSCAN to be a good candidate to use for news clustering. It provides an better accuracy than K-means, while being much faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. The ideal parameters for our dataset are $cosine$ as the distance metric and 4 or 5 as the minimum cluster size. On the flip side the noise ratio is quite high and the space complexity is problematic with larger datasets. Overall HDBSCAN provides a acceptable accuracy, while still leaving room for major improvements.
