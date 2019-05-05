@@ -61,8 +61,7 @@ def load_from_db_by_stories(nstories, skip_stories=0):
     story_sql = (
         "SELECT story" 
         " FROM news_article" 
-        " WHERE"
-        "     newspaper_processed = 1"
+        " WHERE newspaper_processed = 1"
         "     AND title_keywords_intersection = 1"
         "     AND hostname != 'newsledge.com'"
         "     AND hostname != 'www.newsledge.com'"
