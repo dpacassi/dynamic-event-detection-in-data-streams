@@ -3,11 +3,14 @@ import os
 import utils
 import argparse
 import time
-
+import collections
+from itertools import chain
 from dotenv import load_dotenv
 from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import TfidfVectorizer
 from datasketch import MinHash, MinHashLSH
+from datetime import datetime
+from datetime import timedelta
 
 script_name = os.path.basename(__file__)
 
@@ -47,9 +50,12 @@ def cluster_news(news_articles):
 
     # Clusters are identified by a sorted string of news ids
     return (
-        utils.convert_labels_to_cluster_identifier(labels, list(news_articles.index.values)),
+        utils.convert_labels_to_cluster_identifier(
+            labels, list(news_articles.index.values)
+        ),
         news_articles["date"].values[0],
     )
+
 
 def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
     changed_clusters = []
@@ -101,6 +107,41 @@ def create_minhash(identifier):
     return m
 
 
+def find_true_events(new_news_ids, existing_news_ids):
+    new_stories = get_stories_from_news_ids(new_news_ids)
+    existing_stories = get_stories_from_news_ids(existing_news_ids)
+
+    addition_events = len(new_stories.keys() - existing_stories.keys())
+    deletion_events = len(existing_stories.keys() - new_stories.keys())
+
+    change_events = []
+    unchanged_events = []
+
+    for story, news_ids in new_stories.items():
+        existing_ids = existing_stories[story]
+        additions = news_ids - existing_ids
+        deletions = existing_ids - news_ids
+        if len(additions) > 0 and len(deletions) > 0:
+            change_events.append(
+                {"story": story, "additions": additions, "deletions": deletions}
+            )
+
+    return change_events, addition_events, deletion_events
+
+
+def get_stories_from_news_ids(news_ids):
+    if len(news_ids) == 0:
+        return dict()
+
+    news = db.load_news_by_ids(news_ids)
+
+    news_by_story = collections.defaultdict(set)
+    for index, row in news.iterrows():
+        news_by_story[row["story"]].add(row["id"])
+
+    return news_by_story
+
+
 def run(date, rows, full_cluster=False, verbose=False):
     # The online method works by regularly fetching articles from a certain date
     # and cluster them. Once in a while the whole (limited by nrows) dataset will be clustered again.
@@ -122,10 +163,15 @@ def run(date, rows, full_cluster=False, verbose=False):
             existing_clusters, clusters
         )
 
+        n_addition_events = 0
+        n_change_events = 0
+        n_deletion_events = 0
+
         # Add new clusters
         for cluster in new_clusters:
             cluster_id = db.add_cluster(cluster)
             db.add_event(Event.TOPIC_ADDED, cluster_id)
+            n_addition_events += 1
 
         # Process changed clusters
         for cluster in changed_clusters:
@@ -152,22 +198,42 @@ def run(date, rows, full_cluster=False, verbose=False):
                 or "deletions" in changes
                 and len(changes["deletions"]) > 0
             ):
+                n_change_events += 1
                 db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
 
+        # Get true events based on labeled test data
+        new_news_ids = list(
+            chain.from_iterable([identifier.split(",") for identifier in new_clusters])
+        )
+        existing_news_ids = list(
+            chain.from_iterable(
+                [identifier.split(",") for identifier in existing_clusters["identifier"]]
+            )
+        )
+
+        new_rows = len(set(new_news_ids) - set(existing_news_ids))
+        true_change_events, true_addition_events, true_deletion_events = find_true_events(
+            new_news_ids, existing_news_ids
+        )
+
         if verbose:
-            print("----------------------")
-            print("Changed clusters:")
-            print(changed_clusters)
-            print("Unchanged clusters:")
-            print(unchanged_clusters)
-            print("New clusters:")
-            print(new_clusters)
             print("----------------------")
             print("Statistics:")
             print("Number of changed clusters:", len(changed_clusters))
             print("Number of unchanged clusters:", len(unchanged_clusters))
             print("Number of new clusters:", len(new_clusters))
             print("----------------------")
+            print("Events:")
+            print("Topic added: {} detected, {} true".format(n_addition_events, true_addition_events))
+            print("Topic changed: {} detected, {} true".format(n_change_events, len(true_change_events)))
+            print("Topic deleted: {} detected, {} true".format(n_deletion_events, true_deletion_events))
+
+        result = {
+            "topic_added": {"detected": n_addition_events , "true": true_addition_events},
+            "topic_changed": {"detected": n_change_events, "true": len(true_change_events)},
+            "topic_deleted": {"detected": n_deletion_events , "true": true_deletion_events}
+        }
+        
 
     except ArithmeticError as err:
         if verbose:
@@ -181,12 +247,12 @@ def run(date, rows, full_cluster=False, verbose=False):
     end = time.time()
     processing_time = end - start
     db.add_script_execution(
-        script_name, str(last_processed_date), failed, log_message, processing_time
+        script_name, str(last_processed_date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows
     )
 
 
 # Test run:
-# Start with partial clusters:
+# Single runs with partial clusters:
 # * python data_processing/online_clustering.py --date "2014-03-11 00:00:00"
 # * python data_processing/online_clustering.py --date "2014-03-11 12:00:00"
 # * python data_processing/online_clustering.py --date "2014-03-12 12:00:00" --rows 2000
@@ -196,10 +262,12 @@ def run(date, rows, full_cluster=False, verbose=False):
 # Finally do a full cluster:
 # * python data_processing/online_clustering.py --rows 5000
 
+
+# Simulation:
+# * python data_processing/online_clustering.py --date "2014-03-11 00:00:00" --run_n_days 2 --full_rows 10000 --rows 2000 --verbose
+
 # ToDos:
 # Detect type of change:
-# * Topic addition
-# * Topic change
 # * Topic deletion
 # Add most important keyterms to name a cluster
 #
@@ -214,7 +282,9 @@ if __name__ == "__main__":
     ap.add_argument("--full-cluster", dest="full_cluster", action="store_true")
     ap.add_argument("--verbose", dest="verbose", action="store_true")
     ap.add_argument("--rows", required=False, type=int, default=1000)
+    ap.add_argument("--full_rows", required=False, type=int, default=10000)
     ap.add_argument("--date", required=False, type=str, default=None)
+    ap.add_argument("--run_n_days", required=False, type=int, default=0)
     ap.set_defaults(full_cluster=False)
     ap.set_defaults(verbose=False)
     args = vars(ap.parse_args())
@@ -223,5 +293,25 @@ if __name__ == "__main__":
     rows = args["rows"]
     date = args["date"]
     verbose = args["verbose"]
+    run_n_days = args["run_n_days"]
+    full_rows = args["full_rows"]
 
-    run(date, rows, full_cluster, verbose)
+
+    if run_n_days > 0:
+        # run the simulation:
+        current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+        end_date = current_date + timedelta(days=run_n_days)
+        while current_date < end_date:
+
+            if verbose:
+                print("Date: " current_date)
+                
+            if current_date.hour == 0:
+                run(current_date, full_rows, True, verbose)
+            else:
+                run(current_date, rows, False, verbose)
+                
+            current_date += timedelta(hours=1)
+        
+    else:
+        run(date, rows, full_cluster, verbose)

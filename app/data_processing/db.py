@@ -31,20 +31,20 @@ def get_last_script_execution(name):
 
 
 def add_script_execution(
-    name, last_processed_date, failed, log_message, processing_time
+    name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows
 ):
     connection = get_connection()
 
     insert_sql = (
         "INSERT INTO script_execution"
-        " (script, last_processed_date, failed, log_message, processing_time)"
-        " VALUES ( %s, %s, %s, %s, %s)"
+        " (script, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     )
 
     with connection.cursor() as cursor:
         cursor.execute(
             insert_sql,
-            args=[name, last_processed_date, failed, log_message, processing_time],
+            args=[name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows],
         )
 
     connection.commit()
@@ -249,3 +249,18 @@ def write_evaluation_result_in_db(
 
     connection.close()
     return insert_id
+
+
+def load_news_by_ids(news_ids):
+    connection = get_connection()
+    id_str = ",".join(["'" + x + "'" for x in news_ids])
+
+    news_sql = (
+        "SELECT id, story"
+        " FROM news_article"
+        " WHERE id in ({}) ".format(id_str)
+    )
+
+    data = pandas.read_sql(sql=news_sql, con=connection)
+    connection.close()
+    return data

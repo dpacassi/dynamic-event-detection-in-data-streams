@@ -70,6 +70,10 @@ CREATE TABLE `data_database`.`script_execution` (
   `last_processed_date` DATETIME NOT NULL,
   `failed` TINYINT UNSIGNED NULL,
   `log_message` LONGTEXT NULL,
+  `result` LONGTEXT NULL,
+  `new_rows` INT NULL,
+  `nrows` INT NULL,
+  `is_full_cluster` TINYINT NULL,
   `processing_time` FLOAT NULL,
   `execution_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
