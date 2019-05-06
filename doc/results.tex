@@ -70,3 +70,16 @@ Being able to handle noise is one of the advantages of HDBSCAN has over the othe
 
 
 The evaluation has shown HDBSCAN to be a good candidate to use for news clustering. It provides an better accuracy than K-means, while being much faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. The ideal parameters for our dataset are $cosine$ as the distance metric and 4 or 5 as the minimum cluster size. On the flip side the noise ratio is quite high and the space complexity is problematic with larger datasets. Overall HDBSCAN provides a acceptable accuracy, while still leaving room for major improvements.
+
+\subsection{Evaluation of online clustering}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{event_detection_by_date}
+    \caption{Comparison between detected and true events}
+    \label{fig:event_detection_by_date}
+\end{figure}
+
+% analyse overlap size
+% show incoming news articles
+% show deletion events on full clusterings

@@ -225,13 +225,72 @@ def plot_cluster_difference_samples():
     plt.savefig('../../doc/images/cluster_difference_samples.png')
     plt.close(fig)
 
+# Detected events by date
+def plot_event_detection_by_date():
+    connection = db.get_connection()
+
+    sql = (
+        "select last_processed_date, result, new_rows, is_full_cluster from script_execution"
+        " where failed = 0"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["last_processed_date"].values
+
+    cosine_values = collections.defaultdict(list)
+    euclidean_values = collections.defaultdict(list)
+   
+    Y_pred_add_events = []
+    Y_pred_change_events = []
+    Y_true_add_events = []
+    Y_true_change_events = []
+
+    for index, row in data.iterrows():
+        result = json.loads(row["result"].replace("'", '"'))
+
+        Y_pred_add_events.append(result["topic_added"]["detected"])
+        Y_pred_change_events.append(result["topic_changed"]["detected"])
+        Y_true_add_events.append(result["topic_added"]["true"])
+        Y_true_change_events.append(result["topic_changed"]["true"])
+        
+    fig = plt.figure(figsize=(15,5))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(X, Y_pred_add_events, label='Detected')
+    plt.plot(X, Y_true_add_events, label='True')
+    plt.xlabel('Time')
+    plt.ylabel('Number of events')
+    plt.title("Event: topic added")
+    plt.legend()
+    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+
+    plt.subplot(1, 2, 2)
+
+    plt.plot(X, Y_pred_change_events, label='Detected')
+    plt.plot(X, Y_true_change_events, label='True')
+    plt.xlabel('Time')
+    plt.ylabel('Number of events')
+    plt.title("Event: topic changed")
+    plt.legend()
+    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+
+    plt.savefig('../../doc/images/event_detection_by_date.png')
+    plt.close(fig)
 
 # TODO Accuracy by different vectorizer with hdbscan
 # TODO Accuracy by different preprocessing and vectorizer with hdbscan
 
+
+# Clustering method evaluation
 plot_accuracy_samples()
 plot_processing_time_samples()
 plot_cluster_difference_samples()
 plot_noise_ratio_samples()
 plot_different_clusterings()
 plot_hdbscan_parameters()
+
+# Online clustering evaluation
+plot_event_detection_by_date()
