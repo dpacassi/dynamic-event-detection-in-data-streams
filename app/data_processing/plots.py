@@ -157,6 +157,9 @@ def plot_hdbscan_parameters():
 
     for size, values in Y_min_cluster_sizes.items():
         Y = [max(x) for x in values.values()]
+        if len(Y) < len(X):
+            Y += [0] * (len(X) - len(Y))
+
         plt.plot(X, Y, label="m = {}".format(size))
 
     plt.xlabel('Number of news articles')
@@ -176,7 +179,7 @@ def plot_noise_ratio_samples():
 
     # TODO with different min_cluster_sizes
     sql = (
-        "select avg(m.n_noise / m.sample_size) as n_noise, m.sample_size from method_evaluation as m"
+        "select min(m.n_noise / m.sample_size) as n_noise, m.sample_size from method_evaluation as m"
         " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
         " group by m.sample_size"
     )
