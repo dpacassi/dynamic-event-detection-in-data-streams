@@ -62,10 +62,11 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
     unchanged_clusters = []
     new_clusters = []
 
-    lsh = MinHashLSH(threshold=0.9, num_perm=128)
-
+    lsh = MinHashLSH(threshold=0.8, num_perm=256)
+    min_hashes = dict()
     for index, cluster in existing_clusters.iterrows():
         m = create_minhash(cluster["identifier"])
+        min_hashes[index] = m
         lsh.insert(index, m)
 
     for identifier in new_cluster_identifiers:
@@ -75,7 +76,7 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
         if len(cluster_ids) == 0:
             new_clusters.append(identifier)
         else:
-            cluster_id = int(cluster_ids[0])
+            cluster_id = find_best_match(m, min_hashes, cluster_ids)
             existing_identifier = existing_clusters.loc[cluster_id]["identifier"]
             existing_news = set(existing_identifier.split(","))
             new_news = set(identifier.split(","))
@@ -99,8 +100,19 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
     return changed_clusters, unchanged_clusters, new_clusters
 
 
+def find_best_match(min_hash, min_hashes, cluster_ids):
+    best_match = 0
+    best_similarity = 0
+    for cluster_id in cluster_ids:
+        similarity = min_hash.jaccard(min_hashes[cluster_id])
+        if similarity > best_similarity:
+            best_similarity = similarity
+            best_match = cluster_id
+    return best_match
+
+
 def create_minhash(identifier):
-    m = MinHash(num_perm=128)
+    m = MinHash(num_perm=256)
     for d in set(identifier.split(",")):
         m.update(d.encode("utf8"))
 
@@ -115,16 +127,16 @@ def find_true_events(new_news_ids, existing_news_ids):
     deletion_events = len(existing_stories.keys() - new_stories.keys())
 
     change_events = []
-    unchanged_events = []
 
-    for story, news_ids in new_stories.items():
-        existing_ids = existing_stories[story]
-        additions = news_ids - existing_ids
-        deletions = existing_ids - news_ids
-        if len(additions) > 0 and len(deletions) > 0:
-            change_events.append(
-                {"story": story, "additions": additions, "deletions": deletions}
-            )
+    if len(existing_stories) > 0:
+        for story, news_ids in new_stories.items():
+            existing_ids = existing_stories[story]
+            additions = news_ids - existing_ids
+            deletions = existing_ids - news_ids
+            if len(additions) > 0 and len(deletions) > 0:
+                change_events.append(
+                    {"story": story, "additions": additions, "deletions": deletions}
+                )
 
     return change_events, addition_events, deletion_events
 
@@ -265,6 +277,7 @@ def run(date, rows, full_cluster=False, verbose=False):
 
 # Simulation:
 # * python data_processing/online_clustering.py --date "2014-03-11 00:00:00" --run_n_days 2 --full_rows 10000 --rows 2000 --verbose
+#  2014-05-01 might be a better date to start
 
 # ToDos:
 # Detect type of change:
@@ -299,14 +312,16 @@ if __name__ == "__main__":
 
     if run_n_days > 0:
         # run the simulation:
+        db.reset_online_evaluation()
         current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
         end_date = current_date + timedelta(days=run_n_days)
         while current_date < end_date:
 
             if verbose:
-                print("Date: " current_date)
+                print()
+                print("Date: ", current_date)
                 
-            if current_date.hour == 0:
+            if current_date.hour == 0 or current_date.hour == 24:
                 run(current_date, full_rows, True, verbose)
             else:
                 run(current_date, rows, False, verbose)

@@ -2,6 +2,14 @@
 
 \subsection{Evaluation of clustering methods}
 
+TODO start with setup and show all parameters to be used 
+
+TODO go through the whole process and show best accuracies in the end
+
+TODO include preprocessing
+
+TODO show error bars und use logarithmic scales where necessary
+
 The goal of this evaluation is to find an accurat clustering method for working with news articles. The most suitable algorithm will then be used for the online approach of detecting changes in a news stream based on stories.
 
 
@@ -18,7 +26,6 @@ To begin the evaluation, we first compare six different clustering methods with 
 
 Increasing the sample size results for both HDBSCAN and K-means in a small loss regarding the accuracy as can be seen in figure \ref{fig:accuracy_kmeans_hdbscan}. However the accuracy seems to stabilize around the 0.7 mark. The drop in the beginning is due to the fact, that for each run, we load the news articles based 
 
-% TODO fix error in data collection
 
 \begin{figure}[h]
     \centering
@@ -73,11 +80,20 @@ The evaluation has shown HDBSCAN to be a good candidate to use for news clusteri
 
 \subsection{Evaluation of online clustering}
 
+TODO new topic, topic extended
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_by_date}
     \caption{Comparison between detected and true events}
     \label{fig:event_detection_by_date}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{event_detection_overlap}
+    \caption{Plot work in progress}
+    \label{fig:event_detection_overlap}
 \end{figure}
 
 % analyse overlap size

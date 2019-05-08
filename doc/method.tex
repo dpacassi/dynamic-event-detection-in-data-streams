@@ -1,50 +1,30 @@
 \section{Method}
 
-% TODO define proper outline
-
-% TODO introductionary paragraph
+TODO introductionary paragraph
 
 \subsection{Test Data}
 
 The first important step is to create a test data set to run the evaluations with and verify them.
 
-% TODO explain the source and structrue
+TODO explain the source and structrue
 
 \subsection{Clustering methods}
 
 Clustering finds similarities in different news articles based on their content and groups them together, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
 
-An initial evaluation (Table \ref{tab:first_evaluation}) shows a selection of potential clustering methods. The selection was done based on the criteria, that the number of clusters is unkown. Many clustering methods as for example K-Means require to know the number of clusters, which we cannot provide once we work with dynamic data. Based on this first evaluation and its property to be able to handle noise, we decided to focus on HDBSCAN as our main clustering method. Further evaluations will be done in comparison with K-Means, since it is one of the most commonly used clustering algorithm [insert citation]. K-Means will be run with the true number of clusters and an approximation based on $\sqrt{n}$.
-
-% TODO update numbers. and 
-% add number of clusters into table
-\begin{table}[h]
-    \centering
-    \label{tab:first_evaluation}
-    \begin{tabular}{|l|l|l|l|}
-    \hline
-    \textbf{Algorithm} & \textbf{NMI} & \textbf{Completeness}  & \textbf{Average Processing Time (in seconds)} \\ \hline
-    affinity\_propagation & \textbf{0.74} & 0.51 & 14.42 \\ \hline
-    hdbscan & 0.73 & \textbf{0.68} & \textbf{0.3} \\ \hline
-    birch & 0.64 & 0.14 & 1.27 \\ \hline
-    spectral\_clustering & 0.55 & 0.44  & 461.21 \\ \hline
-    hdbscan\_lda & 0.51 & 0.43 & 154.53 \\ \hline
-    meanshift & 0.33 & 0.06  & 440.74 \\ \hline
-    \end{tabular}
-    \caption{Write a caption}
-\end{table}
+TODO why hdbscan
 
 \subsubsection{HDBSCAN}
 
 HDBSCAN is a hierarchical density-based clustering algorithm \cite{McInnes2017}. It extends the well known [insert citation] DBSCAN algorithm and reduces its sensitivity for clusters of varying densities. Another important quality of HDBSCAN is, that it does not need to know the number of clusters up front.
 
-% TODO explain some more
+ TODO explain some more
 
 \subsubsection{K-means}
 
 KMeans is a centroid-based clustering algorithm. 
 
-% TODO explain some more
+ TODO explain some more
 
 \subsubsection{Preprocessing}
 
@@ -54,6 +34,10 @@ KMeans is a centroid-based clustering algorithm.
 % Tfidf
 
 \subsubsection{Score calculation}
+
+TODO specific examples
+
+TODO why is it better than NMI?
 
 The scoring function is essential for measuring the result of a clustering method. The score should tell us how close the resulting clusters are to the ground truth and give us an intuitive understanding about the quality of the clusters. One of the challenges when comparing one clustering with the other, is that the differnet clusters do not share the same label across different clusterings. Which is why scoring functions used for clusterings typically ignore the labels and focus on the shape of a cluster.
 

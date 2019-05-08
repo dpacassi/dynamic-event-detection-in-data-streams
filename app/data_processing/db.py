@@ -131,9 +131,16 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
     get_sql = (
         "SELECT *"
         " FROM news_article"
-        " WHERE"
-        "     newspaper_processed = 1"
-        "     AND newspaper_text != ''"
+        " WHERE newspaper_processed = 1"
+        "     AND title_keywords_intersection = 1"
+        "     AND hostname != 'newsledge.com'"
+        "     AND hostname != 'www.newsledge.com'"
+        "     AND newspaper_text IS NOT NULL"
+        "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "     AND newspaper_text NOT LIKE '%%404%%'"
+        "     AND newspaper_text NOT LIKE '%%cookie%%'"
         "     AND date <= %s"
         " ORDER BY date DESC"
         " LIMIT %s, %s"
@@ -264,3 +271,22 @@ def load_news_by_ids(news_ids):
     data = pandas.read_sql(sql=news_sql, con=connection)
     connection.close()
     return data
+
+
+def reset_online_evaluation():
+    connection = get_connection()
+
+    sql = "DELETE from cluster where method_evaluation_id is null"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        connection.commit()
+
+    sql = "TRUNCATE script_execution"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        connection.commit()
+
+
+    connection.close()

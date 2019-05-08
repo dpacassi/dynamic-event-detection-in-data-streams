@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
 import pandas
 import json
@@ -264,6 +265,11 @@ def plot_event_detection_by_date():
     plt.subplot(1, 2, 1)
     plt.plot(X, Y_pred_add_events, label='Detected')
     plt.plot(X, Y_true_add_events, label='True')
+
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d.%m'))
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    plt.gcf().autofmt_xdate()
+
     plt.xlabel('Time')
     plt.ylabel('Number of events')
     plt.title("Event: topic added")
@@ -274,13 +280,60 @@ def plot_event_detection_by_date():
 
     plt.plot(X, Y_pred_change_events, label='Detected')
     plt.plot(X, Y_true_change_events, label='True')
-    plt.xlabel('Time')
+
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d.%m'))
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    plt.gcf().autofmt_xdate()
+
+    plt.xlabel('Time')    
     plt.ylabel('Number of events')
     plt.title("Event: topic changed")
     plt.legend()
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
 
     plt.savefig('../../doc/images/event_detection_by_date.png')
+    plt.close(fig)
+
+
+def plot_event_detection_overlap():
+    connection = db.get_connection()
+
+    sql = (
+        "select (nrows - new_rows) / nrows as overlap, result, new_rows, nrows, is_full_cluster from script_execution"
+        " where failed = 0"
+        " order by overlap"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["overlap"].values
+
+    Y_error_add = []
+    Y_error_change = []
+
+    for index, row in data.iterrows():
+        result = json.loads(row["result"].replace("'", '"'))
+
+        topics_added = result["topic_added"]
+        topic_changed = result["topic_changed"]
+
+        Y_error_add.append(abs(topics_added["detected"] - topics_added["true"]))
+        Y_error_change.append(abs(topic_changed["detected"] - topic_changed["true"]))
+        
+    fig = plt.figure()
+
+    plt.plot(X, Y_error_add, label='Error Additions')
+    plt.plot(X, Y_error_change, label='Error Changes')
+
+    plt.xlabel('Overlap')
+    plt.ylabel('Detection Error')
+    plt.title("Errors in detected events over cluster overlap")
+    plt.legend()
+    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+
+
+    plt.savefig('../../doc/images/event_detection_overlap.png')
     plt.close(fig)
 
 # TODO Accuracy by different vectorizer with hdbscan
@@ -297,3 +350,4 @@ plot_hdbscan_parameters()
 
 # Online clustering evaluation
 plot_event_detection_by_date()
+plot_event_detection_overlap()
