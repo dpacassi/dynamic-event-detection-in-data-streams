@@ -25,6 +25,7 @@ from sklearn.cluster import (
 import db
 import utils
 import test_data
+import score
 
 from result import Result
 
@@ -218,7 +219,7 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            corrected_avg_unique_accuracy, avg_unique_accuracy = self.calculate_precision(
+                            corrected_avg_unique_accuracy, avg_unique_accuracy = self.calculate_cluster_accuracy(
                                 labels, self.labels_true
                             )
                             method_id = self.store_result_to_db(
@@ -274,35 +275,18 @@ class ClusterMethods:
             float(result.processing_time),
         )
 
-    def calculate_precision(self, labels, labels_true):
+    def calculate_cluster_accuracy(self, labels, labels_true):
         cluster_identifiers = utils.convert_labels_to_cluster_identifier(
             labels, self.document_ids
         )
         true_identifiers = utils.convert_labels_to_cluster_identifier(
             labels_true, self.document_ids
         )
-        accuracy_matrix = self.create_accuracy_matrix(true_identifiers, cluster_identifiers)
-        number_of_true_clusters = len(true_identifiers)
-        number_of_predicted_clusters = len(cluster_identifiers)
 
-        print("Create Score")
-        start = time.time()
-
-        unique_indicies = self.select_max_values(accuracy_matrix)
-
-        avg_unique_accuracy = self.sum_unique_values(unique_indicies) / number_of_true_clusters
-        
-        # Add the difference between predicted and true number of clusters if larger than 0. This way both cases with 
-        # too many and too few predicted clusters will be reflected in the score. By simply averaging by number of true clustes
-        # only too few predicted clusters will have an effect on the score, since clusters without a pairing are counted as 0. 
-        # But too many will not change the score, since each true cluster found a predicted cluster accuracy, therefore leading
-        # to a good score, eventhough there might be a big difference in number of predicted clusters vs. true clusters.
-        corrected_avg_unique_accuracy = self.sum_unique_values(unique_indicies) / (number_of_true_clusters + max(0, number_of_predicted_clusters - number_of_true_clusters))
-
-        end = time.time()
-        print("Finished  score calculation in ", (end - start))
-
-        # Return both for validation of corrected accuracy
+        true_clusters = [true_identifier.split(',') for true_identifier in true_identifiers]
+        predicted_clusters = [cluster_identifier.split(',') for cluster_identifier in cluster_identifiers]
+        corrected_avg_unique_accuracy, avg_unique_accuracy = score.cluster_accuracy(true_clusters, predicted_clusters)
+       
         return corrected_avg_unique_accuracy, avg_unique_accuracy
 
     def sum_unique_values(self, unique_indicies):
