@@ -35,10 +35,6 @@ KMeans is a centroid-based clustering algorithm.
 
 \subsubsection{Score calculation}
 
-TODO specific examples
-
-TODO why is it better than NMI?
-
 The scoring function is essential for measuring the result of a clustering method. The score should tell us how close the resulting clusters are to the ground truth and give us an intuitive understanding about the quality of the clusters. One of the challenges when comparing one clustering with the other, is that the differnet clusters do not share the same label across different clusterings. Which is why scoring functions used for clusterings typically ignore the labels and focus on the shape of a cluster.
 
 Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI calculates the mutual information between two clusterings and normalizes the result by dividing through a generalized mean of the entropy of each clustering. % TODO better description.
@@ -46,6 +42,7 @@ The score proved to work well for our initial evaluations and manual samplings v
 
 % TODO explain the reason for the big difference
 
+TODO add number of estimated clusters
 \begin{table}[h]
     \centering
     \begin{tabular}{|l|l|l|l|}
@@ -58,14 +55,49 @@ The score proved to work well for our initial evaluations and manual samplings v
     \label{tab:nmi_kmeans_example}
 \end{table}
 
-To get a more accurate score based on the documents inside a cluster, we developed our own scoring function. The scoring function first calculates the accuracy for each combination of two clusters, where each clusters belongs to a different clustering. We define the accuracy as
+To get a more accurate score based on the documents inside a cluster, we developed our own scoring function. 
+
+\paragraph{Calculating the score}
+
+The scoring function first calculates the accuracy for each combination of two clusters, where each clusters belongs to a different clustering. We define the accuracy as
 
 \begin{equation}
     \label{equ:accuracy}
-        \frac{n_{true}}{n_{true} + fp + fn}
-    \end{equation}
+    \frac{n_{true}}{n_{true} + fp + fn}
+\end{equation}
 
-where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. As a next step a selection process is used to find relevant accuracy values from each row of the accuracy matrix. 
+where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. To illustrate this step with an example, we use $T$ and $C$ as our clusterings, where $T$ is the true clustering and $C$ is the predicted clustering. The clusterings are defined as follows:
+
+\begin{gather*}
+    T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\} \\
+    C = \{\{1,2\},\{3,4,5,6\},\{7\},\{8,9\}\}
+\end{gather*}
+
+We calculate the accuracy as defined in Equation \ref{equ:accuracy}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
+
+\begin{align*}
+    accuracy(t_1,c_1) &= \frac{n_{true}}{n_{true} + fp + fn} \\
+    &= \frac{|t_1|}{|t_1| + |c_1 - t_1| + |t_1 - c_1|} \\
+    &= \frac{3}{ 3 + |\{\emptyset\}| + |\{3\}|} = \frac{3}{ 3 + 0 + 1} \\
+    &= \frac{3}{4} = 0.75 \\
+\end{align*}
+
+After doing this for each possible pair we get the accuracy matrix $A$:
+
+\begin{gather*}
+\begin{array}{rcl}
+    A = & \left(\begin{array}{cccc}
+        accuracy(t_1,c_1) & \hdots & \hdots & accuracy(t_1,c_4)\\
+        \vdots & \vdots & \vdots & \vdots\\
+        accuracy(t_3,c_3) & \hdots & \hdots & accuracy(t_3,c_4) \end{array}\right)
+        = & \left(\begin{array}{cccc}
+            0.75 & 0.375 & 0.427 & 0.375 \\
+            0.4 & 0.667 & 0.571 & 0.4 \\
+            0.333 &  0.25 & 0.4 & 1.0 \end{array}\right)
+\end{array}
+\end{gather*}
+
+As a next step we have to select the most relevant accuracy values from each row of the accuracy matrix. 
 
 Finding relevant values in the accuracy matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
 \begin{enumerate} 
@@ -73,60 +105,31 @@ Finding relevant values in the accuracy matrix non-trivial, since clusters do no
 \item Each cluster can be associated with a cluster from another clustering only once.
 \end{enumerate}
 
-Based on those assumptions we select the highest accuracy value per row, whose column is not already associated with another row. Listing \ref{lst:select_max_values} shows the selection process in more detail. 
+Based on those assumptions we select the highest accuracy value per row, whose column is not already associated with another row. Applying this selection function $f$ to our previously calculated accuracy matrix $A$ results in the set containing the most relevant accuracy values.
 
-\begin{lstlisting}[language=Python, caption=Select relevant accuracy values from a accuracy matrix., label={lst:select_max_values}]
-def select_max_values(self, accuracy_matrix):
-    unique_indicies = dict()
-    row_index = 0
-    nrows = len(accuracy_matrix)
-    
-    while row_index < nrows:
-        ignore_indicies = set()
-        max_value_found = False
+\begin{gather*}
+    \begin{array}{rcl}
+        f(A) = & \left(\begin{array}{cccc}
+                \mathbf{0.75} & 0.375 & 0.427 & 0.375 \\
+                0.4 & \mathbf{0.667} & 0.571 & 0.4 \\
+                0.333 &  0.25 & 0.4 & \mathbf{1.0} \end{array}\right)
+            = \{0.75, 0.667, 1\}
+    \end{array}
+\end{gather*}
 
-        while not max_value_found:
-            max_value = 0
-            column = 0
-            for col_index, value in enumerate(accuracy_matrix[row_index]):
-                if value >= max_value and col_index not in ignore_indicies:
-                    max_value = value
-                    column = col_index
+As we can see, there were no collisions between columns and we simply get the highest value per row. Consider the following example with an accuracy matrix $B$, which does contain a collision:
 
-            if (
-                max_value > 0
-                and column in unique_indicies
-                and unique_indicies[column]["row_index"] != row_index
-                and unique_indicies[column]["max_value"] > 0
-            ):
-                if unique_indicies[column]["max_value"] < max_value:
-                    # The column is already used, but we found a better 
-                    # candidate. We use the new candidate and set the 
-                    # cursor to the old one to find a new max value.
-                    old_row_index = unique_indicies[column]["row_index"]
-                    unique_indicies[column]["row_index"] = row_index
-                    row_index = old_row_index
-                    unique_indicies[column]["max_value"] = max_value
-                    max_value_found = True
-                else:
-                    # The column is already used by a better candidate.
-                    ignore_indicies.add(column)
-            else:
-                # If max_value is greater than 0, we store the value as a 
-                # new candiate. Otherwise either the row does not match 
-                # any other column or the max_value was low and got 
-                # overriden by previous tries and no other match is available. 
-                if max_value > 0:
-                    # The column is free to use
-                    unique_indicies[column] = {
-                        "row_index": row_index,
-                        "max_value": max_value,
-                    }
-                max_value_found = True
-                row_index += 1
-    
-    return unique_indicies
-\end{lstlisting}
+\begin{gather*}
+    \begin{array}{rcl}
+        f(B) = & \left(\begin{array}{cccc}
+            \mathbf{0.75} & 0.375 & 0.427 & 0.375 \\
+            0.4 & \mathbf{0.667} & 0.571 & \textcolor{red}{0.8} \\
+            0.333 &  0.25 & 0.4 & \mathbf{1.0} \end{array}\right)
+            = \{0.75, 0.667, 1\}
+    \end{array}
+\end{gather*}
+
+The selected accuracy for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row with an accuracy greater than 0.8, therefore based on our assumption that clusters cannot be associated twice, the second highest accuracy is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
 
 As a final step the average is calculated from the sum of the accuracy with respect to the difference in predicted clusters to the true amount of clusters. In case the predicted amount is lower a normal average will already result in a lower score, since each real cluster without a matching predicted cluster counts as zero. However if there are more predicted clusters than true ones, each true cluster will have a value and the score would appear the same as if there was a perfect prediction in the amount of clusters. To take this into account, the difference is added to the number of true clusters as shown in Equation \ref{equ:avg_accuracy}.
 
@@ -135,8 +138,18 @@ As a final step the average is calculated from the sum of the accuracy with resp
         \frac{s_{accuracy}}{c_{true} + max(0, c_{predicted} - c_{true})}
 \end{equation}
 
-Where $s_{accuracy}$ is the sum of the accuracy values, $c_{predicted}$ is the number of predicted clusters and $c_{true}$ is the number of true clusters.
+Where $s_{accuracy}$ is the sum of the accuracy values, $c_{predicted}$ is the number of predicted clusters and $c_{true}$ is the number of true clusters. Using our previously selected accuracy values $S = f(A) = \{0.75, 0.667, 1\}$ with  $c_{true}=3$ and $c_{predicted}=4$, the calculation for the final average would be done as follows:
 
+\begin{align*}
+    score &= \frac{\sum_{i=1}^{|S|} S_i}{c_{true} + max(0, c_{predicted} - c_{true})} \\
+    &= \frac{2.417}{3 + max(0, 4 - 3)} = \frac{2.417}{3 + max(0, 1)} \\
+    &= \frac{2.417}{3 + 1} = \frac{2.417}{4} \\
+    &= \mathbf{0.604}
+\end{align*}
+
+The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.604.
+
+\paragraph{Comparison against NMI}
 
 After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a second time using the average accuracy per clustering, the score (Table \ref{tab:avg_predict_kmeans_example}) for K-means is much lower than HDBSCAN. This reflects what we would expect based on the big difference in the amount of predicted clusters.
 
@@ -151,6 +164,9 @@ After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a sec
     \caption{K-Means has a higher NMI score than HDBSCAN, while having a much larger difference in number of clusters.}
     \label{tab:avg_predict_kmeans_example}
 \end{table}
+
+TODO why is it better than NMI?
+TODO show edge cases where our score is better (score\_examples.py)
 
 \subsection{Online Clustering}
 

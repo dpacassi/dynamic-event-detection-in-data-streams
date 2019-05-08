@@ -7,11 +7,11 @@ from sklearn.metrics import (
     silhouette_score,
 )
 from sklearn.metrics.cluster import normalized_mutual_info_score
-from score import cluster_accuracy
+import score
 
 
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
-    accuracy, _ = cluster_accuracy(true_clusters, predicted_clusters)
+    accuracy, _ = score.cluster_accuracy(true_clusters, predicted_clusters)
     nmi = normalized_mutual_info_score(true_labels, predicted_labels)
     completeness = completeness_score(true_labels, predicted_labels)
 
@@ -134,4 +134,20 @@ predicted_clusters = [
 predicted_labels = [3,1,2,1,3,2,1,2,2]
 
 nexperiment += 1
+compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
+
+
+# Thesis Example:
+predicted_clusters = [
+    [1,2],
+    [3,4,5,6],
+    [7],
+    [8,9]
+]
+
+predicted_labels = [1,1,2,2,2,2,3,4,4]
+
+nexperiment += 1
+matrix = score.create_accuracy_matrix(true_clusters, predicted_clusters)
+print(matrix)
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
