@@ -9,6 +9,14 @@ def cluster_accuracy(true_clusters, predicted_clusters):
         2. Select the most relevant values from the accuracy matrix and make sure no two clusters are being used 
            at the same time.
         3. Calculate the average with consideration for differences in number of clusters between true and predicted.
+    
+    Parameters
+    ----------
+    true_clusters: array[clusters]
+        2-dimensional array of true clusters
+    
+    predicted_clusters: array[clusters] 
+        2-dimensional array of predicted clusters
     """
     accuracy_matrix = create_accuracy_matrix(true_clusters, predicted_clusters)
     number_of_true_clusters = len(true_clusters)
