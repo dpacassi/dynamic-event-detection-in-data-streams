@@ -129,7 +129,7 @@ As we can see, there were no collisions between columns and we simply get the hi
     \end{array}
 \end{gather*}
 
-The selected accuracy for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row with an accuracy greater than 0.8, therefore based on our assumption that clusters cannot be associated twice, the second highest accuracy is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
+The selected accuracy for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row, while having an accuracy greater than 0.8. Therefore based on our assumption that clusters cannot be associated twice, the second highest accuracy is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
 
 As a final step the average is calculated from the sum of the accuracy with respect to the difference in predicted clusters to the true amount of clusters. In case the predicted amount is lower a normal average will already result in a lower score, since each real cluster without a matching predicted cluster counts as zero. However if there are more predicted clusters than true ones, each true cluster will have a value and the score would appear the same as if there was a perfect prediction in the amount of clusters. To take this into account, the difference is added to the number of true clusters as shown in Equation \ref{equ:avg_accuracy}.
 
