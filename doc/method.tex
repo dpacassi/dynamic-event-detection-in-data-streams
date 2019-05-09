@@ -142,7 +142,7 @@ Where $s_{accuracy}$ is the sum of the accuracy values, $c_{predicted}$ is the n
 
 \begin{align*}
     score &= \frac{\sum_{i=1}^{|S|} S_i}{c_{true} + max(0, c_{predicted} - c_{true})} \\
-    &= \frac{2.417}{3 + max(0, 4 - 3)} = \frac{2.417}{3 + max(0, 1)} \\
+    &= \frac{0.75 + 0.667 + 1}{3 + max(0, 4 - 3)} = \frac{2.417}{3 + max(0, 1)} \\
     &= \frac{2.417}{3 + 1} = \frac{2.417}{4} \\
     &= \mathbf{0.604}
 \end{align*}
@@ -157,7 +157,7 @@ After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a sec
     \centering
     \begin{tabular}{|l|l|l|l|}
     \hline
-    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{AVG Accuracy}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
+    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{Accuracy}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
     k-means & 19255 & 0.137 & 457 \\ \hline
     hdbscan & 19255 & 0.605 & 2 \\ \hline
     \end{tabular}
@@ -165,8 +165,29 @@ After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a sec
     \label{tab:avg_predict_kmeans_example}
 \end{table}
 
-TODO why is it better than NMI?
-TODO show edge cases where our score is better (score\_examples.py)
+The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our accuracy score, NMI and completeness. It is important to note that NMI and completeness work with cluster labels assigned to each document, instead of considing elements inside a single cluster. This means the clustering will be flattened into one dimension, where each document is assigned the label of the cluster it appeares in. The array containing the labels for the first scenario would look as follows: $C=[1,1,1,2,2,2,2,3,3]$.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    \multicolumn{5}{ |c| }{\textbf{Test scenarios with true clustering $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
+    \hline
+    Nr. & Predicted Clustering $C$ & NMI & Completeness & Accuracy \\ \hline
+    1 & $C = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$ & 1.0 & 1.0 & 1.0 \\ \hline
+    2 & $C = \{\{1,2\},\{3,4,5,6\},\{7,8,9\}\}$ & 0.564 & 0.564 & 0.694 \\ \hline
+    3 & $C = \{\{1,2,3\},\{4,5,6\},\{7\},\{8,9\}\}$ & 0.895 & 0.809 & 0.7 \\ \hline
+    4 & $C = \{\{1,2,3\},\{4,5\},\{6,7\},\{8\},\{9\}\}$ & 0.821 & 0.697 & 0.467 \\ \hline
+    5 & $C = \{\{1\},\{2\},\{3\},\{4\},\{5\},\{6\},\{7\},\{8\},\{9\}\}$ & 0.651 & 0.483 & 0.204 \\ \hline
+    6 & $C = \{\{1,2,3,4,5\},\{6,7,8,9\}\}$ & 0.434 & 0.552 & 0.367 \\ \hline
+    7 & $C = \{\{1,2,3,4,5,6,7,8,9\}\}$ & 0.0 & 1.0 & 0.148 \\ \hline
+    8 & $C = \{\{7,2,4\},\{8,9,6,3\},\{1,5\}\}$ & 0.219 & 0.219 & 0.524 \\ \hline
+    \end{tabular}
+    \caption{Direct comparison of different scoring functions}
+    \label{tab:score_scenarios}
+\end{table}
+
+TODO explain scores. why is it better than NMI?
 
 \subsection{Online Clustering}
 

@@ -5,21 +5,23 @@ from sklearn.metrics import (
     adjusted_rand_score,
     adjusted_mutual_info_score,
     silhouette_score,
+    normalized_mutual_info_score
 )
-from sklearn.metrics.cluster import normalized_mutual_info_score
 import score
 
 
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
     accuracy, _ = score.cluster_accuracy(true_clusters, predicted_clusters)
-    nmi = normalized_mutual_info_score(true_labels, predicted_labels)
+    nmi = normalized_mutual_info_score(true_labels, predicted_labels, average_method='arithmetic')
     completeness = completeness_score(true_labels, predicted_labels)
+    v_measure = v_measure_score(true_labels, predicted_labels)
 
     print("------------------")
     print("Example ", nexperiment)
-    print("Accuracy: ", accuracy)
-    print("NMI: ", completeness)
-    print("Completeness: ", completeness)
+    print("Accuracy: ", round(accuracy,3))
+    print("NMI: ", round(nmi,3))
+    print("Completeness: ", round(completeness,3))
+    print("V-Measure: ", round(v_measure,3))
     print()
 
 
@@ -51,7 +53,9 @@ predicted_clusters = [
     [7,8,9]
 ]
 
-predicted_labels = [1,1,2,2,2,2,3,3,3]
+predicted_labels = 
+[1,1,2,2,2,2,3,3,3]
+[1,1,1,2,2,3,3,4,5]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)

@@ -70,6 +70,7 @@ def plot_processing_time_samples():
     plt.plot(X, Y_kmeans, label='K-means')
     plt.xlabel('Number of news articles')
     plt.ylabel('Processing time in seconds')
+    plt.yscale('log')
     plt.title("Average Processing Time by number of samples")
     plt.legend()
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
@@ -80,28 +81,59 @@ def plot_processing_time_samples():
 def plot_accuracy_samples():
     connection = db.get_connection()
 
+    # Fixate hdbscan parameters and vectorizer for showing errors of best approach
+    parameters = '{"min_cluster_size": 4, "metric": "cosine"}'
+    vectorizer = 'TfidfVectorizer'
     sql = (
-        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.sample_size, m.method from method_evaluation as m"
-        " where m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null"
+        "select m.corrected_avg_unique_accuracy as accuracy, m.real_clusters, m.method from method_evaluation as m"
+        " where ((m.method = 'hdbscan' and m.parameters = %s) or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
+        " and vectorizer = %s"
         " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
         " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
-        " group by m.sample_size, m.method"
     )
 
-    data = pandas.read_sql(sql=sql, con=connection)
+    data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
     connection.close()
+    
+    def format_data(data, method):
+        accuracy_values = collections.defaultdict(list)
+        for index, row in data.iterrows():
+            if row["method"] == method:
+                accuracy_values[row["real_clusters"]].append(row["accuracy"])
+        
+        Y = []
+        Y_lower_err = []
+        Y_higher_err = []
+        for key, values in accuracy_values.items():
+            # It can be done more efficiently but this is only for a plot.
+            avg = sum(values) / len(values)
+            Y.append(avg)
+            Y_lower_err.append(avg - min(values)) 
+            Y_higher_err.append(max(values) - avg)
 
-    X = data["sample_size"].unique()
+        return Y, Y_lower_err, Y_higher_err
+
+    fig = plt.figure()
+
+    X = data[data['method']=='hdbscan']["real_clusters"].values
     Y_hdbscan = data[data['method']=='hdbscan']["accuracy"].values
     Y_kmeans = data[data['method']=='kmeans']["accuracy"].values
 
-    fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label='HDBSCAN')
-    plt.plot(X, Y_kmeans, label='K-means')
-    plt.xlabel('Number of news articles')
-    plt.ylabel('Average Accuracy')
+    plt.scatter(X, Y_hdbscan, marker='o', label='HDBSCAN')
+    plt.scatter(X, Y_kmeans, marker='^', label='K-means')
+
+    # X = data["real_clusters"].unique()
+
+    # Y, Y_lower_err, Y_higher_err = format_data(data, 'hdbscan')
+    # plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', label='HDBSCAN')
+
+    # Y, Y_lower_err, Y_higher_err = format_data(data, 'kmeans')
+    # plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', label='K-means')
+
+    plt.xlabel('Number of stories')
+    plt.ylabel('Accuracy')
     plt.ylim(top=1, bottom=0)
-    plt.title("Accuracy by number of samples")
+    plt.title("Accuracy by number of stories")
     plt.legend()
     plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
     plt.savefig('../../doc/images/accuracy_kmeans_hdbscan.png')
