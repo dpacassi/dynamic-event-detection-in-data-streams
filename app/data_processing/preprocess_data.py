@@ -1,18 +1,20 @@
-import os
 import sys
 import time
 import utils
-import pymysql
 import subprocess
 import pandas
 import db
 import preprocessing
+import datetime
 from newspaper import Article
 from dotenv import load_dotenv
 
 ######################################################################################
 # Check if the script is already running.
 ######################################################################################
+
+ts = str(datetime.datetime.now())
+print("[" + ts + "] Running preprocess_data.py")
 
 script_names = ['preprocess_data.py']
 
@@ -21,6 +23,7 @@ for script_name in script_names:
         "ps aux | grep -e '%s' | grep -v grep | awk '{print $2}'| awk '{print $2}'" % script_name
     )
     if status[1]:
+        print("Already running, exiting!")
         sys.exit(0)
 
 
@@ -101,6 +104,8 @@ while has_more:
     connection = db.get_connection()
     rows = pandas.read_sql(sql=get_sql, con=connection, index_col="id", params=[batch_size])
     connection.close()
+
+    print("Iterating...")
 
     nrows = len(rows)
     if nrows < batch_size:
@@ -206,6 +211,7 @@ while has_more:
                 )
                 connection.commit()
             connection.close()
+            print("Commited row")
         except:
             # Write to database with new connection.
             connection = db.get_connection()
@@ -213,4 +219,4 @@ while has_more:
                 cursor.execute(update_failed_sql, (index))
             connection.commit()
             connection.close()
-
+            print("Something failed!")
