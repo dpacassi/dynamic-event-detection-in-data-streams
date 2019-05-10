@@ -11,3 +11,4 @@ app/data_database/*
 !app/data_database/conf
 diff.html
 *.log
+*.lock
