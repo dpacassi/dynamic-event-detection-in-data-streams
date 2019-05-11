@@ -13,3 +13,4 @@ ipdb
 newspaper3k
 deepdiff
 filelock
+tabulate

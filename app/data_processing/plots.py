@@ -5,6 +5,8 @@ import pandas
 import json
 import db
 import collections
+
+from  tabulate import tabulate
 from dotenv import load_dotenv
 
 # Load environment variables.
@@ -371,15 +373,61 @@ def plot_event_detection_overlap():
 # TODO Accuracy by different vectorizer with hdbscan
 # TODO Accuracy by different preprocessing and vectorizer with hdbscan
 
+def table_preprocessing():
+    connection = db.get_connection()
+
+    sql = (
+        "select m.corrected_avg_unique_accuracy as accuracy, m.parameters, m.real_clusters, tokenizer, vectorizer from method_evaluation as m"
+        " where  m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null and tokenizer != 'None'"
+        " order by m.parameters"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+    
+    table_dict = collections.defaultdict(list)
+
+    indicies = {
+        "CountVectorizer_newspaper_text": 1,
+        "CountVectorizer_text_keyterms": 2,
+        "CountVectorizer_text_entities": 3,
+        "CountVectorizer_text_lemmatized_without_stopwords": 4,
+        "CountVectorizer_text_stemmed_without_stopwords": 5,
+        "TfidfVectorizer_newspaper_text": 6,
+        "TfidfVectorizer_text_keyterms": 7,
+        "TfidfVectorizer_text_entities": 8,
+        "TfidfVectorizer_text_lemmatized_without_stopwords": 9,
+        "TfidfVectorizer_text_stemmed_without_stopwords": 10,
+    }
+
+    for index, row in data.iterrows():
+        if len(table_dict[row["parameters"]]) == 0:
+            table_dict[row["parameters"]] = [0 for x in range(len(indicies) + 1)]
+
+        key = row["vectorizer"] + "_" + row["tokenizer"]
+        if key in indicies:
+            table_dict[row["parameters"]][indicies[key]] = round(row["accuracy"], 3)
+            table_dict[row["parameters"]][0] = row["parameters"].replace("{", "").replace("}", "").replace('"', "").replace('min_cluster', "min")
+
+    table = table_dict.values()
+    for row in table:
+        max_index = np.argmax(row[1:])
+        row[max_index + 1] = "aa" + "{:.3f}".format(row[max_index + 1]) + "bb"
+
+    latex = tabulate(table, tablefmt="latex", floatfmt=".3f")
+    latex = latex.replace("aa", "\\textbf{").replace("bb", "}")
+    print(latex)
+
 
 # Clustering method evaluation
-plot_accuracy_samples()
-plot_processing_time_samples()
-plot_cluster_difference_samples()
-plot_noise_ratio_samples()
-plot_different_clusterings()
-plot_hdbscan_parameters()
+# plot_accuracy_samples()
+# plot_processing_time_samples()
+# plot_cluster_difference_samples()
+# plot_noise_ratio_samples()
+# plot_different_clusterings()
+# plot_hdbscan_parameters()
+table_preprocessing()
 
 # Online clustering evaluation
-plot_event_detection_by_date()
-plot_event_detection_overlap()
+# plot_event_detection_by_date()
+# plot_event_detection_overlap()

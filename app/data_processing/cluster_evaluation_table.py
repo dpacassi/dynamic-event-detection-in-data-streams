@@ -127,7 +127,7 @@ class ClusterMethods:
                 analyzer="word",
                 stop_words="english",
                 max_features=50000,
-            )
+            ),
         ]
 
         tokenizers = [
@@ -139,12 +139,12 @@ class ClusterMethods:
 
         # Parameter arguments have to be a list
         parameters_by_method = {
-            self.kmeans: {"n_cluster": 
-                ["n_true"],
+            self.kmeans: {
+                "n_cluster": ["n_true"],
                 # ["n_square", "n_true"]
             },
             self.hdbscan: {
-                #"min_cluster_size": [6],
+                # "min_cluster_size": [6],
                 "min_cluster_size": range(2, 10),
                 # "metric": ["cosine"]
                 "metric": ["cosine", "euclidean"]
@@ -170,13 +170,16 @@ class ClusterMethods:
 
         return vectorizers, tokenizers, parameters_by_method
 
-    def run(self, methods, whitelist_vectorizer):
+    def run(self, methods, whitelist_vectorizer, external_tokenizer):
         vectorizers, tokenizers, parameters_by_method = self.setup_evaluation()
         results = []
         errors = []
 
         for vectorizer in vectorizers:
-            if len(whitelist_vectorizer) > 0 and vectorizer.__class__.__name__ not in whitelist_vectorizer:
+            if (
+                len(whitelist_vectorizer) > 0
+                and vectorizer.__class__.__name__ not in whitelist_vectorizer
+            ):
                 continue
 
             for tokenizer in tokenizers:
@@ -229,7 +232,7 @@ class ClusterMethods:
                                     processing_time,
                                     None,
                                     vectorizer.__class__.__name__,
-                                    "None" if tokenizer is None else tokenizer.__name__,
+                                    external_tokenizer, # "None" if tokenizer is None else tokenizer.__name__,
                                     parameter_combination,
                                 ),
                                 corrected_avg_unique_accuracy,
@@ -245,7 +248,7 @@ class ClusterMethods:
                                 method.__name__,
                                 error,
                                 vectorizer.__class__.__name__,
-                                "None" if tokenizer is None else tokenizer.__name__,
+                                external_tokenizer, # "None" if tokenizer is None else tokenizer.__name__,
                                 str(parameter_combination),
                                 self.nrows,
                             )
@@ -256,7 +259,9 @@ class ClusterMethods:
 
         return errors
 
-    def store_result_to_db(self, result, corrected_avg_unique_accuracy, avg_unique_precision):
+    def store_result_to_db(
+        self, result, corrected_avg_unique_accuracy, avg_unique_precision
+    ):
         scores = result.create_evaluation(self.labels_true)
         return db.write_evaluation_result_in_db(
             str(result.title),
@@ -283,10 +288,16 @@ class ClusterMethods:
             labels_true, self.document_ids
         )
 
-        true_clusters = [true_identifier.split(',') for true_identifier in true_identifiers]
-        predicted_clusters = [cluster_identifier.split(',') for cluster_identifier in cluster_identifiers]
-        corrected_avg_unique_accuracy, avg_unique_accuracy = score.cluster_accuracy(true_clusters, predicted_clusters)
-       
+        true_clusters = [
+            true_identifier.split(",") for true_identifier in true_identifiers
+        ]
+        predicted_clusters = [
+            cluster_identifier.split(",") for cluster_identifier in cluster_identifiers
+        ]
+        corrected_avg_unique_accuracy, avg_unique_accuracy = score.cluster_accuracy(
+            true_clusters, predicted_clusters
+        )
+
         return corrected_avg_unique_accuracy, avg_unique_accuracy
 
     def create_clusters(self, method_id, labels):
@@ -320,15 +331,31 @@ if __name__ == "__main__":
     ap.add_argument("--rows", required=False, type=int, default=1000)
     ap.add_argument("--stories", required=False, type=str, default=None)
     ap.add_argument("--methods", required=False, type=str, default=None)
-    ap.add_argument("--vectorizers", required=False, type=str, default=None)
+    ap.add_argument("--vectorizers", required=False, type=str, default=None, help="Options: CountVectorizer, TfidfVectorizer")
+    ap.add_argument(
+        "--tokenizers",
+        required=False,
+        type=str,
+        default=None,
+        help="Options: newspaper_text, text_keyterms, text_entities, text_keyterms_and_entities, text_lemmatized_without_stopwords, text_stemmed_without_stopwords",
+    )
     ap.add_argument("--runs", required=False, type=int, default=1)
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]
     nrows = args["rows"]
     methods = args["methods"].split(",") if args["methods"] is not None else list()
-    vectorizers = args["vectorizers"].split(",") if args["vectorizers"] is not None else list()
-    story_runs = map(int, args["stories"].split(",")) if args["stories"] is not None else [0]
+    tokenizers = (
+        args["tokenizers"].split(",")
+        if args["tokenizers"] is not None
+        else ["newspaper_text"]
+    )
+    vectorizers = (
+        args["vectorizers"].split(",") if args["vectorizers"] is not None else list()
+    )
+    story_runs = (
+        map(int, args["stories"].split(",")) if args["stories"] is not None else [0]
+    )
 
     load_dotenv()
 
@@ -349,18 +376,22 @@ if __name__ == "__main__":
             labels_true = LabelEncoder().fit_transform(dataset["story"])
             stories_in_dataset = len(set(labels_true)) - (1 if -1 in labels_true else 0)
 
-            evaluation = ClusterMethods(
-                dataset["newspaper_text"],
-                stories_in_dataset,
-                labels_true,
-                list(dataset.index.values),
-            )
+            errors = []
+            for tokenizer in tokenizers:
+                print("Use ", tokenizer)
 
-            # delete full dataframe before evaluation to save some memory
-            del dataset
-            gc.collect()
+                evaluation = ClusterMethods(
+                    dataset[tokenizer],
+                    stories_in_dataset,
+                    labels_true,
+                    list(dataset.index.values),
+                )
 
-            errors = evaluation.run(methods, vectorizers)
+                # delete full dataframe before evaluation to save some memory
+                # del dataset
+                # gc.collect()
+
+                errors = evaluation.run(methods, vectorizers, tokenizer)
 
             if len(errors) > 0:
                 print("Errors:")

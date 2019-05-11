@@ -71,6 +71,7 @@ def load_from_db_by_stories(nstories, skip_stories=0):
         "     AND newspaper_text NOT LIKE '%%javascript%%'"
         "     AND newspaper_text NOT LIKE '%%404%%'"
         "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "     AND preprocessed = 1"
         " GROUP BY story"
         " LIMIT %s, %s"
     )
@@ -82,7 +83,7 @@ def load_from_db_by_stories(nstories, skip_stories=0):
     story_ids = ",".join(["'" + x + "'" for x in stories["story"]])
 
     news_sql = (
-        "SELECT id, newspaper_text, story"
+        "SELECT id, newspaper_text, story, text_keyterms, text_entities, text_keyterms_and_entities, text_lemmatized_without_stopwords, text_stemmed_without_stopwords"
         " FROM news_article"
         " WHERE"
         "     newspaper_processed = 1"
@@ -96,6 +97,7 @@ def load_from_db_by_stories(nstories, skip_stories=0):
         "     AND newspaper_text NOT LIKE '%%javascript%%'"
         "     AND newspaper_text NOT LIKE '%%404%%'"
         "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "     AND preprocessed = 1"
         " ORDER BY id ASC".format(story_ids)
     )
 
