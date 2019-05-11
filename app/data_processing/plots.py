@@ -6,7 +6,7 @@ import json
 import db
 import collections
 
-from  tabulate import tabulate
+from tabulate import tabulate
 from dotenv import load_dotenv
 
 # Load environment variables.
@@ -27,24 +27,22 @@ def plot_different_clusterings():
     connection.close()
     fig = plt.figure()
 
-    
     X = data["processing_time"].values
     Y = data["accuracy"].values
 
     colors = np.random.rand(len(X))
     plt.scatter(X, Y, c=colors, alpha=0.5)
 
-
-    methods = data['method'].values
+    methods = data["method"].values
     for index, method in enumerate(methods):
-        plt.annotate(method, (X[index], Y[index]), xytext = (X[index], Y[index] + 0.02))
+        plt.annotate(method, (X[index], Y[index]), xytext=(X[index], Y[index] + 0.02))
 
     plt.ylim(top=1, bottom=0)
-    plt.xlabel('Processing time in seconds')
-    plt.ylabel('Accuracy')
+    plt.xlabel("Processing time in seconds")
+    plt.ylabel("Accuracy")
     plt.title("Comparison of different clutering methods")
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.savefig('../../doc/images/different_clusterings.png')
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    plt.savefig("../../doc/images/different_clusterings.png")
     plt.close(fig)
 
 
@@ -64,20 +62,21 @@ def plot_processing_time_samples():
     connection.close()
 
     X = data["sample_size"].unique()
-    Y_hdbscan = data[data['method']=='hdbscan']["processing_time"].values
-    Y_kmeans = data[data['method']=='kmeans']["processing_time"].values
+    Y_hdbscan = data[data["method"] == "hdbscan"]["processing_time"].values
+    Y_kmeans = data[data["method"] == "kmeans"]["processing_time"].values
 
     fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label='HDBSCAN')
-    plt.plot(X, Y_kmeans, label='K-means')
-    plt.xlabel('Number of news articles')
-    plt.ylabel('Processing time in seconds')
-    plt.yscale('log')
+    plt.plot(X, Y_hdbscan, label="HDBSCAN")
+    plt.plot(X, Y_kmeans, label="K-means")
+    plt.xlabel("Number of news articles")
+    plt.ylabel("Processing time in seconds")
+    plt.yscale("log")
     plt.title("Average Processing Time by number of samples")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.savefig('../../doc/images/processing_time_kmeans_hdbscan.png')
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    plt.savefig("../../doc/images/processing_time_kmeans_hdbscan.png")
     plt.close(fig)
+
 
 # Accuracy by number of samples with hdbscan and kmeans
 def plot_accuracy_samples():
@@ -85,7 +84,7 @@ def plot_accuracy_samples():
 
     # Fixate hdbscan parameters and vectorizer for showing errors of best approach
     parameters = '{"min_cluster_size": 4, "metric": "cosine"}'
-    vectorizer = 'TfidfVectorizer'
+    vectorizer = "TfidfVectorizer"
     sql = (
         "select m.corrected_avg_unique_accuracy as accuracy, m.real_clusters, m.method from method_evaluation as m"
         " where ((m.method = 'hdbscan' and m.parameters = %s) or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
@@ -96,13 +95,13 @@ def plot_accuracy_samples():
 
     data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
     connection.close()
-    
+
     def format_data(data, method):
         accuracy_values = collections.defaultdict(list)
         for index, row in data.iterrows():
             if row["method"] == method:
                 accuracy_values[row["real_clusters"]].append(row["accuracy"])
-        
+
         Y = []
         Y_lower_err = []
         Y_higher_err = []
@@ -110,19 +109,19 @@ def plot_accuracy_samples():
             # It can be done more efficiently but this is only for a plot.
             avg = sum(values) / len(values)
             Y.append(avg)
-            Y_lower_err.append(avg - min(values)) 
+            Y_lower_err.append(avg - min(values))
             Y_higher_err.append(max(values) - avg)
 
         return Y, Y_lower_err, Y_higher_err
 
     fig = plt.figure()
 
-    X = data[data['method']=='hdbscan']["real_clusters"].values
-    Y_hdbscan = data[data['method']=='hdbscan']["accuracy"].values
-    Y_kmeans = data[data['method']=='kmeans']["accuracy"].values
+    X = data[data["method"] == "hdbscan"]["real_clusters"].values
+    Y_hdbscan = data[data["method"] == "hdbscan"]["accuracy"].values
+    Y_kmeans = data[data["method"] == "kmeans"]["accuracy"].values
 
-    plt.scatter(X, Y_hdbscan, marker='o', label='HDBSCAN')
-    plt.scatter(X, Y_kmeans, marker='^', label='K-means')
+    plt.scatter(X, Y_hdbscan, marker="o", label="HDBSCAN")
+    plt.scatter(X, Y_kmeans, marker="^", label="K-means")
 
     # X = data["real_clusters"].unique()
 
@@ -132,14 +131,15 @@ def plot_accuracy_samples():
     # Y, Y_lower_err, Y_higher_err = format_data(data, 'kmeans')
     # plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', label='K-means')
 
-    plt.xlabel('Number of stories')
-    plt.ylabel('Accuracy')
+    plt.xlabel("Number of stories")
+    plt.ylabel("Accuracy")
     plt.ylim(top=1, bottom=0)
     plt.title("Accuracy by number of stories")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.savefig('../../doc/images/accuracy_kmeans_hdbscan.png')
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    plt.savefig("../../doc/images/accuracy_kmeans_hdbscan.png")
     plt.close(fig)
+
 
 # Accuracy by different parameters with hdbscan
 def plot_hdbscan_parameters():
@@ -169,24 +169,28 @@ def plot_hdbscan_parameters():
             euclidean_values[row["sample_size"]].append(row["accuracy"])
 
         if parameters["min_cluster_size"] not in Y_min_cluster_sizes:
-            Y_min_cluster_sizes[parameters["min_cluster_size"]] = collections.defaultdict(list)
-        
-        Y_min_cluster_sizes[parameters["min_cluster_size"]][row["sample_size"]].append(row["accuracy"])
-        
-    fig = plt.figure(figsize=(15,5))
+            Y_min_cluster_sizes[
+                parameters["min_cluster_size"]
+            ] = collections.defaultdict(list)
+
+        Y_min_cluster_sizes[parameters["min_cluster_size"]][row["sample_size"]].append(
+            row["accuracy"]
+        )
+
+    fig = plt.figure(figsize=(15, 5))
 
     Y_cosine = [max(x) for x in cosine_values.values()]
     Y_euclidean = [max(x) for x in euclidean_values.values()]
 
     plt.subplot(1, 2, 1)
-    plt.plot(X, Y_cosine, label='Cosine')
-    plt.plot(X, Y_euclidean, label='Euclidean')
-    plt.xlabel('Number of news articles')
-    plt.ylabel('Average Accuracy')
+    plt.plot(X, Y_cosine, label="Cosine")
+    plt.plot(X, Y_euclidean, label="Euclidean")
+    plt.xlabel("Number of news articles")
+    plt.ylabel("Average Accuracy")
     plt.ylim(top=1, bottom=0)
     plt.title("HDBSCAN Metrics")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
     plt.subplot(1, 2, 2)
 
@@ -197,14 +201,14 @@ def plot_hdbscan_parameters():
 
         plt.plot(X, Y, label="m = {}".format(size))
 
-    plt.xlabel('Number of news articles')
-    plt.ylabel('Average Accuracy')
+    plt.xlabel("Number of news articles")
+    plt.ylabel("Average Accuracy")
     plt.ylim(top=1, bottom=0)
     plt.title("HDBSCAN Min cluster sizes")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    plt.savefig('../../doc/images/hdbscan_parameters.png')
+    plt.savefig("../../doc/images/hdbscan_parameters.png")
     plt.close(fig)
 
 
@@ -226,15 +230,16 @@ def plot_noise_ratio_samples():
     Y_hdbscan = data["n_noise"].values
 
     fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label='HDBSCAN')
-    plt.xlabel('Number of news articles')
-    plt.ylabel('Noise ratio')
+    plt.plot(X, Y_hdbscan, label="HDBSCAN")
+    plt.xlabel("Number of news articles")
+    plt.ylabel("Noise ratio")
     plt.ylim(top=1, bottom=0)
     plt.title("Ratio of samples classified as noise")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.savefig('../../doc/images/noise_ratio_samples.png')
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    plt.savefig("../../doc/images/noise_ratio_samples.png")
     plt.close(fig)
+
 
 # HDBSCAN cluster difference
 def plot_cluster_difference_samples():
@@ -253,15 +258,16 @@ def plot_cluster_difference_samples():
     Y_hdbscan = data["diff"].values
 
     fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label='HDBSCAN')
-    plt.xlabel('Number of clusters')
-    plt.ylabel('|n_true - n_predicted| / n_true')
+    plt.plot(X, Y_hdbscan, label="HDBSCAN")
+    plt.xlabel("Number of clusters")
+    plt.ylabel("|n_true - n_predicted| / n_true")
     plt.ylim(top=0.1, bottom=0)
     plt.title("Difference in predicted number of clusters")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
-    plt.savefig('../../doc/images/cluster_difference_samples.png')
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    plt.savefig("../../doc/images/cluster_difference_samples.png")
     plt.close(fig)
+
 
 # Detected events by date
 def plot_event_detection_by_date():
@@ -280,7 +286,7 @@ def plot_event_detection_by_date():
 
     cosine_values = collections.defaultdict(list)
     euclidean_values = collections.defaultdict(list)
-   
+
     Y_pred_add_events = []
     Y_pred_change_events = []
     Y_true_add_events = []
@@ -293,39 +299,39 @@ def plot_event_detection_by_date():
         Y_pred_change_events.append(result["topic_changed"]["detected"])
         Y_true_add_events.append(result["topic_added"]["true"])
         Y_true_change_events.append(result["topic_changed"]["true"])
-        
-    fig = plt.figure(figsize=(15,5))
+
+    fig = plt.figure(figsize=(15, 5))
 
     plt.subplot(1, 2, 1)
-    plt.plot(X, Y_pred_add_events, label='Detected')
-    plt.plot(X, Y_true_add_events, label='True')
+    plt.plot(X, Y_pred_add_events, label="Detected")
+    plt.plot(X, Y_true_add_events, label="True")
 
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d.%m'))
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator())
     plt.gcf().autofmt_xdate()
 
-    plt.xlabel('Time')
-    plt.ylabel('Number of events')
+    plt.xlabel("Time")
+    plt.ylabel("Number of events")
     plt.title("Event: topic added")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
     plt.subplot(1, 2, 2)
 
-    plt.plot(X, Y_pred_change_events, label='Detected')
-    plt.plot(X, Y_true_change_events, label='True')
+    plt.plot(X, Y_pred_change_events, label="Detected")
+    plt.plot(X, Y_true_change_events, label="True")
 
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d.%m'))
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator())
     plt.gcf().autofmt_xdate()
 
-    plt.xlabel('Time')    
-    plt.ylabel('Number of events')
+    plt.xlabel("Time")
+    plt.ylabel("Number of events")
     plt.title("Event: topic changed")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    plt.savefig('../../doc/images/event_detection_by_date.png')
+    plt.savefig("../../doc/images/event_detection_by_date.png")
     plt.close(fig)
 
 
@@ -354,24 +360,73 @@ def plot_event_detection_overlap():
 
         Y_error_add.append(abs(topics_added["detected"] - topics_added["true"]))
         Y_error_change.append(abs(topic_changed["detected"] - topic_changed["true"]))
-        
+
     fig = plt.figure()
 
-    plt.plot(X, Y_error_add, label='Error Additions')
-    plt.plot(X, Y_error_change, label='Error Changes')
+    plt.plot(X, Y_error_add, label="Error Additions")
+    plt.plot(X, Y_error_change, label="Error Changes")
 
-    plt.xlabel('Overlap')
-    plt.ylabel('Detection Error')
+    plt.xlabel("Overlap")
+    plt.ylabel("Detection Error")
     plt.title("Errors in detected events over cluster overlap")
     plt.legend()
-    plt.grid(True, 'major',  ls='--', lw=.5, c='k', alpha=.3)
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-
-    plt.savefig('../../doc/images/event_detection_overlap.png')
+    plt.savefig("../../doc/images/event_detection_overlap.png")
     plt.close(fig)
+
 
 # TODO Accuracy by different vectorizer with hdbscan
 # TODO Accuracy by different preprocessing and vectorizer with hdbscan
+
+
+def plot_articles_per_story_distribution():
+    connection = db.get_connection()
+
+    sql = (
+        "SELECT count(n.id) as narticles, n.story FROM news_article as n"
+        " group by n.story "
+        " order by narticles"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+
+    fig = plt.figure(figsize=(15, 5))
+
+    plt.subplot(1, 3, 1)
+
+    plt.hist(data["narticles"], bins='auto')
+
+    plt.xlabel("Number of articles")
+    plt.ylabel("Number of stories")
+    plt.title("Distribution of articles per story")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.subplot(1, 3, 2)
+
+    plt.hist(data["narticles"], bins='auto', range=[1, 100])
+
+    plt.xlabel("Number of articles")
+    plt.ylabel("Number of stories")
+    plt.title("Distribution of articles per story < 100")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.subplot(1, 3, 3)
+
+    plt.hist(data["narticles"], bins='auto', range=[0, 10])
+
+    plt.xlabel("Number of articles")
+    plt.ylabel("Number of stories")
+    plt.title("Distribution of articles per story < 10")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+
+    plt.savefig("../../doc/images/articles_per_story_distribution.png")
+    plt.close(fig)
+
 
 def table_preprocessing():
     connection = db.get_connection()
@@ -384,7 +439,7 @@ def table_preprocessing():
 
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
-    
+
     table_dict = collections.defaultdict(list)
 
     indicies = {
@@ -407,7 +462,13 @@ def table_preprocessing():
         key = row["vectorizer"] + "_" + row["tokenizer"]
         if key in indicies:
             table_dict[row["parameters"]][indicies[key]] = round(row["accuracy"], 3)
-            table_dict[row["parameters"]][0] = row["parameters"].replace("{", "").replace("}", "").replace('"', "").replace('min_cluster', "min")
+            table_dict[row["parameters"]][0] = (
+                row["parameters"]
+                .replace("{", "")
+                .replace("}", "")
+                .replace('"', "")
+                .replace("min_cluster", "min")
+            )
 
     table = table_dict.values()
     for row in table:
@@ -426,7 +487,8 @@ def table_preprocessing():
 # plot_noise_ratio_samples()
 # plot_different_clusterings()
 # plot_hdbscan_parameters()
-table_preprocessing()
+# table_preprocessing()
+plot_articles_per_story_distribution()
 
 # Online clustering evaluation
 # plot_event_detection_by_date()

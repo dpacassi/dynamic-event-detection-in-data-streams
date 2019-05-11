@@ -1,23 +1,51 @@
 \section{Results}
 
-\subsection{Evaluation of clustering methods}
+\subsection{Clustering method}
 
-TODO start with setup and show all parameters to be used 
+The goal of this evaluation is to measure the accuracy of HDBSCAN, with different parameters and preprocessing methods. The most suitable approach will then be used for the online clustering to detect changes in a news stream.
 
-TODO go through the whole process and show best accuracies in the end
+\subsubsection{Setup}
 
+\paragraph{Text Preprocessing}
 
+ The first step in working with text is to apply Natural Language Processing techniques for improving the quality of the data before clustering it. We look the five different preprocessing methods  as described in section \ref{} and evaluate each. The methods are:
+ \begin{itemize}
+     \item Full text with stop word removal
+     \item Keyterms
+     \item Named Entities
+     \item Lemmatization
+     \item Stemmatization
+ \end{itemize} 
 
-The goal of this evaluation is to find an accurat clustering method for working with news articles. The most suitable algorithm will then be used for the online approach of detecting changes in a news stream based on stories.
+\paragraph{Text Vectorization} Before the text can be clustered, it has to be transformed into a vector space model. We look at two different models:
+\begin{itemize}
+    \item Word Count
+    \item Tfidf
+\end{itemize}
+
+\paragraph{Parameters} HDBSCAN has a range of parameters, which can be tuned to fit our dataset. We focus on the two primary ones:
+\begin{itemize}
+    \item Min cluster size: The minimum size of a cluster. We run the evaluation with a range from two to nine as the $min\_cluster\_size$. 
+    \item Metric: The distance measure between points. We apply the metrics "cosine" and "euclidean". 
+    
+\end{itemize}
+
+The primary parameter for K-Means is the number of clusters. Since K-Means is used as a baseline to evaluate HDBSCAN, we provide the true number of clusters for each run. Therefore K-Means runs with an optimal starting point. 
+
+\paragraph{Running the evaluation} The evaluation is done with different sets of news articles per run. This means if we define a run to use 30 stories and set it to repeat five times, each repeat will load 30 different stories from the dataset. This is done to get a more diverse set of samples. Each run will be repeated at least three times. Lower numbers of stories allow for more repetitions due to lower processing times.   
+
+\subsubsection{Evaluation}
+
+The first run is done with 60 stories, which results in approximately 2000 news articles, over five repetitions. Table \ref{tab:cluster_parameters} shows the resulting accuracy for each parameter in combination with each preprocessing method and vector space model. The highest score per parameter is highlighted as bold. The first insight we get is the variety in accuracy scores for different min cluster sizes. The lowest min cluster size results in the lowest accuracy, while increasing this parameter leads to an increasingly better score. The highest accuracy is reached with a min cluster size of six, while increasing it further reduces the score again. The large difference in accuracies between different min cluster sizes, shows the importance this parameters has on the quality of the clustering and requires some knowledge of the data beforehand. In our case we have a wide range of different cluster sizes as shown in figure \ref{fig:articles_per_story_distribution}, with clusters containing as little as two news articles. Based on this distribution we expected the min size cluster size to be low. The distribution also explains the drop in accuracy after a min cluster size of 6, since an increasingly number of clusters are being ignored.
 
 \begin{table}[h]
     \centering
-    \scalebox{0.6}{
+    \scalebox{0.65}{
     \begin{tabular}{|l|rrrrr|rrrrr|}
         \hline
-        \textbf{HDBSCAN} & \multicolumn{5}{ |c| }{\textbf{Bag of Words}} & \multicolumn{5}{ |c| }{\textbf{Tfidf}} \\
+        \textbf{Clustering} & \multicolumn{5}{ |c| }{\textbf{Word Count}} & \multicolumn{5}{ |c| }{\textbf{Tfidf}} \\
         \hline
-        Parameter & Full Text &  Keyterms & Entities & Lemmatized & Stemmed & Full Text &  Keyterms & Entities & Lemmatized & Stemmed \\
+        \textbf{HDBSCAN} & Full Text &  Keyterms & Entities & Lemmatized & Stemmed & Full Text &  Keyterms & Entities & Lemmatized & Stemmed \\
         \hline
         min\_size: 2, metric: cosine    & 0.289 & 0.265 & 0.223 & \textbf{0.305} & 0.297 & 0.286     & 0.268 & 0.26      & 0.296     & 0.3       \\
         min\_size: 2, metric: euclidean & 0.101 & 0.093 & 0.110 & 0.101     & 0.106 & 0.301     & 0.170 & 0.241     & \textbf{0.306} & 0.301     \\
@@ -36,28 +64,57 @@ The goal of this evaluation is to find an accurat clustering method for working 
         min\_size: 9, metric: cosine    & 0.542 & 0.569 & 0.476 & 0.544     & 0.541 & 0.602     & 0.614 & 0.499     & 0.637     & \textbf{0.640} \\
         min\_size: 9, metric: euclidean & 0.065 & 0.236 & 0.310 & 0.025     & 0.033 & 0.602     & 0.216 & 0.475     & 0.637     & \textbf{0.640} \\
         \hline
+        \textbf{K-Means} & \multicolumn{5}{ |c| }{}  & \multicolumn{5}{ |c| }{} \\
+        \hline
         n\_cluster: n\_true              & 0.531 & 0.588 & 0.514 & 0.536     & 0.536 & \textbf{0.713} & 0.653 & 0.584     & 0.672     & 0.693     \\
         \hline
     
     \end{tabular}   
     }
-    \caption{Accuracy for each combination of parameter and preprocessing}
+    \caption{Accuracy for combinations of parameter and preprocessing with a sample size of 60 stories (approx. 2000 articles)}
     \label{tab:cluster_parameters}
-\end{table}   
+\end{table}
 
-To begin the evaluation, we first compare six different clustering methods with each other. K-means is included as a baseline, to put the scores in relation to one of the most commonly used clustering algorithms. As we can see in figure \ref{fig:different_clusterings}, HDBSCAN provides the highest accuracy, while being still being one of the fastest algorithms. Based on this data, we can assume HDBSCAN to be a good candidate to work with further. Therefore we focus on this algorithm for the rest of the evaluation to get more insight into its performance and other important properties.
+Comparing the two vector models, shows the majority of best scores per parameter achieved by Tfidf. Additionally the different metrics show a significant difference when using the vector model based on word count. With Tfidf the difference between both metrics is often negligible.
+
+As for the optimal preprocessing, lemmatization appears to provide the highest accuray in general or at least being fairly close to the highest score. This is to be expected, since lemmatization reduces the dimensions by grouping words into their base form, while still retaining most of the text. In contrast to keyterm and entity extraction, which both result in a drastic reduction of the dimensions, and therefore less detail. It is important to note, that we used pretrained models for keyterm and entity extraction. Specifically training on a news corpus might improve the performance of both methods, but it was decided as to be out of scope for this thesis.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.5\textwidth]{different_clusterings}
-    \caption{Comparison of different clustering methods with a sample size of approximately 1000 news articles}
-    \label{fig:different_clusterings}
+    \includegraphics[width=1\textwidth]{articles_per_story_distribution}
+    \caption{Distribution of cluster sizes.}
+    \label{fig:articles_per_story_distribution}
 \end{figure}
 
-% TODO Explain why HDBSCAN is better than the rest
+After determining the optimal settings for text preprocessing and vectorization, we increase the sample sizes for our evaluation runs, to get a deeper insight into the behaviour of HDBSCAN with larger datasets. Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples. Based on this figure we see the metric $cosine$ to be generally better than $euclidean$, even if $euclidean$ is occasionally more accurate.
 
-Increasing the sample size results for both HDBSCAN and K-means in a small loss regarding the accuracy as can be seen in figure \ref{fig:accuracy_kmeans_hdbscan}. However the accuracy seems to stabilize around the 0.7 mark. The drop in the beginning is due to the fact, that for each run, we load the news articles based 
+TODO explain why cosine is generally better than euclidean
+TODO explain min cluster sizes, but run with lemmatization
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{hdbscan_parameters}
+    \caption{Accuracies for different parameters}
+    \label{fig:hdbscan_parameters}
+\end{figure}
+
+One of the advantages HDBSCAN has over other clustering algorithms, is the ability to work with noise, since we intent on applying it in an online setting, where noisy data is to be expected. At the same time, the number of articles classified as noise should be kept to a minimum. However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is higher, than we would expect it to be based on our test data. A variety of factors play into the high noise ratio. One major influence is due to the used $min\_cluster\_size$. Each news article belonging to a cluster ignored due to a size too small, will be counted as noise. In addition to the false positives due to the min cluster size, the test data does still contain noisy data, even after our efforts in cleaning up the data as good as possible. Nontheless the expected noise ratio based on the test data is less than 10\%, nowhere close to the 20\% of the current evaluation. Decreasing the noise ratio is certainly an important part in future improvements.
+
+TODO calculate expected noise ratio based our min cluster sizes.
+
+% experiment with min_samples
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{noise_ratio_samples}
+    \caption{Number of news articles classified as noise.}
+    \label{fig:noise_ratio_samples}
+\end{figure}
+
+
+Having found the optimal settings to run HDBSCAN with, we can start comparing the overall performance with K-Means. Figure \ref{fig:accuracy_kmeans_hdbscan} shows  a similar behaviour for both clustering methods in value and variance of the accuracy. Although HDBSCAN is generally more accurate than K-Means, the difference gets smaller with an increase in the sample size. 
+
+Increasing the sample size results for both HDBSCAN and K-means in a small loss regarding the accuracy as can be seen in figure \ref{fig:accuracy_kmeans_hdbscan}. However the accuracy seems to stabilize around the 0.7 mark.
 
 \begin{figure}[h]
     \centering
@@ -66,7 +123,7 @@ Increasing the sample size results for both HDBSCAN and K-means in a small loss 
     \label{fig:accuracy_kmeans_hdbscan}
 \end{figure}
 
-While HDBSCAN and K-means provide a similar accuracy, the biggest difference can be noted in the processing time in relation to an increasing number of samples. K-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$, which is demonstrated by figure \ref{fig:processing_time_kmeans_hdbscan}. Although running the evaluation has also shown the space complexity for HDBSCAN to be substantially higher for larger amounts of samples than with K-means. Trying to run HDBSCAN with 100'000 news articles caused in a memory error, even with 64GB of RAM, while K-means was able to complete the clustering.
+While HDBSCAN and K-means provide a similar accuracy, the biggest difference can be noted in the processing time in relation to the number of samples. K-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$, which is demonstrated by figure \ref{fig:processing_time_kmeans_hdbscan}. Although running the evaluation has also shown the space complexity for HDBSCAN to be substantially higher for larger amounts of samples than with K-means. Trying to run HDBSCAN with 100'000 news articles caused in a memory error, even with 64GB of RAM, while K-means was able to complete the clustering.
 
 % TODO measure memory?
 
@@ -86,29 +143,18 @@ Figure \ref{fig:cluster_difference_samples} shows, that the difference between p
     \label{fig:cluster_difference_samples}
 \end{figure}
 
-So far we have looked at data provided by the most accurate parameter combination. Figure \ref{fig:hdbscan_parameters} shows the accuracies of two essential parameters when working with HDBSCAN. The metric is used when calculating the distances between instances in a feature array. For this evaluation we only consider the metrics $cosine$ and $euclidean$, since other available metrics are either unable to work with sparse matrices or the score was too low, while taking significantly longer to calculate. The comparison in figure \ref{fig:hdbscan_parameters} clearly shows the difference in accuracy between both metrics. Additionally we found that the vectorizer used for the feature matrix, has an big impact on the $euclidean$ metric, while the scores using $cosine$ were relatively stable. Using the $CountVectorizer$ caused the accuracy to drop significantly in combination with the $euclidean$ metric, while using $TFIDF$ gives the accuracies as shown in Figure \ref{fig:hdbscan_parameters}. The second parameter defines the minimum size of a cluster and depends heavily on the dataset. In our case we have clusters with sizes ranging from 1 to 450. We consider clusters with size one as noise, which is why we start with two and evaluate sizes up to nine. The evaluation shows, that a score too low such as $min\_cluster\_size=2$, will lead to an low accuracy, since the granularity of clustering starts to get too small. Increasing the $min\_cluster\_size$ eventually leads to another drop in accuracy, since we start to loose more clusters the higher the minimum size is set to. The optimum results are achieved with a $min\_cluster\_size$ of 4 or 5.
+As a final note, we compare HDBSCAN with six different clustering methods taken from scikit-learn. Each method is run with a variety of parameters and the best scores are shown in figure \ref{fig:different_clusterings}. HDBSCAN provides the highest accuracy, while being still being one of the fastest algorithms. Based on this data, we can assume HDBSCAN to be a good candidate for our use case.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{hdbscan_parameters}
-    \caption{Accuracies for different parameters}
-    \label{fig:hdbscan_parameters}
+    \includegraphics[width=0.5\textwidth]{different_clusterings}
+    \caption{Comparison of different clustering methods with a sample size of approximately 1000 news articles}
+    \label{fig:different_clusterings}
 \end{figure}
 
+\subsubsection{Conclusion}
 
-Being able to handle noise is one of the advantages of HDBSCAN has over the other clustering algorithms. It is reasonable to expect to have a lot of noise in the incoming stream of news articles, once the algorithm is applied in an online setting. However this evaluation is done with a labeled static dataset, containing a minimum amount of noise. The noise ratio shown in Figure \ref{fig:noise_ratio_samples} is higher, than we would expect from the test data. One reason is that clusters lower than the threshold $min\_cluster\_size$ will be classified as noise. Although considering the optimum accuracy can be obtained by using $min\_cluster\_size=5$ only approximately $2\%$ of clusters will drop out due to the minimum size. This does explain the noise ratio of $25\%$. Another possibility is that the data does contain a high number of noisy news articles, but considering the initial substantial effort into cleaning the test data, we estimate the noise ratio to be in the single digit range, rather than anywhere near $20\%$ to $30\%$. 
-
-% experiment with min_samples
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{noise_ratio_samples}
-    \caption{Number of news articles classified as noise.}
-    \label{fig:noise_ratio_samples}
-\end{figure}
-
-
-The evaluation has shown HDBSCAN to be a good candidate to use for news clustering. It provides an better accuracy than K-means, while being much faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. The ideal parameters for our dataset are $cosine$ as the distance metric and 4 or 5 as the minimum cluster size. On the flip side the noise ratio is quite high and the space complexity is problematic with larger datasets. Overall HDBSCAN provides a acceptable accuracy, while still leaving room for major improvements.
+The evaluation has shown HDBSCAN to be a good candidate to use for news clustering. It provides an better accuracy than K-means, while being significantly faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. Additionally we have shown the required preprocessing and vectorization steps with the ideal parameters to achieve the most accurate results for our dataset. On the flip side the noise ratio is quite high and the space complexity is problematic with larger datasets. Overall HDBSCAN provides an acceptable accuracy, while still leaving room for further improvements.
 
 \subsection{Evaluation of online clustering}
 
