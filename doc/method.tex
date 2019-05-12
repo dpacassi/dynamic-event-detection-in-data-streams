@@ -43,11 +43,11 @@ Initially we used Normalized Mutual Information (NMI) as our primary scoring fun
 TODO add number of estimated clusters
 \begin{table}[h]
     \centering
-    \begin{tabular}{|l|l|l|l|}
+    \begin{tabular}{|l|l|l|l|l|}
     \hline
-    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{NMI}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
-    k-means & 19255 & 0.754 & 457 \\ \hline
-    hdbscan & 19255 & 0.742 & 2 \\ \hline
+    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{NMI}  & $\mathbf{n_{true}}$ & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
+    k-means & 19255 & 0.754 & 600 & 457 \\ \hline
+    hdbscan & 19255 & 0.742 & 600 & 2 \\ \hline
     \end{tabular}
     \caption{K-Means has a higher NMI score than HDBSCAN, while having a much larger difference in number of clusters.}
     \label{tab:nmi_kmeans_example}
@@ -76,9 +76,9 @@ To illustrate the process we start with an example. We use $T$ and $C$ as our cl
 We calculate the similarity as defined in Equation \ref{equ:similarity}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
 
 \begin{align*}
-    similarity(t_1,c_1) &=\frac{|t_1 \cap c_1|}{|t_1 \cup c_1|} \\
-    &= \frac{|\{1,2\}|}{|\{1,2,3\}|} \\
-    &= \frac{2}{3} = 0.667 \\
+    similarity(t_1,c_1) &=\frac{|t_1 \cap c_1|}{|t_1 \cup c_1|} 
+    = \frac{|\{1,2\}|}{|\{1,2,3\}|} 
+    = \frac{2}{3} = 0.667 \\
 \end{align*}
 
 After doing this for each possible pair we get the similarity matrix $A$:
@@ -154,9 +154,9 @@ The test scenarios in table \ref{tab:score_scenarios} show the resulting scores 
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|l|l|l|l|l|l|}
+    \begin{tabular}{|l|l|l|l|l|}
     \hline
-    \multicolumn{6}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
+    \multicolumn{5}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
     \hline
     Nr. & Predicted Clustering $C$ & NMI & ARI & Similarity \\ \hline
     1 & $C = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$ & 1.0 & 1.0 & 1.0 \\ \hline
@@ -176,11 +176,11 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|l|l|l|l|}
+    \begin{tabular}{|l|l|l|l|l|}
     \hline
-    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{Similarity}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
-    k-means & 19255 & 0.137 & 457 \\ \hline
-    hdbscan & 19255 & 0.605 & 2 \\ \hline
+    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{Similarity}  & $\mathbf{n_{true}}$ & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
+    k-means & 19255 & 0.137 & 600 & 457 \\ \hline
+    hdbscan & 19255 & 0.605 & 600 & 2 \\ \hline
     \end{tabular}
     \caption{The similarty score reflects the difference in number of predicted clusters.}
     \label{tab:avg_predict_kmeans_example}
