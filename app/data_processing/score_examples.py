@@ -13,7 +13,7 @@ import pprint
 
 
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
-    accuracy, _ = score.cluster_accuracy(true_clusters, predicted_clusters)
+    similarity, _ = score.cluster_similarity(true_clusters, predicted_clusters)
     nmi = normalized_mutual_info_score(true_labels, predicted_labels, average_method='arithmetic')
     completeness = completeness_score(true_labels, predicted_labels)
     v_measure = v_measure_score(true_labels, predicted_labels)
@@ -22,7 +22,7 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
 
     print("------------------")
     print("Example ", nexperiment)
-    print("Accuracy: ", round(accuracy,3))
+    print("Similarity: ", round(similarity,3))
     print("NMI: ", round(nmi,3))
     print("Completeness: ", round(completeness,3))
     print("V-Measure: ", round(v_measure,3))
@@ -142,7 +142,7 @@ predicted_clusters = [
 predicted_labels = [3,1,2,1,3,2,1,2,2]
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
-matrix = score.create_accuracy_matrix(true_clusters, predicted_clusters)
+matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 pprint.pprint(matrix)
 print()
 
@@ -159,6 +159,6 @@ predicted_labels = [1,1,2,2,2,2,3,4,4]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
-matrix = score.create_accuracy_matrix(true_clusters, predicted_clusters)
+matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 pprint.pprint(matrix)
 print()

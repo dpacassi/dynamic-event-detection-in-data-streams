@@ -294,7 +294,7 @@ class ClusterMethods:
         predicted_clusters = [
             cluster_identifier.split(",") for cluster_identifier in cluster_identifiers
         ]
-        corrected_avg_unique_accuracy, avg_unique_accuracy = score.cluster_accuracy(
+        corrected_avg_unique_accuracy, avg_unique_accuracy = score.cluster_similarity(
             true_clusters, predicted_clusters
         )
 

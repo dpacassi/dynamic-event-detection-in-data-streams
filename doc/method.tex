@@ -33,14 +33,10 @@ KMeans is a centroid-based clustering algorithm.
 % word embeddings?
 % Tfidf
 
-\subsubsection{Score calculation}
+\subsubsection{Scoring function}
 
-TODO replace accuracy with similarity (jaccard index)
-
-The scoring function is essential for measuring the result of a clustering method. The score should tell us how close the resulting clusters are to the ground truth and give us an intuitive understanding about the quality of the clusters. One of the challenges when comparing one clustering with the other, is that the different clusters do not share the same label across different clusterings. Which is why scoring functions used for clusterings typically ignore the labels and focus on the shape of a cluster.
-
-Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI calculates the mutual information between two clusterings and normalizes the result by dividing through a generalized mean of the entropy of each clustering. % TODO better description.
-The score proved to work well for our initial evaluations and manual samplings verified the score. Upon running evaluations with higher sample sizes the NMI score started to lose its reliability. An example is given in Table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless to the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
+The scoring function is essential for measuring the result of a clustering method. The score should reflect the quality of the individual clusters and of the clustering as a whole. The number of existing measures for clustering is vast and can be split into two main categories. Internal measures determine the score based on criteria derived from the data itself and external measures depend on criteria non-existent in the data itself such as class labels. Since the ground truth is known in our test data, we are going to apply an external measure.   
+Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI is a entropy-based measure and tries to quantify the amount shared information between the clusterings. The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found. An example is given in table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless of the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
 
 % TODO explain the reason for the big difference
 
@@ -57,69 +53,70 @@ TODO add number of estimated clusters
     \label{tab:nmi_kmeans_example}
 \end{table}
 
-To get a more accurate score based on the documents inside a cluster, we developed our own scoring function. 
+Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching and the jaccard index. 
+
+TODO find citations
 
 \paragraph{Calculating the score}
 
-The scoring function first calculates the accuracy for each combination of two clusters, where each clusters belongs to a different clustering. We define the accuracy as
+The scoring function first calculates the similarity between pairs of clusters, where each cluster belongs to a different clustering. We use the jaccard index to measure the similarity, which is defined as
 
 \begin{equation}
-    \label{equ:accuracy}
-    \frac{n_{true}}{n_{true} + fp + fn}
+    \label{equ:similarity}
+    \frac{|A \cap B|}{|A \cup B|}
 \end{equation}
 
-where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. To illustrate this step with an example, we use $T$ and $C$ as our clusterings, where $T$ is the ground truth and $C$ is the predicted clustering. The clusterings are defined as follows:
+To illustrate the process we start with an example. We use $T$ and $C$ as our clusterings, where $T$ is the ground truth and $C$ is the predicted clustering. The clusterings are defined as follows:
 
 \begin{gather*}
     T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\} \\
     C = \{\{1,2\},\{3,4,5,6\},\{7\},\{8,9\}\}
 \end{gather*}
 
-We calculate the accuracy as defined in Equation \ref{equ:accuracy}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
+We calculate the similarity as defined in Equation \ref{equ:similarity}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
 
 \begin{align*}
-    accuracy(t_1,c_1) &= \frac{n_{true}}{n_{true} + fp + fn} \\
-    &= \frac{|t_1|}{|t_1| + |c_1 - t_1| + |t_1 - c_1|} \\
-    &= \frac{3}{ 3 + |\{\emptyset\}| + |\{3\}|} = \frac{3}{ 3 + 0 + 1} \\
-    &= \frac{3}{4} = 0.75 \\
+    similarity(t_1,c_1) &=\frac{|t_1 \cap c_1|}{|t_1 \cup c_1|} \\
+    &= \frac{|\{1,2\}|}{|\{1,2,3\}|} \\
+    &= \frac{2}{3} = 0.667 \\
 \end{align*}
 
-After doing this for each possible pair we get the accuracy matrix $A$:
+After doing this for each possible pair we get the similarity matrix $A$:
 
 \begin{gather*}
 \begin{array}{rcl}
     A = & \left(\begin{array}{cccc}
-        accuracy(t_1,c_1) & \hdots & \hdots & accuracy(t_1,c_4)\\
+        similarity(t_1,c_1) & \hdots & \hdots & similarity(t_1,c_4)\\
         \vdots & \vdots & \vdots & \vdots\\
-        accuracy(t_3,c_3) & \hdots & \hdots & accuracy(t_3,c_4) \end{array}\right)
+        similarity(t_3,c_3) & \hdots & \hdots & similarity(t_3,c_4) \end{array}\right)
         = & \left(\begin{array}{cccc}
-            0.75 & 0.375 & 0.427 & 0.375 \\
-            0.4 & 0.667 & 0.571 & 0.4 \\
-            0.333 &  0.25 & 0.4 & 1.0 \end{array}\right)
+            0.667 & 0.167 & 0 & 0 \\
+            0 & 0.6 & 0.25 & 0.4 \\
+            0 &  0 & 0 & 1.0 \end{array}\right)
 \end{array}
 \end{gather*}
 
-As a next step we have to select the most relevant accuracy values from each row of the accuracy matrix. 
+As a next step we have to select the most relevant similarity values from each row of the similarity matrix. 
 
-Finding relevant values in the accuracy matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
+Finding relevant values in the similarity matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
 \begin{enumerate} 
-\item The higher the accuracy between two clusters, the more likely it is, that both clusters are describing the same group of documents. 
+\item The higher the similarity between two clusters, the more likely it is, that both clusters are describing the same group of documents. 
 \item Each cluster can be associated with a cluster from another clustering only once.
 \end{enumerate}
 
-Based on those assumptions we select the highest accuracy value per row, whose column is not already associated with another row. Applying this selection function $f$ to our previously calculated accuracy matrix $A$ results in the set containing the most relevant accuracy values.
+Based on those assumptions we select the highest similarity value per row, whose column is not already associated with another row. Applying this selection function $f$ to our previously calculated similarity matrix $A$ results in the set containing the most relevant similarity values.
 
 \begin{gather*}
     \begin{array}{rcl}
         f(A) = & \left(\begin{array}{cccc}
-                \mathbf{0.75} & 0.375 & 0.427 & 0.375 \\
-                0.4 & \mathbf{0.667} & 0.571 & 0.4 \\
-                0.333 &  0.25 & 0.4 & \mathbf{1.0} \end{array}\right)
-            = \{0.75, 0.667, 1\}
+            \mathbf{0.667} & 0.167 & 0 & 0 \\
+            0 & \mathbf{0.6} & 0.25 & 0.4 \\
+            0 &  0 & 0 & \mathbf{1.0} \end{array}\right)
+            = \{0.667, 0.6, 1\}
     \end{array}
 \end{gather*}
 
-As we can see, there were no collisions between columns and we simply get the highest value per row. Consider the following example with an accuracy matrix $B$, which does contain a collision:
+As we can see, there were no collisions between columns and we simply get the highest value per row. Consider the following example with an similarity matrix $B$, which does contain a collision:
 
 \begin{gather*}
     \begin{array}{rcl}
@@ -131,65 +128,63 @@ As we can see, there were no collisions between columns and we simply get the hi
     \end{array}
 \end{gather*}
 
-The selected accuracy for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row, while having an accuracy greater than 0.8. Therefore based on our assumption that clusters cannot be associated twice, the second highest accuracy is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
+The selected similarity for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row, while having an similarity greater than 0.8. Therefore based on our assumption that clusters cannot be associated twice, the second highest similarity is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
 
-As a final step the average is calculated from the sum of the accuracy with respect to the difference in predicted clusters to the true amount of clusters. In case the predicted amount is lower a normal average will already result in a lower score, since each real cluster without a matching predicted cluster counts as zero. However if there are more predicted clusters than true ones, each true cluster will have a value and the score would appear the same as if there was a perfect prediction in the amount of clusters. To take this into account, the difference is added to the number of true clusters as shown in Equation \ref{equ:avg_accuracy}.
+As a final step the average is calculated from the sum of the similarity with respect to the difference in predicted clusters to the true amount of clusters. In case the predicted amount is lower a normal average will already result in a lower score, since each real cluster without a matching predicted cluster counts as zero. However if there are more predicted clusters than true ones, each true cluster will have a value and the score would appear the same as if there was a perfect prediction in the amount of clusters. To take this into account, the difference is added to the number of true clusters as shown in Equation \ref{equ:avg_similarity}.
 
 \begin{equation}
-    \label{equ:avg_accuracy}
-        \frac{s_{accuracy}}{c_{true} + max(0, c_{predicted} - c_{true})}
+    \label{equ:avg_similarity}
+        \frac{s_{similarity}}{c_{true} + max(0, c_{predicted} - c_{true})}
 \end{equation}
 
-Where $s_{accuracy}$ is the sum of the accuracy values, $c_{predicted}$ is the number of predicted clusters and $c_{true}$ is the number of true clusters. Using our previously selected accuracy values $S = f(A) = \{0.75, 0.667, 1\}$ with  $c_{true}=3$ and $c_{predicted}=4$, the calculation for the final average would be done as follows:
+Where $s_{similarity}$ is the sum of the similarity values, $c_{predicted}$ is the number of predicted clusters and $c_{true}$ is the number of true clusters. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ with  $c_{true}=3$ and $c_{predicted}=4$, the calculation for the final average would be done as follows:
 
 \begin{align*}
     score &= \frac{\sum_{i=1}^{|S|} S_i}{c_{true} + max(0, c_{predicted} - c_{true})} \\
-    &= \frac{0.75 + 0.667 + 1}{3 + max(0, 4 - 3)} = \frac{2.417}{3 + max(0, 1)} \\
-    &= \frac{2.417}{3 + 1} = \frac{2.417}{4} \\
-    &= \mathbf{0.604}
+    &= \frac{0.667 + 0.6 + 1}{3 + max(0, 4 - 3)} = \frac{2.267}{3 + max(0, 1)} \\
+    &= \frac{2.267}{3 + 1} = \frac{2.267}{4} \\
+    &= \mathbf{0.567}
 \end{align*}
 
-The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.604.
+The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.567.
 
-\paragraph{Comparison against NMI}
+\paragraph{Comparison against other measures}
 
-After repeating the evaluation shown in Table \ref{tab:nmi_kmeans_example} a second time using the average accuracy per clustering, the score (Table \ref{tab:avg_predict_kmeans_example}) for K-means is much lower than HDBSCAN. This reflects what we would expect based on the big difference in the amount of predicted clusters.
-
-\begin{table}[h]
-    \centering
-    \begin{tabular}{|l|l|l|l|}
-    \hline
-    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{Accuracy}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
-    k-means & 19255 & 0.137 & 457 \\ \hline
-    hdbscan & 19255 & 0.605 & 2 \\ \hline
-    \end{tabular}
-    \caption{K-Means has a higher NMI score than HDBSCAN, while having a much larger difference in number of clusters.}
-    \label{tab:avg_predict_kmeans_example}
-\end{table}
-
-The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our accuracy score, NMI and completeness. It is important to note that NMI and completeness work with cluster labels assigned to each document, instead of considing elements inside a single cluster. This means the clustering will be flattened into one dimension, where each document is assigned the label of the cluster it appeares in. The array containing the labels for the first scenario would look as follows: $C=[1,1,1,2,2,2,2,3,3]$.
+The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and completeness. It is important to note that NMI and completeness work with cluster labels assigned to each document, instead of considing elements inside a single cluster. This means the clustering will be flattened into one dimension, where each document is assigned the label of the cluster it appeares in. The array containing the labels for the first scenario would look as follows: $C=[1,1,1,2,2,2,2,3,3]$.
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|l|l|l|l|l|}
+    \begin{tabular}{|l|l|l|l|l|l|}
     \hline
-    \multicolumn{5}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
+    \multicolumn{6}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
     \hline
-    Nr. & Predicted Clustering $C$ & NMI & Completeness & Accuracy \\ \hline
+    Nr. & Predicted Clustering $C$ & NMI & ARI & Similarity \\ \hline
     1 & $C = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$ & 1.0 & 1.0 & 1.0 \\ \hline
-    2 & $C = \{\{1,2\},\{3,4,5,6\},\{7,8,9\}\}$ & 0.564 & 0.564 & 0.694 \\ \hline
-    3 & $C = \{\{1,2,3\},\{4,5,6\},\{7\},\{8,9\}\}$ & 0.895 & 0.809 & 0.7 \\ \hline
-    4 & $C = \{\{1,2,3\},\{4,5\},\{6,7\},\{8\},\{9\}\}$ & 0.821 & 0.697 & 0.467 \\ \hline
-    5 & $C = \{\{1\},\{2\},\{3\},\{4\},\{5\},\{6\},\{7\},\{8\},\{9\}\}$ & 0.651 & 0.483 & 0.204 \\ \hline
-    6 & $C = \{\{1,2,3,4,5\},\{6,7,8,9\}\}$ & 0.434 & 0.552 & 0.367 \\ \hline
-    7 & $C = \{\{1,2,3,4,5,6,7,8,9\}\}$ & 0.0 & 1.0 & 0.148 \\ \hline
-    8 & $C = \{\{7,2,4\},\{8,9,6,3\},\{1,5\}\}$ & 0.219 & 0.219 & 0.524 \\ \hline
+    2 & $C = \{\{1,2\},\{3,4,5,6\},\{7,8,9\}\}$ & 0.564 &  0.308 & 0.644 \\ \hline
+    3 & $C = \{\{1,2,3\},\{4,5,6\},\{7\},\{8,9\}\}$ & 0.895 & 0.771 & 0.688 \\ \hline
+    4 & $C = \{\{1,2,3\},\{4,5\},\{6,7\},\{8\},\{9\}\}$ & 0.821 & 0.591 & 0.467 \\ \hline
+    5 & $C = \{\{1\},\{2\},\{3\},\{4\},\{5\},\{6\},\{7\},\{8\},\{9\}\}$ & 0.651 & 0 & 0.12 \\ \hline
+    6 & $C = \{\{1,2,3,4,5\},\{6,7,8,9\}\}$ & 0.434 & 0.182 & 0.367 \\ \hline
+    7 & $C = \{\{1,2,3,4,5,6,7,8,9\}\}$ & 0.0 & 0 & 0.148 \\ \hline
+    8 & $C = \{\{7,2,4\},\{8,9,6,3\},\{1,5\}\}$ & 0.219 & -0.108 & 0.383 \\ \hline
     \end{tabular}
     \caption{Direct comparison of different scoring functions}
     \label{tab:score_scenarios}
 \end{table}
 
-TODO explain scores. why is it better than NMI?
+As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_example} a second time using the average similarity per clustering, the score (Table \ref{tab:avg_predict_kmeans_example}) for K-means is much lower than HDBSCAN. This reflects what we would expect based on the big difference in the amount of predicted clusters.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Algorithm} & \textbf{Sample Size} & \textbf{Similarity}  & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
+    k-means & 19255 & 0.137 & 457 \\ \hline
+    hdbscan & 19255 & 0.605 & 2 \\ \hline
+    \end{tabular}
+    \caption{The similarty score reflects the difference in number of predicted clusters.}
+    \label{tab:avg_predict_kmeans_example}
+\end{table}
 
 \subsection{Online Clustering}
 
