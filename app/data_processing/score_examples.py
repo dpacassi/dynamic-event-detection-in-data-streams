@@ -5,9 +5,11 @@ from sklearn.metrics import (
     adjusted_rand_score,
     adjusted_mutual_info_score,
     silhouette_score,
-    normalized_mutual_info_score
+    normalized_mutual_info_score,
+    fowlkes_mallows_score
 )
 import score
+import pprint
 
 
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
@@ -15,6 +17,8 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
     nmi = normalized_mutual_info_score(true_labels, predicted_labels, average_method='arithmetic')
     completeness = completeness_score(true_labels, predicted_labels)
     v_measure = v_measure_score(true_labels, predicted_labels)
+    rand = adjusted_rand_score(true_labels, predicted_labels)
+    fms = fowlkes_mallows_score(true_labels, predicted_labels)
 
     print("------------------")
     print("Example ", nexperiment)
@@ -22,6 +26,8 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
     print("NMI: ", round(nmi,3))
     print("Completeness: ", round(completeness,3))
     print("V-Measure: ", round(v_measure,3))
+    print("Adjusted Rand: ", round(rand,3))
+    print("Fowlkes Mallows: ", round(fms,3))
     print()
 
 
@@ -53,9 +59,7 @@ predicted_clusters = [
     [7,8,9]
 ]
 
-predicted_labels = 
-[1,1,2,2,2,2,3,3,3]
-[1,1,1,2,2,3,3,4,5]
+predicted_labels = [1,1,2,2,2,2,3,3,3]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
@@ -136,9 +140,11 @@ predicted_clusters = [
 ]
 
 predicted_labels = [3,1,2,1,3,2,1,2,2]
-
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
+matrix = score.create_accuracy_matrix(true_clusters, predicted_clusters)
+pprint.pprint(matrix)
+print()
 
 
 # Thesis Example:
@@ -152,6 +158,7 @@ predicted_clusters = [
 predicted_labels = [1,1,2,2,2,2,3,4,4]
 
 nexperiment += 1
-matrix = score.create_accuracy_matrix(true_clusters, predicted_clusters)
-print(matrix)
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
+matrix = score.create_accuracy_matrix(true_clusters, predicted_clusters)
+pprint.pprint(matrix)
+print()

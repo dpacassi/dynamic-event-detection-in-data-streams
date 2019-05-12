@@ -35,7 +35,9 @@ KMeans is a centroid-based clustering algorithm.
 
 \subsubsection{Score calculation}
 
-The scoring function is essential for measuring the result of a clustering method. The score should tell us how close the resulting clusters are to the ground truth and give us an intuitive understanding about the quality of the clusters. One of the challenges when comparing one clustering with the other, is that the differnet clusters do not share the same label across different clusterings. Which is why scoring functions used for clusterings typically ignore the labels and focus on the shape of a cluster.
+TODO replace accuracy with similarity (jaccard index)
+
+The scoring function is essential for measuring the result of a clustering method. The score should tell us how close the resulting clusters are to the ground truth and give us an intuitive understanding about the quality of the clusters. One of the challenges when comparing one clustering with the other, is that the different clusters do not share the same label across different clusterings. Which is why scoring functions used for clusterings typically ignore the labels and focus on the shape of a cluster.
 
 Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI calculates the mutual information between two clusterings and normalizes the result by dividing through a generalized mean of the entropy of each clustering. % TODO better description.
 The score proved to work well for our initial evaluations and manual samplings verified the score. Upon running evaluations with higher sample sizes the NMI score started to lose its reliability. An example is given in Table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless to the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
@@ -66,7 +68,7 @@ The scoring function first calculates the accuracy for each combination of two c
     \frac{n_{true}}{n_{true} + fp + fn}
 \end{equation}
 
-where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. To illustrate this step with an example, we use $T$ and $C$ as our clusterings, where $T$ is the true clustering and $C$ is the predicted clustering. The clusterings are defined as follows:
+where $n_{true}$ is the number of elements in the true cluster, $fp$ is the number of false positives in the predicted cluster and $fn$ describes the number of false negatives in the predicted cluster. To illustrate this step with an example, we use $T$ and $C$ as our clusterings, where $T$ is the ground truth and $C$ is the predicted clustering. The clusterings are defined as follows:
 
 \begin{gather*}
     T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\} \\
@@ -171,7 +173,7 @@ The test scenarios in table \ref{tab:score_scenarios} show the resulting scores 
     \centering
     \begin{tabular}{|l|l|l|l|l|}
     \hline
-    \multicolumn{5}{ |c| }{\textbf{Test scenarios with true clustering $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
+    \multicolumn{5}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
     \hline
     Nr. & Predicted Clustering $C$ & NMI & Completeness & Accuracy \\ \hline
     1 & $C = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$ & 1.0 & 1.0 & 1.0 \\ \hline
@@ -193,6 +195,5 @@ TODO explain scores. why is it better than NMI?
 
 * time based sliding window
 * Near duplicate detection for clusters with MinHash and LSH O(log n)
-* Jaccard Coefficient: number of common elements / (total number of elements - number of common elements)
 * source https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134
 * defining events -> new story, changes in story (additions/deletions)
