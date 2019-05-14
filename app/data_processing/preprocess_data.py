@@ -200,7 +200,7 @@ try:
                             time_lemmatized_without_stopwords_aggr,
                             index)
                         )
-                        connection.commit()
+                    connection.commit()
                     connection.close()
                 except:
                     # Write to database with new connection.
