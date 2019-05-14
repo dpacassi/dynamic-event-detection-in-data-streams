@@ -204,7 +204,7 @@ try:
                     connection.close()
                 except:
                     # Write to database with new connection.
-                    if connection.open():
+                    if connection.open:
                         connection.close()
 
                     connection = db.get_connection()
