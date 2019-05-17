@@ -162,7 +162,7 @@ matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 pprint.pprint(matrix)
 print()
 
-# Example 9: Pacassis example
+# Example 9: Pacassis example 1
 true_clusters = [
     list(range(1, 1001)),
     [2000],
@@ -178,6 +178,29 @@ predicted_clusters = [
 ]
 predicted_labels = 1000 * [1]
 predicted_labels += [4, 5]
+
+nexperiment += 1
+compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
+matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
+pprint.pprint(matrix)
+print()
+
+# Example 10: Pacassis example 2
+true_clusters = [
+    list(range(1, 1001)),
+    [2000],
+    [3000]
+]
+true_labels = 1000 * [1]
+true_labels += [2, 3]
+
+predicted_clusters = [
+    list(range(1, 1001)),
+    [4000],
+    [5000]
+]
+predicted_labels = list(range(1, 1001))
+predicted_labels += [4000, 5000]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
