@@ -207,3 +207,7 @@ ADD COLUMN `text_lemmatized_without_stopwords_aggr` LONGTEXT NULL DEFAULT NULL A
 
 ALTER TABLE `data_database`.`news_article`
 ADD COLUMN `time_lemmatized_without_stopwords_aggr` INT NULL DEFAULT NULL AFTER `text_lemmatized_without_stopwords_aggr`;
+
+ALTER TABLE `data_database`.`news_article`
+ADD COLUMN `valid_story_count` INT UNSIGNED NULL DEFAULT NULL AFTER `story`,
+ADD COLUMN `computed_publish_date` DATETIME NULL DEFAULT NULL AFTER `newspaper_publish_date`;

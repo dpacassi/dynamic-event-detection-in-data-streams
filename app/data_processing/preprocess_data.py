@@ -200,10 +200,13 @@ try:
                             time_lemmatized_without_stopwords_aggr,
                             index)
                         )
-                        connection.commit()
+                    connection.commit()
                     connection.close()
                 except:
                     # Write to database with new connection.
+                    if connection.open:
+                        connection.close()
+
                     connection = db.get_connection()
                     with connection.cursor() as cursor:
                         cursor.execute(update_failed_sql, (index))
