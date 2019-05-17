@@ -83,17 +83,18 @@ def plot_accuracy_samples():
     connection = db.get_connection()
 
     # Fixate hdbscan parameters and vectorizer for showing errors of best approach
-    parameters = '{"min_cluster_size": 4, "metric": "cosine"}'
+    # parameters = '{"min_cluster_size": 4, "metric": "cosine"}'
     vectorizer = "TfidfVectorizer"
     sql = (
-        "select m.corrected_avg_unique_accuracy as accuracy, m.real_clusters, m.method from method_evaluation as m"
-        " where ((m.method = 'hdbscan' and m.parameters = %s) or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
-        " and vectorizer = %s"
+        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.real_clusters, m.method from method_evaluation as m"
+        " where ((m.method = 'hdbscan') or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
+        " and vectorizer = %s and tokenizer != 'None'"
         " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
         " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
+        " group by m.real_clusters, m.method "
     )
 
-    data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
+    data = pandas.read_sql(sql=sql, con=connection, params=[vectorizer])
     connection.close()
 
     def format_data(data, method):
@@ -481,14 +482,14 @@ def table_preprocessing():
 
 
 # Clustering method evaluation
-# plot_accuracy_samples()
+plot_accuracy_samples()
 # plot_processing_time_samples()
 # plot_cluster_difference_samples()
 # plot_noise_ratio_samples()
 # plot_different_clusterings()
 # plot_hdbscan_parameters()
 # table_preprocessing()
-plot_articles_per_story_distribution()
+# plot_articles_per_story_distribution()
 
 # Online clustering evaluation
 # plot_event_detection_by_date()
