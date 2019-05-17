@@ -31,16 +31,16 @@ def cluster_similarity(true_clusters, predicted_clusters):
     # to a good score, eventhough there might be a big difference in number of predicted clusters vs. true clusters.
     corrected_avg_unique_similarity = sum_unique_values(unique_indicies) / (number_of_true_clusters + max(0, number_of_predicted_clusters - number_of_true_clusters))
     
-    elements_per_cluster = [len(cluster) for cluster in true_clusters]
-    total_elements = sum(elements_per_cluster)
+    elements_per_true_cluster = [len(cluster) for cluster in true_clusters]
+    elements_per_predicted_cluster = [len(cluster) for cluster in predicted_clusters]
+    
+    total_true_elements = sum(elements_per_true_cluster)
+    total_pred_elements = sum(elements_per_predicted_cluster)
 
     weighted_similarity = 0
     if total_elements > 0:
-        for value in unique_indicies.values():
-            weighted_similarity += value["max_value"] * (elements_per_cluster[value["row_index"]] / total_elements)
-
-    # Add weight for number of clusters
-    weighted_similarity *= number_of_true_clusters / (number_of_true_clusters + max(0, number_of_predicted_clusters - number_of_true_clusters))
+        for column, value in unique_indicies.items():
+            weighted_similarity += value["max_value"] * ((elements_per_true_cluster[value["row_index"]] + elements_per_predicted_cluster[column]) / (total_pred_elements + total_true_elements))
 
     # Return both for validation of corrected similarity
     return corrected_avg_unique_similarity, weighted_similarity
