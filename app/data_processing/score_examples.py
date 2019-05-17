@@ -16,7 +16,7 @@ import clusim.sim as sim
 
 
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
-    similarity, _ = score.cluster_similarity(true_clusters, predicted_clusters)
+    avg_similarity, weighted_similarity = score.cluster_similarity(true_clusters, predicted_clusters)
     nmi = normalized_mutual_info_score(true_labels, predicted_labels, average_method='arithmetic')
     completeness = completeness_score(true_labels, predicted_labels)
     v_measure = v_measure_score(true_labels, predicted_labels)
@@ -35,7 +35,8 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
 
     print("------------------")
     print("Example ", nexperiment)
-    print("Similarity: ", round(similarity,3))
+    print("AVG Similarity: ", round(avg_similarity,3))
+    print("Weigthed Similarity: ", round(weighted_similarity,3))
     print("NMI: ", round(nmi,3))
     print("NMI2: ", round(nmi2,3))
     print("Completeness: ", round(completeness,3))
@@ -190,7 +191,7 @@ matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 pprint.pprint(matrix)
 print()
 
-# Example 9: Pacassis example 1
+# Example 10: Pacassis example 1
 true_clusters = [
     list(range(1, 1001)),
     [2000],
@@ -201,11 +202,10 @@ true_labels += [2, 3]
 
 predicted_clusters = [
     list(range(1, 1001)),
-    [4000],
-    [5000]
+    [2000,3000]
 ]
 predicted_labels = 1000 * [1]
-predicted_labels += [4, 5]
+predicted_labels += [2, 2]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
@@ -213,25 +213,37 @@ matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 pprint.pprint(matrix)
 print()
 
-# Example 10: Pacassis example 2
-true_clusters = [
-    list(range(1, 1001)),
-    [2000],
-    [3000]
-]
-true_labels = 1000 * [1]
-true_labels += [2, 3]
+# Similarity:  0.5
+# NMI:  0.954
+# NMI2:  0.954
+# Completeness:  1.0
+# V-Measure:  0.954
+# Adjusted Rand:  1.0
+# Fowlkes Mallows:  1.0
+# Jaccard Index:  1.0
+# F-Measure:  1.0
+# Element-centric:  0.999
 
-predicted_clusters = [
-    list(range(1, 1001)),
-    [4000],
-    [5000]
-]
-predicted_labels = list(range(1, 1001))
-predicted_labels += [4000, 5000]
 
-nexperiment += 1
-compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
-matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
-pprint.pprint(matrix)
-print()
+# # Example 10: Pacassis example 2
+# true_clusters = [
+#     list(range(1, 1001)),
+#     [2000],
+#     [3000]
+# ]
+# true_labels = 1000 * [1]
+# true_labels += [2, 3]
+
+# predicted_clusters = [
+#     list(range(1, 1001)),
+#     [4000],
+#     [5000]
+# ]
+# predicted_labels = list(range(1, 1001))
+# predicted_labels += [4000, 5000]
+
+# nexperiment += 1
+# compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
+# matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
+# pprint.pprint(matrix)
+# print()
