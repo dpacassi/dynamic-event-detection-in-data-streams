@@ -21,13 +21,13 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
     fms = fowlkes_mallows_score(true_labels, predicted_labels)
 
     print("------------------")
-    print("Example ", nexperiment)
-    print("Similarity: ", round(similarity,3))
-    print("NMI: ", round(nmi,3))
-    print("Completeness: ", round(completeness,3))
-    print("V-Measure: ", round(v_measure,3))
-    print("Adjusted Rand: ", round(rand,3))
-    print("Fowlkes Mallows: ", round(fms,3))
+    print("Example", nexperiment)
+    print("Similarity:", round(similarity,3))
+    print("NMI:", round(nmi,3))
+    print("Completeness:", round(completeness,3))
+    print("V-Measure:", round(v_measure,3))
+    print("Adjusted Rand:", round(rand,3))
+    print("Fowlkes Mallows:", round(fms,3))
     print()
 
 
@@ -147,7 +147,7 @@ pprint.pprint(matrix)
 print()
 
 
-# Thesis Example:
+# Thesis example:
 predicted_clusters = [
     [1,2],
     [3,4,5,6],
@@ -156,6 +156,28 @@ predicted_clusters = [
 ]
 
 predicted_labels = [1,1,2,2,2,2,3,4,4]
+
+compare_scores('Thesis example', true_clusters, true_labels, predicted_clusters, predicted_labels)
+matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
+pprint.pprint(matrix)
+print()
+
+# Example 9: Pacassis example
+true_clusters = [
+    list(range(1, 1001)),
+    [2000],
+    [3000]
+]
+true_labels = 1000 * [1]
+true_labels += [2, 3]
+
+predicted_clusters = [
+    list(range(1, 1001)),
+    [4000],
+    [5000]
+]
+predicted_labels = 1000 * [1]
+predicted_labels += [4, 5]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
