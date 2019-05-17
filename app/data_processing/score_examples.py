@@ -213,6 +213,27 @@ matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 pprint.pprint(matrix)
 print()
 
+# Example 11
+true_clusters = [
+    list(range(1, 1001)),
+    [2000,3000]
+]
+true_labels = 1000 * [1]
+true_labels += [2, 3]
+
+predicted_clusters = [
+    list(range(1, 1001)),
+    [2000],
+    [3000]
+]
+predicted_labels = 1000 * [1]
+predicted_labels += [2, 2]
+
+nexperiment += 1
+compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
+matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
+pprint.pprint(matrix)
+print()
 # Similarity:  0.5
 # NMI:  0.954
 # NMI2:  0.954
