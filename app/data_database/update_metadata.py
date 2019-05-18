@@ -3,48 +3,63 @@ import random
 import pymysql
 import datetime
 from dotenv import load_dotenv
+from filelock import Timeout, FileLock
 
+######################################################################################
+# Check if the script is already running.
+######################################################################################
 
-# Load environment variables.
-load_dotenv()
+ts = str(datetime.datetime.now())
 
-connection = pymysql.connect(
-    host=os.environ['MYSQL_HOSTNAME'],
-    port=int(os.environ['MYSQL_PORT']),
-    user=os.environ['MYSQL_USER'],
-    passwd=os.environ['MYSQL_PASSWORD'],
-    database=os.environ['MYSQL_DATABASE'],
-    charset='utf8mb4',
-    cursorclass=pymysql.cursors.DictCursor
-)
+try:
+    lock = FileLock("metadata.lock", timeout=1)
+    with lock:
+        print("[" + ts + "] Received lock, updating metadata")
 
-# Get the next story to process.
-get_next_sql = "SELECT * FROM news_article WHERE preprocessed = 1 AND valid_story_count IS NULL LIMIT 1"
-get_stories_sql = "SELECT * FROM news_article WHERE preprocessed = 1 AND story = %s ORDER BY `date` ASC"
-update_story_sql = "UPDATE news_article SET valid_story_count = %s, computed_publish_date = %s WHERE id = %s"
+        # Load environment variables.
+        load_dotenv()
 
-with connection.cursor() as cursor:
-    cursor.execute(get_next_sql)
-    rows = cursor.fetchall()
+        connection = pymysql.connect(
+            host=os.environ['MYSQL_HOSTNAME'],
+            port=int(os.environ['MYSQL_PORT']),
+            user=os.environ['MYSQL_USER'],
+            passwd=os.environ['MYSQL_PASSWORD'],
+            database=os.environ['MYSQL_DATABASE'],
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
 
-    if len(rows) == 0:
-        print("No stories to process")
-        connection.close()
-        exit(0)
+        # Get the next story to process.
+        get_next_sql = "SELECT * FROM news_article WHERE preprocessed = 1 AND valid_story_count IS NULL LIMIT 1"
+        get_stories_sql = "SELECT * FROM news_article WHERE preprocessed = 1 AND story = %s ORDER BY `date` ASC"
+        update_story_sql = "UPDATE news_article SET valid_story_count = %s, computed_publish_date = %s WHERE id = %s"
 
-    story = rows[0]['story']
-    cursor.execute(get_stories_sql, (story))
-    rows = cursor.fetchall()
-    valid_story_count = len(rows)
-    date = None
+        with connection.cursor() as cursor:
+            cursor.execute(get_next_sql)
+            rows = cursor.fetchall()
 
-    for idx, news_article in enumerate(rows):
-        if idx > 0:
-            minutes_to_add = random.randint(1, 120)
-            seconds_to_add = random.randint(0, 59)
-            date += datetime.timedelta(minutes=minutes_to_add, seconds=seconds_to_add)
-        else:
-            date = news_article['date']
+            if len(rows) == 0:
+                print("[" + ts + "] No stories to process")
+                connection.close()
+                exit(0)
 
-        cursor.execute(update_story_sql, (valid_story_count, date, news_article['id']))
-        connection.commit()
+            story = rows[0]['story']
+            cursor.execute(get_stories_sql, (story))
+            rows = cursor.fetchall()
+            valid_story_count = len(rows)
+            date = None
+
+            for idx, news_article in enumerate(rows):
+                if idx > 0:
+                    minutes_to_add = random.randint(1, 120)
+                    seconds_to_add = random.randint(0, 59)
+                    date += datetime.timedelta(minutes=minutes_to_add, seconds=seconds_to_add)
+                else:
+                    date = news_article['date']
+
+                cursor.execute(update_story_sql, (valid_story_count, date, news_article['id']))
+                connection.commit()
+
+        lock.release()
+except Timeout:
+    print("[" + ts + "] Didn't receive lock")
