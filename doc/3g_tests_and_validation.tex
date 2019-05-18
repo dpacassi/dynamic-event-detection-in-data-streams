@@ -1,41 +1,8 @@
-\section{Method}
-
-TODO introductionary paragraph
-
-\subsection{Test Data}
-
-The first important step is to create a test data set to run the evaluations with and verify them.
-
-TODO explain the source and structrue
-
-\subsection{Clustering method}
-
-Clustering finds similarities in different news articles based on their content and groups them together, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
-
-TODO why hdbscan
-
-\subsubsection{HDBSCAN}
-
-HDBSCAN is a hierarchical density-based clustering algorithm \cite{McInnes2017}. It extends the well known [insert citation] DBSCAN algorithm and reduces its sensitivity for clusters of varying densities. Another important quality of HDBSCAN is, that it does not need to know the number of clusters up front.
-
- TODO explain some more
-
-\subsubsection{K-means}
-
-KMeans is a centroid-based clustering algorithm. 
-
- TODO explain some more
-
-\subsubsection{Preprocessing}
-
-% raw text
-% with entity extraction
-% word embeddings?
-% Tfidf
+\subsection{Tests and validation}
 
 \subsubsection{Scoring function}
 
-The scoring function is essential for measuring the result of a clustering method. The score should reflect the quality of the individual clusters and of the clustering as a whole. The number of existing measures for clustering is vast and can be split into two main categories. Internal measures determine the score based on criteria derived from the data itself and external measures depend on criteria non-existent in the data itself such as class labels. Since the ground truth is known in our test data, we are going to apply an external measure.   
+The scoring function is essential for measuring the result of a clustering method. The score should reflect the quality of the individual clusters and of the clustering as a whole. The number of existing measures for clustering is vast and can be split into two main categories. Internal measures determine the score based on criteria derived from the data itself and external measures depend on criteria non-existent in the data itself such as class labels. Since the ground truth is known in our test data, we are going to apply an external measure.
 Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI is a entropy-based measure and tries to quantify the amount shared information between the clusterings. The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found. An example is given in table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless of the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
 
 % TODO explain the reason for the big difference
@@ -53,7 +20,7 @@ TODO add number of estimated clusters
     \label{tab:nmi_kmeans_example}
 \end{table}
 
-Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching and the jaccard index. 
+Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching and the jaccard index.
 
 TODO find citations
 
@@ -76,8 +43,8 @@ To illustrate the process we start with an example. We use $T$ and $C$ as our cl
 We calculate the similarity as defined in Equation \ref{equ:similarity}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
 
 \begin{align*}
-    similarity(t_1,c_1) &=\frac{|t_1 \cap c_1|}{|t_1 \cup c_1|} 
-    = \frac{|\{1,2\}|}{|\{1,2,3\}|} 
+    similarity(t_1,c_1) &=\frac{|t_1 \cap c_1|}{|t_1 \cup c_1|}
+    = \frac{|\{1,2\}|}{|\{1,2,3\}|}
     = \frac{2}{3} = 0.667 \\
 \end{align*}
 
@@ -96,11 +63,11 @@ After doing this for each possible pair we get the similarity matrix $A$:
 \end{array}
 \end{gather*}
 
-As a next step we have to select the most relevant similarity values from each row of the similarity matrix. 
+As a next step we have to select the most relevant similarity values from each row of the similarity matrix.
 
 Finding relevant values in the similarity matrix non-trivial, since clusters do not share labels across different clusterings. To solve this, we make two assumptions:
-\begin{enumerate} 
-\item The higher the similarity between two clusters, the more likely it is, that both clusters are describing the same group of documents. 
+\begin{enumerate}
+\item The higher the similarity between two clusters, the more likely it is, that both clusters are describing the same group of documents.
 \item Each cluster can be associated with a cluster from another clustering only once.
 \end{enumerate}
 
@@ -137,7 +104,7 @@ As a third step we have to calculate the weights to be used for the final  The w
         w_{ij} = \frac{|t_i| + |c_j|}{|T|+|C|} \\
 \end{equation}
 
-where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$. Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster and the size of the predicted cluster. The reason both sizes are used, is that we want to reflect if the overall number of predicted clusters is different from the ground truth. Using only the true number of elements as the weight, would affect the score if |C| < |T|, but not |C| > |T|. Therefore the number of predicted elements has to be included as well. 
+where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$. Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster and the size of the predicted cluster. The reason both sizes are used, is that we want to reflect if the overall number of predicted clusters is different from the ground truth. Using only the true number of elements as the weight, would affect the score if |C| < |T|, but not |C| > |T|. Therefore the number of predicted elements has to be included as well.
 
 In the fourth and final step we calculate the weighted average, $S$ is the similarity matrix with $s_{i} \in S$
 
@@ -194,59 +161,3 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
     \caption{The similarty score reflects the difference in number of predicted clusters.}
     \label{tab:avg_predict_kmeans_example}
 \end{table}
-
-\subsection{Online Clustering}
-
-Detecting events in a stream of news articles will be achieved by using an online clustering approach. The events of interest for this application are the discovery of new topics and the extension of existing topics. Thus we define our two events as follows:
-
-\begin{itemize}
-    \item Topic added: A new cluster of news articles appears in the data stream.
-    \item Topic extended: An existing topic is extended by additional news articles.
-\end{itemize}
-
-HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the preivous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustring.
-
-Since HDBSCAN only supports static datasets, the clustering will be done in batches using a time based sliding window approach. Events are detected by comparing the resulting clusters with the previous ones.
-
-\begin{figure}[h]
-    \centering
-
-    \begin{tikzpicture}[scale=1]
-        
-       
-        \draw[lightgray, line width=4pt] (0,.5) -- (4,.5);
-        \draw[lightgray, dashed] (0,.5) -- (0,0);
-        \draw[lightgray, dashed] (4,.5) -- (4,0);
-        \node[align=right] at (-1,.5) {batch $n$};
-
-        \draw[gray, line width=4pt] (1,1) -- (5,1);
-        \draw[gray, dashed] (1,1) -- (1,0);
-        \draw[gray, dashed] (5,1) -- (5,0);
-        \node[align=right] at (-.2,1) {batch $n + 1$};
-
-        \draw[darkgray, line width=4pt] (2,1.5) -- (6,1.5);
-        \draw[darkgray, dashed] (2,1.5) -- (2,0);
-        \draw[darkgray, dashed] (6,1.5) -- (6,0);
-        \node[align=right] at (0.8,1.5) {batch $n + 2$};
-
-        \node[align=center] at (5.5,-0.85) {$\triangle t$};
-        \node[align=center] at (10,-0.5) {t};
-
-        \draw [thick,->] (0,0) -- (10,0);
-        \foreach \x in {0,...,9} \draw (\x,0.1) -- (\x,-0.1);
-
-        \draw [thick,decorate,decoration={brace,amplitude=6pt,raise=0pt,mirror}] (5,-0.25) -- (6,-0.25);
-
-        \end{tikzpicture}
-        
-    \caption{Timeline showing the sliding window approach}
-    \label{fig:timeline}
-\end{figure}
-
-\subsubsection{Finding pairs clusters}
-
-To be able to compare clusters of different batches with each other, we have to find pairs of clusters between batches, which describe the same topic. This is done by applying the same assumptions as for the scoring function used in the evaluation. Therefore clusters are paired based on their similarity calculated with the jaccard index as shown in equation \ref{equ:similarity}. If the similarity is above a certain threshold, both clusters are seen as describing the same topic.
-
-\subsubsection{Sliding window}
-
-An important consideration for determining existing or new clusters is the overlap of samples between batches. If the overlap is too small, similar clusters will no longer be detected as such, which would result in an increasingly high error rate. Finding optimal values for the step size between batches and the number of samples for each batch is therefore essential for our online clustering approach.
