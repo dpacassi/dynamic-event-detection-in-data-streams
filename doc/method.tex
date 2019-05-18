@@ -130,14 +130,23 @@ As we can see, there were no collisions between columns and we simply get the hi
 
 The selected similarity for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row, while having an similarity greater than 0.8. Therefore based on our assumption that clusters cannot be associated twice, the second highest similarity is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
 
-As a final step the average is calculated from the sum of the similarity with respect to the difference in predicted clusters to the true amount of clusters. In case the predicted amount is lower a normal average will already result in a lower score, since each real cluster without a matching predicted cluster counts as zero. However if there are more predicted clusters than true ones, each true cluster will have a value and the score would appear the same as if there was a perfect prediction in the amount of clusters. To take this into account, the difference is added to the number of true clusters as shown in Equation \ref{equ:avg_similarity}.
+As a third step we have to calculate the weights to be used for the final  The weight is based on the number of elements inside the cluster and necessary to represent differences in predicted and true number of clusters in the final score. It is defined as follows
 
 \begin{equation}
-    \label{equ:avg_similarity}
-        \frac{s_{similarity}}{c_{true} + max(0, c_{predicted} - c_{true})}
+    \label{equ:weight}
+        w_{ij} = \frac{|t_i| + |c_j|}{|T|+|C|} \\
 \end{equation}
 
-Where $s_{similarity}$ is the sum of the similarity values, $c_{predicted}$ is the number of predicted clusters and $c_{true}$ is the number of true clusters. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ with  $c_{true}=3$ and $c_{predicted}=4$, the calculation for the final average would be done as follows:
+where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$. Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster and the size of the predicted cluster. The reason both sizes are used, is that we want to reflect if the overall number of predicted clusters is different from the ground truth. Using only the true number of elements as the weight, would affect the score if |C| < |T|, but not |C| > |T|. Therefore the number of predicted elements has to be included as well. 
+
+In the fourth and final step we calculate the weighted average, $S$ is the similarity matrix with $s_{i} \in S$
+
+\begin{equation}
+    \label{equ:weighted_average}
+        \text{MP-Score} = \sum_{i=0}^{|S|} w_is_i
+\end{equation}
+
+Where $S$ is the similarity matrix with $s_{i} \in S$ and $w_i$ the corresponding weight. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ with  $c_{true}=3$ and $c_{predicted}=4$, the calculation for the final average would be done as follows:
 
 \begin{align*}
     score &= \frac{\sum_{i=1}^{|S|} S_i}{c_{true} + max(0, c_{predicted} - c_{true})} \\
@@ -158,21 +167,21 @@ The test scenarios in table \ref{tab:score_scenarios} show the resulting scores 
     \hline
     \multicolumn{5}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
     \hline
-    Nr. & Predicted Clustering $C$ & NMI & ARI & M-Score \\ \hline
+    Nr. & Predicted Clustering $C$ & NMI & ARI & MP-Score \\ \hline
     1 & $C = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$ & 1.0 & 1.0 & 1.0 \\ \hline
-    2 & $C = \{\{1,2\},\{3,4,5,6\},\{7,8,9\}\}$ & 0.564 &  0.308 & 0.644 \\ \hline
-    3 & $C = \{\{1,2,3\},\{4,5,6\},\{7\},\{8,9\}\}$ & 0.895 & 0.771 & 0.688 \\ \hline
-    4 & $C = \{\{1,2,3\},\{4,5\},\{6,7\},\{8\},\{9\}\}$ & 0.821 & 0.591 & 0.467 \\ \hline
-    5 & $C = \{\{1\},\{2\},\{3\},\{4\},\{5\},\{6\},\{7\},\{8\},\{9\}\}$ & 0.651 & 0 & 0.12 \\ \hline
-    6 & $C = \{\{1,2,3,4,5\},\{6,7,8,9\}\}$ & 0.434 & 0.182 & 0.367 \\ \hline
-    7 & $C = \{\{1,2,3,4,5,6,7,8,9\}\}$ & 0.0 & 0 & 0.148 \\ \hline
-    8 & $C = \{\{7,2,4\},\{8,9,6,3\},\{1,5\}\}$ & 0.219 & -0.108 & 0.383 \\ \hline
+    2 & $C = \{\{1,2\},\{3,4,5,6\},\{7,8,9\}\}$ & 0.564 &  0.308 & 0.637 \\ \hline
+    3 & $C = \{\{1,2,3\},\{4,5,6\},\{7\},\{8,9\}\}$ & 0.895 & 0.771 & 0.847 \\ \hline
+    4 & $C = \{\{1,2,3\},\{4,5\},\{6,7\},\{8\},\{9\}\}$ & 0.821 & 0.591 & 0.583 \\ \hline
+    5 & $C = \{\{1\},\{2\},\{3\},\{4\},\{5\},\{6\},\{7\},\{8\},\{9\}\}$ & 0.651 & 0 & 0.227 \\ \hline
+    6 & $C = \{\{1,2,3,4,5\},\{6,7,8,9\}\}$ & 0.434 & 0.182 & 0.433 \\ \hline
+    7 & $C = \{\{1,2,3,4,5,6,7,8,9\}\}$ & 0.0 & 0 & 0.321 \\ \hline
+    8 & $C = \{\{7,2,4\},\{8,9,6,3\},\{1,5\}\}$ & 0.219 & -0.108 & 0.392 \\ \hline
     \end{tabular}
     \caption{Direct comparison of different scoring functions}
     \label{tab:score_scenarios}
 \end{table}
 
-As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_example} a second time using the average similarity per clustering, the score (Table \ref{tab:avg_predict_kmeans_example}) for K-means is much lower than HDBSCAN. This reflects what we would expect based on the big difference in the amount of predicted clusters.
+As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_example} a second time using the MP-Score, the score (Table \ref{tab:avg_predict_kmeans_example}) for K-means is much lower than HDBSCAN. This reflects what we would expect based on the big difference in the amount of predicted clusters.
 
 \begin{table}[h]
     \centering
@@ -198,6 +207,41 @@ Detecting events in a stream of news articles will be achieved by using an onlin
 HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the preivous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustring.
 
 Since HDBSCAN only supports static datasets, the clustering will be done in batches using a time based sliding window approach. Events are detected by comparing the resulting clusters with the previous ones.
+
+\begin{figure}[h]
+    \centering
+
+    \begin{tikzpicture}[scale=1]
+        
+       
+        \draw[lightgray, line width=4pt] (0,.5) -- (4,.5);
+        \draw[lightgray, dashed] (0,.5) -- (0,0);
+        \draw[lightgray, dashed] (4,.5) -- (4,0);
+        \node[align=right] at (-1,.5) {batch $n$};
+
+        \draw[gray, line width=4pt] (1,1) -- (5,1);
+        \draw[gray, dashed] (1,1) -- (1,0);
+        \draw[gray, dashed] (5,1) -- (5,0);
+        \node[align=right] at (-.2,1) {batch $n + 1$};
+
+        \draw[darkgray, line width=4pt] (2,1.5) -- (6,1.5);
+        \draw[darkgray, dashed] (2,1.5) -- (2,0);
+        \draw[darkgray, dashed] (6,1.5) -- (6,0);
+        \node[align=right] at (0.8,1.5) {batch $n + 2$};
+
+        \node[align=center] at (5.5,-0.85) {$\triangle t$};
+        \node[align=center] at (10,-0.5) {t};
+
+        \draw [thick,->] (0,0) -- (10,0);
+        \foreach \x in {0,...,9} \draw (\x,0.1) -- (\x,-0.1);
+
+        \draw [thick,decorate,decoration={brace,amplitude=6pt,raise=0pt,mirror}] (5,-0.25) -- (6,-0.25);
+
+        \end{tikzpicture}
+        
+    \caption{Timeline showing the sliding window approach}
+    \label{fig:timeline}
+\end{figure}
 
 \subsubsection{Finding pairs clusters}
 
