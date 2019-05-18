@@ -35,31 +35,32 @@ try:
         update_story_sql = "UPDATE news_article SET valid_story_count = %s, computed_publish_date = %s WHERE id = %s"
 
         with connection.cursor() as cursor:
-            cursor.execute(get_next_sql)
-            rows = cursor.fetchall()
+            while True:
+                cursor.execute(get_next_sql)
+                rows = cursor.fetchall()
 
-            if len(rows) == 0:
-                print("[" + ts + "] No stories to process")
-                connection.close()
-                exit(0)
+                if len(rows) == 0:
+                    break
 
-            story = rows[0]['story']
-            cursor.execute(get_stories_sql, (story))
-            rows = cursor.fetchall()
-            valid_story_count = len(rows)
-            date = None
+                story = rows[0]['story']
+                cursor.execute(get_stories_sql, (story))
+                rows = cursor.fetchall()
+                valid_story_count = len(rows)
+                date = None
 
-            for idx, news_article in enumerate(rows):
-                if idx > 0:
-                    minutes_to_add = random.randint(1, 120)
-                    seconds_to_add = random.randint(0, 59)
-                    date += datetime.timedelta(minutes=minutes_to_add, seconds=seconds_to_add)
-                else:
-                    date = news_article['date']
+                for idx, news_article in enumerate(rows):
+                    if idx > 0:
+                        minutes_to_add = random.randint(1, 120)
+                        seconds_to_add = random.randint(0, 59)
+                        date += datetime.timedelta(minutes=minutes_to_add, seconds=seconds_to_add)
+                    else:
+                        date = news_article['date']
 
-                cursor.execute(update_story_sql, (valid_story_count, date, news_article['id']))
-                connection.commit()
+                    cursor.execute(update_story_sql, (valid_story_count, date, news_article['id']))
+                    connection.commit()
 
+        print("[" + ts + "] No stories to process")
+        connection.close()
         lock.release()
 except Timeout:
     print("[" + ts + "] Didn't receive lock")
