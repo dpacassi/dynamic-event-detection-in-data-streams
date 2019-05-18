@@ -14,6 +14,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage[utf8]{inputenc} % Needed for the Umlaut in our title
+\usepackage{pdfpages}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -50,7 +51,7 @@
 \graphicspath{ {images/} }
 
 % variable definitions
-\providecommand{\documenttitle}{Dynamische Eventerkennung in Datenströmen}
+\providecommand{\documenttitle}{Dynamic event detection in data streams}
 \providecommand{\documentauthors}{
   David Pacassi Torrico,
   Daniel Milenkovic
@@ -64,7 +65,11 @@
 
 \begin{document}
 
-\include{cover}
+% \include{cover}
+
+\includepdf{templates/cover.pdf}
+\includepdf{templates/declaration_of_originality.pdf}
+
 \tableofcontents\newpage
 \include{abstract}
 \include{introduction}
