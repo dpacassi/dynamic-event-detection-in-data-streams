@@ -13,3 +13,7 @@ app/data_database/*
 diff.html
 *.log
 *.lock
+*.bcf
+*.lof
+*.lot
+doc/*.xml

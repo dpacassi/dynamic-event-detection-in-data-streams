@@ -2,9 +2,8 @@
 % !TEX encoding = UTF-8 Unicode
 % !program = pdflatex
 
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper,bibliography=totoc,listof=totocnumbered]{article}
 \usepackage[a4paper,top=30mm,right=20mm,bottom=25mm,left=20mm,head=35mm,foot=15mm]{geometry}
-\usepackage{cite}
 \usepackage{fancyhdr}
 \usepackage[parfill]{parskip}
 \usepackage{algorithm}
@@ -15,6 +14,8 @@
 \usepackage{color}
 \usepackage[utf8]{inputenc} % Needed for the Umlaut in our title
 \usepackage{pdfpages}
+\usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\addbibresource{citations.bib}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -65,22 +66,20 @@
 
 \begin{document}
 
-% \include{cover}
-
 \includepdf{templates/cover.pdf}
 \includepdf{templates/declaration_of_originality.pdf}
 
-\tableofcontents\newpage
-\include{abstract}
-\include{introduction}
+\include{0_abstract}
+\include{0_preface}
+\include{0_table_of_contents}
+\include{1_introduction}
+\include{2_theoretical_basics}
+\include{data}
 \include{method}
 \include{implementation}
-\include{results}
-\include{conclusion} % Diskussion und Ausblick
-\include{appendix}
-
-
-% \bibliography{citations}
+\include{4_results}
+\include{5_conclusion} % Diskussion und Ausblick
+\include{6_index}
+\include{7_appendix}
 
 \end{document}
-
