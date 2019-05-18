@@ -188,7 +188,21 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
 
 \subsection{Online Clustering}
 
-* time based sliding window
-* Near duplicate detection for clusters with MinHash and LSH O(log n)
-* source https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134
-* defining events -> new story, changes in story (additions/deletions)
+Detecting events in a stream of news articles will be achieved by using an online clustering approach. The events of interest for this application are the discovery of new topics and the extension of existing topics. Thus we define our two events as follows:
+
+\begin{itemize}
+    \item Topic added: A new cluster of news articles appears in the data stream.
+    \item Topic extended: An existing topic is extended by additional news articles.
+\end{itemize}
+
+HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the preivous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustring.
+
+Since HDBSCAN only supports static datasets, the clustering will be done in batches using a time based sliding window approach. Events are detected by comparing the resulting clusters with the previous ones.
+
+\subsubsection{Finding pairs clusters}
+
+To be able to compare clusters of different batches with each other, we have to find pairs of clusters between batches, which describe the same topic. This is done by applying the same assumptions as for the scoring function used in the evaluation. Therefore clusters are paired based on their similarity calculated with the jaccard index as shown in equation \ref{equ:similarity}. If the similarity is above a certain threshold, both clusters are seen as describing the same topic.
+
+\subsubsection{Sliding window}
+
+An important consideration for determining existing or new clusters is the overlap of samples between batches. If the overlap is too small, similar clusters will no longer be detected as such, which would result in an increasingly high error rate. Finding optimal values for the step size between batches and the number of samples for each batch is therefore essential for our online clustering approach.

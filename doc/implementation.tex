@@ -15,3 +15,10 @@ The evaluation process is done with our own evaluation framework. The framework 
 The implementation is done with Python. Clustering methods and vectorizers are provided by the Scikit-learn library. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This makes it very easy to run locally or on a server. 
 
 % TODO write it better
+
+\subsection{Online Clustering}
+
+* Near duplicate detection for clusters with MinHash and LSH O(log n)
+* source https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134
+
+* simulate an dynamic stream from our static dataset
