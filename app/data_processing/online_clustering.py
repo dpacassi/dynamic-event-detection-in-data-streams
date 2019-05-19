@@ -54,7 +54,7 @@ def cluster_news(news_articles):
         utils.convert_labels_to_cluster_identifier(
             labels, list(news_articles.index.values)
         ),
-        news_articles["date"].values[0],
+        news_articles["newspaper_publish_date"].values[0],
     )
 
 
