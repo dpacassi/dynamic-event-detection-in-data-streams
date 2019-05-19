@@ -132,6 +132,7 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
         "SELECT *"
         " FROM news_article"
         " WHERE newspaper_processed = 1"
+        "     AND preprocessed = 1"
         "     AND title_keywords_intersection = 1"
         "     AND hostname != 'newsledge.com'"
         "     AND hostname != 'www.newsledge.com'"
@@ -141,8 +142,8 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
         "     AND newspaper_text NOT LIKE '%%javascript%%'"
         "     AND newspaper_text NOT LIKE '%%404%%'"
         "     AND newspaper_text NOT LIKE '%%cookie%%'"
-        "     AND date <= %s"
-        " ORDER BY date DESC"
+        "     AND computed_publish_date <= %s"
+        " ORDER BY computed_publish_date DESC"
         " LIMIT %s, %s"
     )
 

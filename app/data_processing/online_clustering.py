@@ -45,7 +45,8 @@ def cluster_news(news_articles):
 
     model = HDBSCAN(min_cluster_size=5, metric="cosine")
 
-    data_matrix = vectorizer.fit_transform(news_articles["newspaper_text"])
+    #data_matrix = vectorizer.fit_transform(news_articles["newspaper_text"])
+    data_matrix = vectorizer.fit_transform(news_articles["text_lemmatized_without_stopwords"])
     labels = model.fit_predict(data_matrix)
 
     # Clusters are identified by a sorted string of news ids
@@ -62,7 +63,7 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
     unchanged_clusters = []
     new_clusters = []
 
-    lsh = MinHashLSH(threshold=0.8, num_perm=256)
+    lsh = MinHashLSH(threshold=0.75, num_perm=256)
     min_hashes = dict()
     for index, cluster in existing_clusters.iterrows():
         m = create_minhash(cluster["identifier"])
@@ -133,7 +134,7 @@ def find_true_events(new_news_ids, existing_news_ids):
             existing_ids = existing_stories[story]
             additions = news_ids - existing_ids
             deletions = existing_ids - news_ids
-            if len(additions) > 0 and len(deletions) > 0:
+            if len(additions) > 0 or len(deletions) > 0:
                 change_events.append(
                     {"story": story, "additions": additions, "deletions": deletions}
                 )

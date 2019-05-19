@@ -328,7 +328,7 @@ def plot_event_detection_by_date():
 
     plt.xlabel("Time")
     plt.ylabel("Number of events")
-    plt.title("Event: topic changed")
+    plt.title("Event: topic extended")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
@@ -482,7 +482,7 @@ def table_preprocessing():
 
 
 # Clustering method evaluation
-plot_accuracy_samples()
+# plot_accuracy_samples()
 # plot_processing_time_samples()
 # plot_cluster_difference_samples()
 # plot_noise_ratio_samples()
@@ -492,5 +492,5 @@ plot_accuracy_samples()
 # plot_articles_per_story_distribution()
 
 # Online clustering evaluation
-# plot_event_detection_by_date()
-# plot_event_detection_overlap()
+plot_event_detection_by_date()
+plot_event_detection_overlap()
