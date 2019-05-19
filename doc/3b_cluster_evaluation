@@ -1,6 +1,8 @@
-\subsection{Tests and validation}
+\subsection{Clustering Evaluation}
 
-\subsubsection{Scoring function}
+TODO introductionary paragraph
+
+\subsubsection{Scoring Function}
 
 The scoring function is essential for measuring the result of a clustering method. The score should reflect the quality of the individual clusters and of the clustering as a whole. The number of existing measures for clustering is vast and can be split into two main categories. Internal measures determine the score based on criteria derived from the data itself and external measures depend on criteria non-existent in the data itself such as class labels. Since the ground truth is known in our test data, we are going to apply an external measure.
 Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI is a entropy-based measure and tries to quantify the amount shared information between the clusterings. The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found. An example is given in table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless of the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
@@ -161,3 +163,21 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
     \caption{The similarty score reflects the difference in number of predicted clusters.}
     \label{tab:avg_predict_kmeans_example}
 \end{table}
+
+\subsubsection{Implementation}
+The evaluation process is done with our own evaluation framework.
+The framework allows for automated and repeatable evaluation runs.
+Results are stored in a database for later analysis.
+The main features include:
+
+\begin{itemize}
+    \item Defining the number of stories to run the evaluation with and load all news articles from those stories.
+    \item Repeating evaluation runs with different sets of data.
+    \item Providing different vectorizers for converting the textual data into a vector space model.
+    \item Defining a range for each parameter of a clustering method and running it with each possible combination of those parameters.
+    \item Storing the result the result in a database and creating relations between news articles, clusters and evaluation runs. This allows for manual inspection and analysis of individual articles inside a predicted cluster.
+\end{itemize}
+
+The implementation is done with Python. Clustering methods and vectorizers are provided by the Scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This prinicple was useful for developing and testing the framework in a local environment and deploying it on a remote server for running the final evaluations, without worrying about setting up and installing all dependencies again.
+
+% TODO write it better
