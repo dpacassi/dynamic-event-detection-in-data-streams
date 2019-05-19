@@ -142,6 +142,7 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
         "     AND newspaper_text NOT LIKE '%%javascript%%'"
         "     AND newspaper_text NOT LIKE '%%404%%'"
         "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "     AND computed_publish_date is not NULL"
         "     AND computed_publish_date <= %s"
         " ORDER BY computed_publish_date DESC"
         " LIMIT %s, %s"
