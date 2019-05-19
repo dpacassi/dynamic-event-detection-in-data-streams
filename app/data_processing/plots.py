@@ -304,12 +304,12 @@ def plot_event_detection_by_date():
     fig = plt.figure(figsize=(15, 5))
 
     plt.subplot(1, 2, 1)
-    plt.scatter(X, Y_pred_add_events, label="Detected")
-    plt.scatter(X, Y_true_add_events, label="True")
+    plt.plot(X, Y_pred_add_events,  '-o', label="Detected")
+    plt.plot(X, Y_true_add_events,  '-^', label="True")
 
-    #plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-    #plt.gca().xaxis.set_major_locator(mdates.DayLocator())
-    #plt.gcf().autofmt_xdate()
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    plt.gcf().autofmt_xdate()
 
     plt.xlabel("Time")
     plt.ylabel("Number of events")
@@ -319,8 +319,8 @@ def plot_event_detection_by_date():
 
     plt.subplot(1, 2, 2)
 
-    plt.scatter(X, Y_pred_change_events, label="Detected")
-    plt.scatter(X, Y_true_change_events, label="True")
+    plt.plot(X, Y_pred_change_events,  '-o', label="Detected")
+    plt.plot(X, Y_true_change_events,  '-^', label="True")
 
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator())
