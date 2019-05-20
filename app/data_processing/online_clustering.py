@@ -260,7 +260,7 @@ def run(date, rows, full_cluster=False, verbose=False):
     end = time.time()
     processing_time = end - start
     db.add_script_execution(
-        script_name, str(last_processed_date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows
+        script_name, str(date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows
     )
 
 
