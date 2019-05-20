@@ -147,7 +147,6 @@ def get_stories_from_news_ids(news_ids):
         return dict()
 
     news = db.load_news_by_ids(news_ids)
-last_processed_date
     news_by_story = collections.defaultdict(set)
     for index, row in news.iterrows():
         news_by_story[row["story"]].add(row["id"])
