@@ -205,14 +205,14 @@ def run(date, rows, full_cluster=False, verbose=False):
                 identifier = ",".join(identifier)
 
             db.update_cluster(cluster_id, identifier)
-            if (
-                "additions" in changes
-                and len(changes["additions"]) > 0
-                or "deletions" in changes
-                and len(changes["deletions"]) > 0
-            ):
+            if "additions" in changes and len(changes["additions"]) > 0:
                 n_change_events += 1
                 db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
+
+            if "deletions" in changes and len(changes["deletions"]) > 0:
+                # We ignore deletions for now, since single batches might miss older articles, 
+                # which we don't want to count as events. 
+                pass
 
         # Get true events based on labeled test data
         new_news_ids = list(
