@@ -58,17 +58,20 @@ def cluster_news(news_articles):
     )
 
 
-def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
+def find_changes_in_clusters(clusters, new_cluster_identifiers):
     changed_clusters = []
     unchanged_clusters = []
     new_clusters = []
 
     lsh = MinHashLSH(threshold=0.75, num_perm=256)
     min_hashes = dict()
-    for index, cluster in existing_clusters.iterrows():
-        m = create_minhash(cluster["identifier"])
+    clusters_by_index = dict()
+
+    for index, cluster in enumerate(clusters):
+        m = create_minhash(cluster)
         min_hashes[index] = m
         lsh.insert(index, m)
+        clusters_by_index[index] = cluster
 
     for identifier in new_cluster_identifiers:
         m = create_minhash(identifier)
@@ -78,7 +81,7 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
             new_clusters.append(identifier)
         else:
             cluster_id = find_best_match(m, min_hashes, cluster_ids)
-            existing_identifier = existing_clusters.loc[cluster_id]["identifier"]
+            existing_identifier = clusters_by_index[cluster_id]
             existing_news = set(existing_identifier.split(","))
             new_news = set(identifier.split(","))
 
@@ -87,7 +90,7 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
 
             if len(additions) == 0 and len(deletions) == 0:
                 unchanged_clusters.append(identifier)
-            else:
+            elif len(additions) > 0:
                 changed_clusters.append(
                     {
                         "cluster_id": cluster_id,
@@ -104,11 +107,13 @@ def find_changes_in_clusters(existing_clusters, new_cluster_identifiers):
 def find_best_match(min_hash, min_hashes, cluster_ids):
     best_match = 0
     best_similarity = 0
+
     for cluster_id in cluster_ids:
         similarity = min_hash.jaccard(min_hashes[cluster_id])
         if similarity > best_similarity:
             best_similarity = similarity
             best_match = cluster_id
+
     return best_match
 
 
@@ -134,7 +139,7 @@ def find_true_events(new_news_ids, existing_news_ids):
             existing_ids = existing_stories[story]
             additions = news_ids - existing_ids
             deletions = existing_ids - news_ids
-            if len(additions) > 0 or len(deletions) > 0:
+            if len(additions) > 0: # or len(deletions) > 0: # we don't care about deletions for now
                 change_events.append(
                     {"story": story, "additions": additions, "deletions": deletions}
                 )
@@ -154,7 +159,41 @@ def get_stories_from_news_ids(news_ids):
     return news_by_story
 
 
-def run(date, rows, full_cluster=False, verbose=False):
+def persist_cluster_and_events(new_clusters, changed_clusters):
+    # Add new clusters
+    for cluster in new_clusters:
+        cluster_id = db.add_cluster(cluster)
+        db.add_event(Event.TOPIC_ADDED, cluster_id)
+
+    # Process changed clusters
+    for cluster in changed_clusters:
+        cluster_id = cluster["cluster_id"]
+        changes = {}
+
+        if full_cluster:
+            identifier = cluster["new_identifier"]
+            changes["additions"] = cluster["additions"]
+            changes["deletions"] = cluster["deletions"]
+        else:
+            # In partial clusters deletions will be ignored, since the deleted articles are most likely not part of
+            # the sample subset. We could check in the future if deleted articles are part of the current subset.
+            changes["additions"] = cluster["additions"]
+            identifier = cluster["old_identifier"].split(",")
+            identifier += cluster["additions"]
+            identifier.sort()
+            identifier = ",".join(identifier)
+
+        db.update_cluster(cluster_id, identifier)
+        if "additions" in changes and len(changes["additions"]) > 0:
+            db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
+
+        if "deletions" in changes and len(changes["deletions"]) > 0:
+            # We ignore deletions for now, since single batches might miss older articles, 
+            # which we don't want to count as events. 
+            pass
+
+
+def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, persit_clusters_in_db=False):
     # The online method works by regularly fetching articles from a certain date
     # and cluster them. Once in a while the whole (limited by nrows) dataset will be clustered again.
     # After each clustering step, the result is compared with the previous one
@@ -162,65 +201,34 @@ def run(date, rows, full_cluster=False, verbose=False):
 
     load_dotenv()
 
+    clusters = []
+
     log_message = ""
     failed = False
-    last_processed_date = "0000-00-00 00:00:00"
 
     start = time.time()
 
     try:
         clusters, last_processed_date = cluster_news_by_date(rows, date)
-        existing_clusters = db.get_clusters()
+
+        if existing_clusters is None:
+            existing_clusters_dataframe = db.get_clusters()
+            existing_clusters = set(existing_clusters_dataframe["identifier"])
+
         changed_clusters, unchanged_clusters, new_clusters = find_changes_in_clusters(
             existing_clusters, clusters
         )
 
-        n_addition_events = 0
-        n_change_events = 0
-        n_deletion_events = 0
-
-        # Add new clusters
-        for cluster in new_clusters:
-            cluster_id = db.add_cluster(cluster)
-            db.add_event(Event.TOPIC_ADDED, cluster_id)
-            n_addition_events += 1
-
-        # Process changed clusters
-        for cluster in changed_clusters:
-            cluster_id = cluster["cluster_id"]
-            changes = {}
-
-            if full_cluster:
-                identifier = cluster["new_identifier"]
-                changes["additions"] = cluster["additions"]
-                changes["deletions"] = cluster["deletions"]
-            else:
-                # In partial clusters deletions will be ignored, since the deleted articles are most likely not part of
-                # the sample subset. We could check in the future if deleted articles are part of the current subset.
-                changes["additions"] = cluster["additions"]
-                identifier = cluster["new_identifier"].split(",")
-                identifier += cluster["additions"]
-                identifier.sort()
-                identifier = ",".join(identifier)
-
-            db.update_cluster(cluster_id, identifier)
-            if "additions" in changes and len(changes["additions"]) > 0:
-                n_change_events += 1
-                db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
-
-            if "deletions" in changes and len(changes["deletions"]) > 0:
-                # We ignore deletions for now, since single batches might miss older articles, 
-                # which we don't want to count as events. 
-                pass
+        if persit_clusters_in_db:
+            # Store clusters and events in db for closer analysis
+            persist_cluster_and_events(new_clusters, changed_clusters)
 
         # Get true events based on labeled test data
         new_news_ids = list(
-            chain.from_iterable([identifier.split(",") for identifier in new_clusters])
+            chain.from_iterable([identifier.split(",") for identifier in clusters])
         )
         existing_news_ids = list(
-            chain.from_iterable(
-                [identifier.split(",") for identifier in existing_clusters["identifier"]]
-            )
+            chain.from_iterable([identifier.split(",") for identifier in existing_clusters])
         )
 
         new_rows = len(set(new_news_ids) - set(existing_news_ids))
@@ -230,22 +238,17 @@ def run(date, rows, full_cluster=False, verbose=False):
 
         if verbose:
             print("----------------------")
-            print("Statistics:")
-            print("Number of changed clusters:", len(changed_clusters))
-            print("Number of unchanged clusters:", len(unchanged_clusters))
-            print("Number of new clusters:", len(new_clusters))
-            print("----------------------")
+            print("New Rows: ", len(set(new_news_ids) - set(existing_news_ids)))   
             print("Events:")
-            print("Topic added: {} detected, {} true".format(n_addition_events, true_addition_events))
-            print("Topic changed: {} detected, {} true".format(n_change_events, len(true_change_events)))
-            print("Topic deleted: {} detected, {} true".format(n_deletion_events, true_deletion_events))
+            print("Topic added: {} detected, {} true".format(len(new_clusters), true_addition_events))
+            print("Topic changed: {} detected, {} true".format(len(changed_clusters), len(true_change_events)))
+            # print("Topic deleted: {} detected, {} true".format(n_deletion_events, true_deletion_events))
 
         result = {
-            "topic_added": {"detected": n_addition_events , "true": true_addition_events},
-            "topic_changed": {"detected": n_change_events, "true": len(true_change_events)},
-            "topic_deleted": {"detected": n_deletion_events , "true": true_deletion_events}
-        }
-        
+            "topic_added": {"detected": len(new_clusters) , "true": true_addition_events},
+            "topic_changed": {"detected": len(changed_clusters), "true": len(true_change_events)},
+            # "topic_deleted": {"detected": n_deletion_events , "true": true_deletion_events}
+        } 
 
     except ArithmeticError as err:
         if verbose:
@@ -261,6 +264,8 @@ def run(date, rows, full_cluster=False, verbose=False):
     db.add_script_execution(
         script_name, str(date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows
     )
+
+    return clusters
 
 
 # Test run:
@@ -315,6 +320,7 @@ if __name__ == "__main__":
         db.reset_online_evaluation()
         current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
         end_date = current_date + timedelta(days=run_n_days)
+        clustering = []
         while current_date < end_date:
 
             if verbose:
@@ -322,9 +328,9 @@ if __name__ == "__main__":
                 print("Date: ", current_date)
                 
             if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
-                run(current_date, full_rows, True, verbose)
+                clustering = run(current_date, full_rows, True, verbose, clustering)
             else:
-                run(current_date, rows, False, verbose)
+                clustering = run(current_date, rows, False, verbose, clustering)
                 
             current_date += timedelta(hours=1)
         

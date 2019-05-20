@@ -156,6 +156,38 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
     return data
 
 
+def get_news_articles_from_startdate_to_enddate(startdate, enddate, nrows=1000, skip_rows=0):
+    connection = get_connection()
+
+    get_sql = (
+        "SELECT *"
+        " FROM news_article"
+        " WHERE newspaper_processed = 1"
+        "     AND preprocessed = 1"
+        "     AND title_keywords_intersection = 1"
+        "     AND hostname != 'newsledge.com'"
+        "     AND hostname != 'www.newsledge.com'"
+        "     AND newspaper_text IS NOT NULL"
+        "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "     AND newspaper_text NOT LIKE '%%404%%'"
+        "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "     AND computed_publish_date is not NULL"
+        "     AND computed_publish_date > %s"
+        "     AND computed_publish_date <= %s"
+        " ORDER BY computed_publish_date DESC"
+        " LIMIT %s, %s"
+    )
+
+    data = pandas.read_sql(
+        sql=get_sql, con=connection, index_col="id", params=[startdate, enddate, skip_rows, nrows]
+    )
+    connection.close()
+
+    return data
+
+
 def add_news_to_cluster(cluster_id, news_article_id):
     connection = get_connection()
 
