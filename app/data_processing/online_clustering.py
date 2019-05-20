@@ -147,7 +147,7 @@ def get_stories_from_news_ids(news_ids):
         return dict()
 
     news = db.load_news_by_ids(news_ids)
-
+last_processed_date
     news_by_story = collections.defaultdict(set)
     for index, row in news.iterrows():
         news_by_story[row["story"]].add(row["id"])
@@ -322,7 +322,7 @@ if __name__ == "__main__":
                 print()
                 print("Date: ", current_date)
                 
-            if current_date.hour == 0 or current_date.hour == 24:
+            if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
                 run(current_date, full_rows, True, verbose)
             else:
                 run(current_date, rows, False, verbose)
