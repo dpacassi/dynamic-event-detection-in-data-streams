@@ -1,53 +1,9 @@
-% Remove list of figures title.
-\makeatletter
-\renewcommand\listoffigures{%
-        \@starttoc{lof}%
-}
-\makeatother
-
-% Remove list of tables title.
-\makeatletter
-\renewcommand\listoftables{%
-        \@starttoc{lot}%
-}
-\makeatother
-
-% Remove glossary title.
-\renewcommand{\glossarysection}[2][]{}
-
 \section{Index}
 
-% 6.1 Literaturverzeichnis
-\subsection{Bibliography}
-\printbibliography[heading=none]
-
-% 6.2 Glossar
-\newglossaryentry{latex}
-{
-    name=latex,
-    description={Is a mark up language specially suited
-    for scientific documents}
-}
-\newglossaryentry{maths}
-{
-    name=mathematics,
-    description={Mathematics is what mathematicians do}
-}
-
-\glsaddall
-\subsection{Glossary}
-\printglossaries
-
-% 6.3 Abbildungsverzeichnis
-\subsection{List of Figures}
-\listoffigures
-
-% 6.4 Tabellenverzeichnis
-\subsection{List of Tables}
-\listoftables
-
-% 6.5 Symbolverzeichnis
-
-% 6.6 Abkürzungsverzeichnis
-
-% 6.7 Stichwortverzeichnis
+\input{6a_bibliography}
+\input{6b_glossary}
+\input{6c_list_of_figures}
+\input{6d_list_of_tables}
+\input{6e_symbol_directory}
+\input{6f_list_of_abbreviations}
+\input{6g_index}
