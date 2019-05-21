@@ -16,4 +16,9 @@ diff.html
 *.bcf
 *.lof
 *.lot
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
 doc/*.xml
