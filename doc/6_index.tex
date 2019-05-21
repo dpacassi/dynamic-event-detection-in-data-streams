@@ -12,6 +12,9 @@
 }
 \makeatother
 
+% Remove glossary title.
+\renewcommand{\glossarysection}[2][]{}
+
 \section{Index}
 
 % 6.1 Literaturverzeichnis
@@ -19,7 +22,6 @@
 \printbibliography[heading=none]
 
 % 6.2 Glossar
-\subsection{Glossary}
 \newglossaryentry{latex}
 {
     name=latex,
@@ -33,6 +35,7 @@
 }
 
 \glsaddall
+\subsection{Glossary}
 \printglossaries
 
 % 6.3 Abbildungsverzeichnis
