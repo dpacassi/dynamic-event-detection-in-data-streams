@@ -3,12 +3,13 @@
 % !program = pdflatex
 
 \documentclass[11pt,a4paper,bibliography=totoc,listof=totocnumbered]{article}
+
 \usepackage[a4paper,top=30mm,right=20mm,bottom=25mm,left=20mm,head=35mm,foot=15mm]{geometry}
 \usepackage{fancyhdr}
 \usepackage[parfill]{parskip}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{mathtools}
 \usepackage{listings}
 \usepackage{color}
@@ -16,10 +17,12 @@
 \usepackage{pdfpages}
 \usepackage{tikz}
 \usepackage{glossaries}
-\usetikzlibrary{decorations.pathreplacing}
+\usepackage[]{listofsymbols}
 \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+
 \addbibresource{citations.bib}
 \makeglossaries
+\usetikzlibrary{decorations.pathreplacing}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}

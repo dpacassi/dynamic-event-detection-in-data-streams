@@ -21,4 +21,8 @@ diff.html
 *.gls
 *.glsdefs
 *.ist
+*.sub
+*.suc
+*.syc
+*.sym
 doc/*.xml
