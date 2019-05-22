@@ -115,16 +115,17 @@ In the fourth and final step we calculate the weighted average, $S$ is the simil
         \text{MP-Score} = \sum_{i=0}^{|S|} w_is_i
 \end{equation}
 
-Where $S$ is the similarity matrix with $s_{i} \in S$ and $w_i$ the corresponding weight. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ with  $c_{true}=3$ and $c_{predicted}=4$, the calculation for the final average would be done as follows:
+Where $S$ is the similarity matrix with $s_{i} \in S$ and $w_i$ the corresponding weight. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ and the corresponding weights $W$, the calculation for the final average would be done as follows:
 
 \begin{align*}
-    score &= \frac{\sum_{i=1}^{|S|} S_i}{c_{true} + max(0, c_{predicted} - c_{true})} \\
-    &= \frac{0.667 + 0.6 + 1}{3 + max(0, 4 - 3)} = \frac{2.267}{3 + max(0, 1)} \\
-    &= \frac{2.267}{3 + 1} = \frac{2.267}{4} \\
-    &= \mathbf{0.567}
+    S &= \{0.667, 0.6, 1\} \\
+    W &= \{0.278, 0.444, 0.222\} \\ \\ 
+    \text{MP-Score} &= \sum_{i=0}^{|S|} w_is_i \\ 
+    &= (0.278 * 0.667) + (0.444 * 0.6) + (0.222 * 1) \\
+    &= \mathbf{0.674}
 \end{align*}
 
-The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.567.
+The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.674.
 
 \paragraph{Comparison against other measures}
 
