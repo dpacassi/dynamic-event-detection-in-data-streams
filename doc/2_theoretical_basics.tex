@@ -15,7 +15,7 @@ TODO why hdbscan
 \textit{k}-means clustering is an iterative clustering method which assigns all data points in a given data set
 into k clusters, where k is a predefined number of clusters in the dataset.
 
-\subsubsubsection{How does k-means clustering work}
+% \subsubsubsection{How does k-means clustering work}
 At the very beginning, k-means creates k centroids at random locations.
 It then repeats following instructions until reaching convergence:
 
@@ -23,10 +23,10 @@ It then repeats following instructions until reaching convergence:
 - Assign the data point to the nearest centroid (cluster)
 - For each cluster: Compute a new cluster centroid with all assigned data points
 
-\subsubsubsection{Advantages}
+% \subsubsubsection{Advantages}
 - Very simple and easy to understand algorithm
 
-\subsubsubsection{Disadvantages}
+% \subsubsubsection{Disadvantages}
 - Initial (random) centroids have a strong impact on the results
 - The number of clusters (k) has to be known beforehand
 - Unable to handle noise (all data points will be assigned to a cluster)
@@ -38,7 +38,7 @@ and is a density based clustering algorithm.
 A big advantage of DBSCAN is that it's able to sort data into clusters
 of different shapes.
 
-\subsubsubsection{How does DBSCAN work}
+% \subsubsubsection{How does DBSCAN work}
 DBSCAN requires two parameters in order to work:
 1. epsilon - The maximum distance between two data points for them to be considered as in the same cluster.
 2. minPoints - The number of data points a neighborhood has to contain in order to be considered as a cluster.
@@ -51,12 +51,12 @@ Data points that belong to a cluster but don't dense themselves are known
 as **border points**. Some border points could theoretically belong to two or more clusters
 if the distance from the point to the clusters don't differ.
 
-\subsubsubsection{Advantages}
+% \subsubsubsection{Advantages}
 - Does not need to know the number of clusters beforehand
 - Is able to find shaped clusters
 - Is able to handle noise points
 
-\subsubsubsection{Disadvantages}
+% \subsubsubsection{Disadvantages}
 - DBSCAN is not entirely deterministic
 - Defining the right epsilon value can be difficult
 - Unable to cluster data sets with large differences in densities
@@ -74,14 +74,14 @@ HDBSCAN is a extension of DBSCAN that converts DBSCAN into a hierarchical cluste
 Therefor it only requires one parameter to be set:
 1. minPoints - The number of data points a neighborhood has to contain in order to be considered as a cluster.
 
-\subsubsubsection{How does HDBSCAN work}
+% \subsubsubsection{How does HDBSCAN work}
 1. Transform the space according to the density/sparsity.
 2. Build the minimum spanning tree of the distance weighted graph.
 3. Construct a cluster hierarchy of connected components.
 4. Condense the cluster hierarchy based on minimum cluster size.
 5. Extract the stable clusters from the condensed tree.
 
-\subsubsubsubsection{1. Transforming the space}
+% \subsubsubsubsection{1. Transforming the space}
 One reason why HDBSCAN works so well, is that it is aware of noise.
 This is very important as real life data is often messy and sometimes even corrupt.
 
@@ -93,5 +93,5 @@ TODO: Formula
 
 whereas corek(x) stands for the core distance for a point x and a defined parameter k.
 
-\subsubsubsubsection{2. Building the minimum spanning tree}
+% \subsubsubsubsection{2. Building the minimum spanning tree}
 TODO.
