@@ -1,24 +1,9 @@
-% Remove list of figures title.
-\makeatletter
-\renewcommand\listoffigures{%
-        \@starttoc{lof}%
-}
-\makeatother
-
-% Remove list of tables title.
-\makeatletter
-\renewcommand\listoftables{%
-        \@starttoc{lot}%
-}
-\makeatother
-
 \section{Index}
 
-\subsection{Bibliography}
-\printbibliography[heading=none]
-
-\subsection{List of Figures}
-\listoffigures
-
-\subsection{List of Tables}
-\listoftables
+\input{6a_bibliography}
+\input{6b_glossary}
+\input{6c_list_of_figures}
+\input{6d_list_of_tables}
+\input{6e_symbol_directory}
+\input{6f_list_of_abbreviations}
+\input{6g_index}

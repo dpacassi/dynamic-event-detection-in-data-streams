@@ -1,0 +1,12 @@
+% 6.4 Tabellenverzeichnis
+
+% Remove the list of tables title.
+\makeatletter
+\renewcommand\listoftables{%
+        \@starttoc{lot}%
+}
+\makeatother
+
+% Print the list of tables.
+\subsection{List of Tables}
+\listoftables
