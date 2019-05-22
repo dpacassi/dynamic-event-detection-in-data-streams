@@ -71,6 +71,14 @@ def plot_processing_time_samples():
     plt.xlabel("Number of news articles")
     plt.ylabel("Processing time in seconds")
     plt.yscale("log")
+    plt.xscale("log")
+
+    k = np.array(Y_hdbscan.argmax())
+    plt.text(X[k],Y_hdbscan[k], round(Y_hdbscan[k], 0))
+    
+    k = np.array(Y_kmeans.argmax())
+    plt.text(X[k],Y_kmeans[k], round(Y_kmeans[k], 0))
+
     plt.title("Average Processing Time by number of samples")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
@@ -83,18 +91,18 @@ def plot_accuracy_samples():
     connection = db.get_connection()
 
     # Fixate hdbscan parameters and vectorizer for showing errors of best approach
-    # parameters = '{"min_cluster_size": 4, "metric": "cosine"}'
+    parameters = '{"min_cluster_size": 5, "metric": "cosine"}'
     vectorizer = "TfidfVectorizer"
     sql = (
-        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.real_clusters, m.method from method_evaluation as m"
-        " where ((m.method = 'hdbscan') or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
+        "select m.corrected_avg_unique_accuracy as accuracy, m.real_clusters, m.method from method_evaluation as m"
+        " where ((m.method = 'hdbscan' and parameters = %s) or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
         " and vectorizer = %s and tokenizer != 'None'"
         " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
         " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
-        " group by m.real_clusters, m.method "
+       # " group by m.real_clusters, m.method "
     )
 
-    data = pandas.read_sql(sql=sql, con=connection, params=[vectorizer])
+    data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
     connection.close()
 
     def format_data(data, method):
@@ -117,25 +125,25 @@ def plot_accuracy_samples():
 
     fig = plt.figure()
 
-    X = data[data["method"] == "hdbscan"]["real_clusters"].values
-    Y_hdbscan = data[data["method"] == "hdbscan"]["accuracy"].values
-    Y_kmeans = data[data["method"] == "kmeans"]["accuracy"].values
+    # X = data[data["method"] == "hdbscan"]["real_clusters"].values
+    # Y_hdbscan = data[data["method"] == "hdbscan"]["accuracy"].values
+    # Y_kmeans = data[data["method"] == "kmeans"]["accuracy"].values
 
-    plt.scatter(X, Y_hdbscan, marker="o", label="HDBSCAN")
-    plt.scatter(X, Y_kmeans, marker="^", label="K-means")
+    # plt.scatter(X, Y_hdbscan, marker="o", label="HDBSCAN")
+    # plt.scatter(X, Y_kmeans, marker="^", label="K-means")
 
-    # X = data["real_clusters"].unique()
+    X = data["real_clusters"].unique()
 
-    # Y, Y_lower_err, Y_higher_err = format_data(data, 'hdbscan')
-    # plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', label='HDBSCAN')
+    Y, Y_lower_err, Y_higher_err = format_data(data, 'hdbscan')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, label='HDBSCAN')
 
-    # Y, Y_lower_err, Y_higher_err = format_data(data, 'kmeans')
-    # plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', label='K-means')
+    Y, Y_lower_err, Y_higher_err = format_data(data, 'kmeans')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, label='K-means')
 
     plt.xlabel("Number of stories")
-    plt.ylabel("Accuracy")
+    plt.ylabel("MP-Score")
     plt.ylim(top=1, bottom=0)
-    plt.title("Accuracy by number of stories")
+    plt.title("MP-Score by number of stories")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
     plt.savefig("../../doc/images/accuracy_kmeans_hdbscan.png")
@@ -304,11 +312,15 @@ def plot_event_detection_by_date():
     fig = plt.figure(figsize=(15, 5))
 
     plt.subplot(1, 2, 1)
+
+
+    # plt.yticks(np.arange(0, max(max(Y_true_add_events), max(Y_pred_add_events)) + 1, step=1))
+
     plt.plot(X, Y_pred_add_events,  '-o', label="Detected")
     plt.plot(X, Y_true_add_events,  '-^', label="True")
 
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
     plt.gcf().autofmt_xdate()
 
     plt.xlabel("Time")
@@ -323,7 +335,7 @@ def plot_event_detection_by_date():
     plt.plot(X, Y_true_change_events,  '-^', label="True")
 
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
     plt.gcf().autofmt_xdate()
 
     plt.xlabel("Time")
@@ -481,6 +493,39 @@ def table_preprocessing():
     print(latex)
 
 
+def plot_news_article_distribution_per_day():
+    connection = db.get_connection()
+
+    start_date = '2014-05-08 00:00:00'
+    end_date = '2014-06-06 23:00:00'
+
+    sql = (
+        "SELECT count(id) as narticles, CAST(computed_publish_date AS DATE) as day FROM news_article"
+        " where computed_publish_date >= %s and computed_publish_date <= %s"
+        " group by CAST(computed_publish_date AS DATE) "
+        " order by CAST(computed_publish_date AS DATE) "
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection, params=[start_date, end_date])
+
+    fig = plt.figure()
+
+    plt.bar(data["day"], data["narticles"])
+
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+    plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+    plt.gcf().autofmt_xdate()
+
+    plt.xlabel("Time")
+    plt.ylabel("Number of news articles")
+    plt.title("News article distribution over time")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.savefig("../../doc/images/news_articles_over_time.png")
+    plt.close(fig)
+
+
 # Clustering method evaluation
 # plot_accuracy_samples()
 # plot_processing_time_samples()
@@ -492,5 +537,6 @@ def table_preprocessing():
 # plot_articles_per_story_distribution()
 
 # Online clustering evaluation
+# plot_news_article_distribution_per_day()
 plot_event_detection_by_date()
-plot_event_detection_overlap()
+# plot_event_detection_overlap()
