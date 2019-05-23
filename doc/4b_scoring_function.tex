@@ -102,23 +102,19 @@ As a third step we have to calculate the weights to be used for the final  The w
         w_{ij} = \frac{|t_i| + |c_j|}{|T|+|C|} \\
 \end{equation}
 
-where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$. Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster and the size of the predicted cluster. The reason both sizes are used, is that we want to reflect if the overall number of predicted clusters is different from the ground truth. Using only the true number of elements as the weight, would affect the score if |C| < |T|, but not |C| > |T|. Therefore the number of predicted elements has to be included as well.
+where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$. Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster and the size of the predicted cluster. The reason both sizes are used, is that we want to reflect if the overall number of predicted clusters is different from the ground truth. Using only the true number of elements as the weight, would affect the score if $|C| < |T|$, but not $|C| > |T|$. Therefore the number of predicted elements has to be included as well.
 
-In the fourth and final step we calculate the weighted average, $S$ is the similarity matrix with $s_{i} \in S$
+In the fourth and final step we calculate the weighted average
 
 \begin{equation}
     \label{equ:weighted_average}
-        \text{MP-Score} = \sum_{i=0}^{|S|} w_is_i
+        \text{MP-Score} = \sum_{i=0}^{|S|} w_is_i \{w_i \in W \wedge s_i \in S\}
 \end{equation}
 
-Where $S$ is the similarity matrix with $s_{i} \in S$ and $w_i$ the corresponding weight. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ and the corresponding weights $W$, the calculation for the final average would be done as follows:
+where $S$ is the similarity matrix with $s_{i} \in S$ and $w_i$ the corresponding weight in $W$. Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$ and the corresponding weights $W = \{0.278, 0.444, 0.222\}$, the calculation for the final average would be done as follows:
 
 \begin{align*}
-    S &= \{0.667, 0.6, 1\} \\
-    W &= \{0.278, 0.444, 0.222\} \\ \\ 
-    \text{MP-Score} &= \sum_{i=0}^{|S|} w_is_i \\ 
-    &= (0.278 * 0.667) + (0.444 * 0.6) + (0.222 * 1) \\
-    &= \mathbf{0.674}
+    \text{MP-Score} = (0.278 * 0.667) + (0.444 * 0.6) + (0.222 * 1) = \mathbf{0.674}
 \end{align*}
 
 The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.674.
