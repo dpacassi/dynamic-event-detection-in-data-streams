@@ -15,8 +15,26 @@ Any new news article writing about \textit{Brexit} would be a new event in this 
 As our goal is to detect events in data streams, we've evaluated different data sets and
 their possibilities to extract events from their data themselves.
 
-The bigger the data set would be, the more interesting it would become for us.
-We'd also prefer data with prelabeled events and data sets which still get new data.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|r|l|}
+    \hline
+    \textbf{Data set} & \textbf{Number of rows} & \textbf{Description} \\ \hline
+    GDELT 2.0 & 575'000'000+ & Print and web news from around the world. \\ \hline
+    ChallengeNetwork & 4'449'294 & Network packages including anomalies. \\ \hline
+    One Million Posts Corpus & 1'011'773 & User comments to news articles. \\ \hline
+    Online Retail Data Set & 541'909 & Customer retail purchases of one year. \\ \hline
+    News Aggregator Dataset & 422'937 & Clustered news articles. \\ \hline
+    Dodgers Loop Sensor Data Set & 50'400 & Number of cars driven through a ramp. \\ \hline
+    10k German News Articles & 10'273 & German news articles. \\ \hline
+    \end{tabular}
+    \caption{Evaluated data set candidates ordered by data set size.}
+    \label{tab:data_set_candidates}
+\end{table}
+
+% Todo: Remove this when finishing
+% The bigger the data set would be, the more interesting it would become for us.
+% We'd also prefer data with prelabeled events and data sets which still get new data.
 
 \subsubsection{Preprocessing}
 
