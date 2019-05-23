@@ -32,12 +32,58 @@ their possibilities to extract events from their data themselves.
     \label{tab:data_set_candidates}
 \end{table}
 
+We could extract events from all data sets mentioned in Table \ref{tab:data_set_candidates}.\\
+The extracted events could be as follows:
+
+\begin{itemize}
+    \item Network packages
+        \begin{itemize}
+            \item Cyber attacks depending on suspicious packets.
+        \end{itemize}
+    \item User comments
+        \begin{itemize}
+            \item Change of public opinion during time.
+        \end{itemize}
+    \item Retail purchases
+        \begin{itemize}
+            \item Change of purchasing behavior based on product choices.
+        \end{itemize}
+    \item Traffic
+        \begin{itemize}
+            \item Traffic changes due to baseball games.
+        \end{itemize}
+    \item News articles
+        \begin{itemize}
+            \item Development of a certain news story.
+        \end{itemize}
+\end{itemize}
+
+However, from above data sets only two contained prelabeled events:
+
+\begin{enumerate}
+    \item Dodgers Loop Sensor Data Set
+        \begin{itemize}
+            \item 81 labeled events. % Todo: x events in y clusters
+        \end{itemize}
+    \item News Aggregator Dataset
+        \begin{itemize}
+            \item 422'937 labeled events. % Todo: x events in y clusters
+        \end{itemize}
+\end{enumerate}
+
+As we didn't want to lose too much time in manually clustering data, we've decided to go with one of these two.
+Regarding our options, our choice was simple:\\
+The News Aggregator Dataset not only provided more data but our work built on the news articles use case could
+be continued by using it on different data sets, e.g. the GDELT 2.0 data set.
+
+
 % Todo: Remove this when finishing
 % The bigger the data set would be, the more interesting it would become for us.
 % We'd also prefer data with prelabeled events and data sets which still get new data.
 
 \subsubsection{Preprocessing}
 
+TODO
 
 % Todo: The first important step is to create a test data set to run the evaluations with and verify them.
 % Todo: explain the source and structrue
