@@ -7,7 +7,7 @@ Detecting events in a stream of news articles will be achieved by using an onlin
     \item Topic extended: An existing topic is extended by additional news articles.
 \end{itemize}
 
-HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the preivous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustring.
+HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the previous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustering.
 
 Since HDBSCAN only supports static datasets, the clustering will be done in batches using a time based sliding window approach. Events are detected by comparing the resulting clusters with the previous ones.
 
@@ -55,7 +55,7 @@ An important consideration for determining existing or new clusters is the overl
 
 \subsubsection{Implementation}
 
-The online clustering implemented for this thesis does not operate in a true online setting, but rather it takes our exisiting test data and simulates a data stream over time. The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings. The implementation is done with Pyhton and the application provides a command line interface to run the simulation with different parameters such as the start date, number of days to run and the batch size.
+The online clustering implemented for this thesis does not operate in a true online setting, but rather it takes our existing test data and simulates a data stream over time. The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings. The implementation is done with Python and the application provides a command line interface to run the simulation with different parameters such as the start date, number of days to run and the batch size.
 
 \paragraph{Comparing clusters} To detect events between batches of clusterings, we have find pairs of clusters describing the same topic. This problem is solved in the evaluation framework as part of the scoring function, by calculating the similarity for each possible cluster pair. The resulting time complexity is $O(n^2)$, which we deemed acceptable for the static evaluation. However in a dynamic setting such as the online clustering, performance is an important factor, since it restricts the lengths of the time delta between batches and the overall batch size. Thus we decided to use Locality-Sensitive Hashing (LSH)\cite{alex2015practical} to find similar clusters. This reduces the time complexity to $O(log(n))$. The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2017_290602}. TODO explain LSH?
 

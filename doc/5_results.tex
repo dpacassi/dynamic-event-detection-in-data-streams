@@ -19,8 +19,8 @@ The goal of this evaluation is to measure the accuracy of HDBSCAN, with differen
 
 \paragraph{Text Vectorization} Before the text can be clustered, it has to be transformed into a vector space model. We look at two different models:
 \begin{itemize}
-    \item Word Count
-    \item Tfidf
+    \item Word Frequency
+    \item tf-idf
 \end{itemize}
 
 \paragraph{Parameters} HDBSCAN has a range of parameters, which can be tuned to fit our dataset. We focus on the two primary ones:
@@ -43,7 +43,7 @@ The first run is done with 60 stories, which results in approximately 2000 news 
     \scalebox{0.65}{
     \begin{tabular}{|l|rrrrr|rrrrr|}
         \hline
-        \textbf{Clustering} & \multicolumn{5}{ |c| }{\textbf{Word Count}} & \multicolumn{5}{ |c| }{\textbf{Tfidf}} \\
+        \textbf{Clustering} & \multicolumn{5}{ |c| }{\textbf{Word Frequency}} & \multicolumn{5}{ |c| }{\textbf{tf-idf}} \\
         \hline
         \textbf{HDBSCAN} & Full Text &  Keyterms & Entities & Lemmatized & Stemmed & Full Text &  Keyterms & Entities & Lemmatized & Stemmed \\
         \hline
@@ -75,7 +75,7 @@ The first run is done with 60 stories, which results in approximately 2000 news 
     \label{tab:cluster_parameters}
 \end{table}
 
-Comparing the two vector models, shows the majority of best scores per parameter achieved by Tfidf. Additionally the different metrics show a significant difference when using the vector model based on word count. With Tfidf the difference between both metrics is often negligible.
+Comparing the two vector models, shows the majority of best scores per parameter achieved by tf-idf. Additionally the different metrics show a significant difference when using the vector model based on word count. With tf-idf the difference between both metrics is often negligible.
 
 As for the optimal preprocessing, lemmatization appears to provide the highest accuray in general or at least being fairly close to the highest score. This is to be expected, since lemmatization reduces the dimensions by grouping words into their base form, while still retaining most of the text. In contrast to keyterm and entity extraction, which both result in a drastic reduction of the dimensions, and therefore less detail. It is important to note, that we used pretrained models for keyterm and entity extraction. Specifically training on a news corpus might improve the performance of both methods, but it was decided as to be out of scope for this thesis.
 

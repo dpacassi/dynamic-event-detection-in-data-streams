@@ -4,53 +4,53 @@
 
 \begin{lstlisting}[language=Python, caption=Select relevant accuracy values from a accuracy matrix., label={lst:select_max_values}]
     def select_max_values(self, accuracy_matrix):
-        unique_indicies = dict()
+        unique_indices = dict()
         row_index = 0
         nrows = len(accuracy_matrix)
         
         while row_index < nrows:
-            ignore_indicies = set()
+            ignore_indices = set()
             max_value_found = False
     
             while not max_value_found:
                 max_value = 0
                 column = 0
                 for col_index, value in enumerate(accuracy_matrix[row_index]):
-                    if value >= max_value and col_index not in ignore_indicies:
+                    if value >= max_value and col_index not in ignore_indices:
                         max_value = value
                         column = col_index
     
                 if (
                     max_value > 0
-                    and column in unique_indicies
-                    and unique_indicies[column]["row_index"] != row_index
-                    and unique_indicies[column]["max_value"] > 0
+                    and column in unique_indices
+                    and unique_indices[column]["row_index"] != row_index
+                    and unique_indices[column]["max_value"] > 0
                 ):
-                    if unique_indicies[column]["max_value"] < max_value:
+                    if unique_indices[column]["max_value"] < max_value:
                         # The column is already used, but we found a better 
                         # candidate. We use the new candidate and set the 
                         # cursor to the old one to find a new max value.
-                        old_row_index = unique_indicies[column]["row_index"]
-                        unique_indicies[column]["row_index"] = row_index
+                        old_row_index = unique_indices[column]["row_index"]
+                        unique_indices[column]["row_index"] = row_index
                         row_index = old_row_index
-                        unique_indicies[column]["max_value"] = max_value
+                        unique_indices[column]["max_value"] = max_value
                         max_value_found = True
                     else:
                         # The column is already used by a better candidate.
-                        ignore_indicies.add(column)
+                        ignore_indices.add(column)
                 else:
                     # If max_value is greater than 0, we store the value as a 
-                    # new candiate. Otherwise either the row does not match 
+                    # new candidate. Otherwise either the row does not match 
                     # any other column or the max_value was low and got 
-                    # overriden by previous tries and no other match is available. 
+                    # overridden by previous tries and no other match is available. 
                     if max_value > 0:
                         # The column is free to use
-                        unique_indicies[column] = {
+                        unique_indices[column] = {
                             "row_index": row_index,
                             "max_value": max_value,
                         }
                     max_value_found = True
                     row_index += 1
         
-        return unique_indicies
+        return unique_indices
 \end{lstlisting}

@@ -18,13 +18,13 @@ TODO add number of estimated clusters
     \label{tab:nmi_kmeans_example}
 \end{table}
 
-Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching and the jaccard index.
+Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching and the Jaccard index.
 
 TODO find citations
 
 \paragraph{Calculating the score}
 
-The scoring function first calculates the similarity between pairs of clusters, where each cluster belongs to a different clustering. We use the jaccard index to measure the similarity, which is defined as
+The scoring function first calculates the similarity between pairs of clusters, where each cluster belongs to a different clustering. We use the Jaccard index to measure the similarity, which is defined as
 
 \begin{equation}
     \label{equ:similarity}
@@ -125,7 +125,7 @@ The final score for the evaluation of the predicted cluster $C$ with the true cl
 
 \paragraph{Comparison against other measures}
 
-The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and completeness. It is important to note that NMI and completeness work with cluster labels assigned to each document, instead of considing elements inside a single cluster. This means the clustering will be flattened into one dimension, where each document is assigned the label of the cluster it appeares in. The array containing the labels for the first scenario would look as follows: $C=[1,1,1,2,2,2,2,3,3]$.
+The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and completeness. It is important to note that NMI and completeness work with cluster labels assigned to each document, instead of considering elements inside a single cluster. This means the clustering will be flattened into one dimension, where each document is assigned the label of the cluster it appears in. The array containing the labels for the first scenario would look as follows: $C=[1,1,1,2,2,2,2,3,3]$.
 
 \begin{table}[h]
     \centering
@@ -157,7 +157,7 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
     k-means & 19255 & 0.137 & 600 & 457 \\ \hline
     hdbscan & 19255 & 0.605 & 600 & 2 \\ \hline
     \end{tabular}
-    \caption{The similarty score reflects the difference in number of predicted clusters.}
+    \caption{The similarity score reflects the difference in number of predicted clusters.}
     \label{tab:avg_predict_kmeans_example}
 \end{table}
 
@@ -175,6 +175,6 @@ The main features include:
     \item Storing the result the result in a database and creating relations between news articles, clusters and evaluation runs. This allows for manual inspection and analysis of individual articles inside a predicted cluster.
 \end{itemize}
 
-The implementation is done with Python. Clustering methods and vectorizers are provided by the Scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This prinicple was useful for developing and testing the framework in a local environment and deploying it on a remote server for running the final evaluations, without worrying about setting up and installing all dependencies again.
+The implementation is done with Python. Clustering methods and vectorizers are provided by the Scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This principle was useful for developing and testing the framework in a local environment and deploying it on a remote server for running the final evaluations, without worrying about setting up and installing all dependencies again.
 
 % TODO write it better
