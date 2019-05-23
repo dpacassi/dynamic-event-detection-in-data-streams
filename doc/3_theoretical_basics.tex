@@ -56,7 +56,7 @@ of different shapes.
 % \subsubsubsection{How does DBSCAN work}
 DBSCAN requires two parameters in order to work:
 1. epsilon - The maximum distance between two data points for them to be considered as in the same cluster.
-2. minPoints - The number of data points a neighborhood has to contain in order to be considered as a cluster.
+2. minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
 
 Having these two parameters defined, DBSCAN will iterate through the data points
 and try to assign them to clusters if the provided parameters match.
@@ -86,8 +86,8 @@ Another important quality of HDBSCAN is, that it does not need to know the numbe
 \fi
 
 HDBSCAN is a extension of DBSCAN that converts DBSCAN into a hierarchical clustering algorithm.
-Therefor it only requires one parameter to be set:
-1. minPoints - The number of data points a neighborhood has to contain in order to be considered as a cluster.
+Therefore it only requires one parameter to be set:
+1. minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
 
 % \subsubsubsection{How does HDBSCAN work}
 1. Transform the space according to the density/sparsity.
