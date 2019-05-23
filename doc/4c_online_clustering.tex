@@ -1,6 +1,6 @@
 \subsection{Online Clustering}
 
-Detecting events in a stream of news articles will be achieved by using an online clustering approach. The events of interest for this application are the discovery of new topics and the extension of existing topics. Thus we define our two events as follows:
+Detecting events in a stream of news articles will be achieved by using an online clustering approach. An event is described by the occurrence of multiple news articles to the same subject.  The events of interest for this application are the discovery of new topics and the extension of existing topics. Thus we define our two events as follows:
 
 \begin{itemize}
     \item Topic added: A new cluster of news articles appears in the data stream.
@@ -46,7 +46,7 @@ Since HDBSCAN only supports static datasets, the clustering will be done in batc
 \end{figure}
 
 \paragraph{Finding pairs clusters}
-
+Thus we define our two events as follows:
 To be able to compare clusters of different batches with each other, we have to find pairs of clusters between batches, which describe the same topic. This is done by applying the same assumptions as for the scoring function used in the evaluation. Therefore clusters are paired based on their similarity calculated with the jaccard index as shown in equation \ref{equ:similarity}. If the similarity is above a certain threshold, both clusters are seen as describing the same topic.
 
 \paragraph{Sliding window}
@@ -60,3 +60,5 @@ The online clustering implemented for this thesis does not operate in a true onl
 \paragraph{Comparing clusters} To detect events between batches of clusterings, we have find pairs of clusters describing the same topic. This problem is solved in the evaluation framework as part of the scoring function, by calculating the similarity for each possible cluster pair. The resulting time complexity is $O(n^2)$, which we deemed acceptable for the static evaluation. However in a dynamic setting such as the online clustering, performance is an important factor, since it restricts the lengths of the time delta between batches and the overall batch size. Thus we decided to use Locality-Sensitive Hashing (LSH)\cite{alex2015practical} to find similar clusters. This reduces the time complexity to $O(log(n))$. The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2017_290602}. TODO explain LSH?
 
 \paragraph{Detecting Events} Once we have found pairs of clusters, which represent the same topic, detecting events becomes trivial. For each pair we look for news articles, which are only present in the new cluster. These articles are then summarized in the event \textit{topic extended} for a specific topic. Clusters from the new batch without a matching cluster from the previous batch are seen as new topics and represented by the event \textit{topic added}.
+
+TODO clarify event vs topic vs story and be consistent with the usages!
