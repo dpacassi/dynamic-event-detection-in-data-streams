@@ -25,4 +25,5 @@ diff.html
 *.suc
 *.syc
 *.sym
+*.bak
 doc/*.xml

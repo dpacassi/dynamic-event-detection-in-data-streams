@@ -12,7 +12,7 @@ Initially we used Normalized Mutual Information (NMI) as our primary scoring fun
     \hline
     \textbf{Algorithm} & \textbf{Sample Size} & \textbf{NMI}  & $\mathbf{n_{true}}$ & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
     k-means & 19255 & 0.754 & 600 & 457 \\ \hline
-    hdbscan & 19255 & 0.742 & 600 & 2 \\ \hline
+    HDBSCAN & 19255 & 0.742 & 600 & 2 \\ \hline
     \end{tabular}
     \caption{K-Means has a higher NMI score than HDBSCAN, while having a much larger difference in number of clusters.}
     \label{tab:nmi_kmeans_example}
@@ -151,7 +151,7 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
     \hline
     \textbf{Algorithm} & \textbf{Sample Size} & \textbf{Similarity}  & $\mathbf{n_{true}}$ & $\mathbf{ \mid n_{true} - n_{predicted} \mid }$ \\ \hline
     k-means & 19255 & 0.137 & 600 & 457 \\ \hline
-    hdbscan & 19255 & 0.605 & 600 & 2 \\ \hline
+    HDBSCAN & 19255 & 0.605 & 600 & 2 \\ \hline
     \end{tabular}
     \caption{The similarity score reflects the difference in number of predicted clusters.}
     \label{tab:avg_predict_kmeans_example}
@@ -171,6 +171,6 @@ The main features include:
     \item Storing the result the result in a database and creating relations between news articles, clusters and evaluation runs. This allows for manual inspection and analysis of individual articles inside a predicted cluster.
 \end{itemize}
 
-The implementation is done with Python. Clustering methods and vectorizers are provided by the Scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This principle was useful for developing and testing the framework in a local environment and deploying it on a remote server for running the final evaluations, without worrying about setting up and installing all dependencies again.
+The implementation is done with Python. Clustering methods and vectorizers are provided by the scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This principle was useful for developing and testing the framework in a local environment and deploying it on a remote server for running the final evaluations, without worrying about setting up and installing all dependencies again.
 
 % TODO write it better
