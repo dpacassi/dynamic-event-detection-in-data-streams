@@ -1,80 +1,101 @@
 \section{Theoretical basics}
+Todo.
 
 \subsection{Text preprocessing}
+Todo.
 
 \subsubsection{Keyterm extraction}
-Todo
+Todo.
 
 \subsubsection{Entity extraction}
+Todo.
 % TODO: "Named entity recognition"?
-Todo
 
 \subsubsection{Text lemmatization}
-Todo
+Todo.
 
 \subsubsection{Text stemming}
-Todo
+Todo.
 
 \subsection{Data Representation}
+Todo.
 
 \subsubsection{Word Frequency}
+Todo.
 
 \subsubsection{tf-idf}
+Todo.
 
 \subsection{Clustering}
-Clustering finds similarities in different news articles based on their content and groups them together, while unrelated news are regarded as noise. The challenge now araises to find an appropriate clustering method, which is able to work with data of varying densities and of high dimensionality.
+Clustering finds similarities in different news articles based on their content and groups them together,
+while unrelated news are regarded as noise.
+The challenge now arises to find an appropriate clustering method,
+which is able to work with data of varying densities and of high dimensionality.
 
-TODO why hdbscan
+% TODO why hdbscan
 
 \subsubsection{\textit{k}-means clustering}
 \textit{k}-means clustering is an iterative clustering method which assigns all data points in a given data set
 into k clusters, where k is a predefined number of clusters in the dataset.
 
-% \subsubsubsection{How does k-means clustering work}
+\paragraph{How does k-means clustering work}
 At the very beginning, k-means creates k centroids at random locations.
 It then repeats following instructions until reaching convergence:
 
-- For each data point: Find the nearest centroid
-- Assign the data point to the nearest centroid (cluster)
-- For each cluster: Compute a new cluster centroid with all assigned data points
+\begin{itemize}
+    \item For each data point: Find the nearest centroid
+    \item Assign the data point to the nearest centroid (cluster)
+    \item For each cluster: Compute a new cluster centroid with all assigned data points
+\end{itemize}
 
-% \subsubsubsection{Advantages}
-- Very simple and easy to understand algorithm
+\paragraph{Advantages}
+\begin{itemize}
+    \item Very simple and easy to understand algorithm
+\end{itemize}
 
-% \subsubsubsection{Disadvantages}
-- Initial (random) centroids have a strong impact on the results
-- The number of clusters (k) has to be known beforehand
-- Unable to handle noise (all data points will be assigned to a cluster)
+\paragraph{Disadvantages}
+\begin{itemize}
+    \item Initial (random) centroids have a strong impact on the results
+    \item The number of clusters (k) has to be known beforehand
+    \item Unable to handle noise (all data points will be assigned to a cluster)
+\end{itemize}
 
 \subsubsection{DBSCAN}
-DBSCAN stands for *Density-Based Spatial Clustering of Applications with Noise*
+DBSCAN stands for \textit{Density-Based Spatial Clustering of Applications with Noise}
 and is a density based clustering algorithm.
 
 A big advantage of DBSCAN is that it's able to sort data into clusters
 of different shapes.
 
-% \subsubsubsection{How does DBSCAN work}
+\paragraph{How does DBSCAN work}
 DBSCAN requires two parameters in order to work:
-1. epsilon - The maximum distance between two data points for them to be considered as in the same cluster.
-2. minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
+
+\begin{enumerate}
+    \item epsilon - The maximum distance between two data points for them to be considered as in the same cluster.
+    \item minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
+\end{enumerate}
 
 Having these two parameters defined, DBSCAN will iterate through the data points
 and try to assign them to clusters if the provided parameters match.
 If a data point can't be assigned to a cluster, it will be marked as noise point.
 
-Data points that belong to a cluster but don't dense themselves are known
-as **border points**. Some border points could theoretically belong to two or more clusters
+Data points that belong to a cluster but don't dense themselves are known as \textbf{border points}.
+Some border points could theoretically belong to two or more clusters
 if the distance from the point to the clusters don't differ.
 
-% \subsubsubsection{Advantages}
-- Does not need to know the number of clusters beforehand
-- Is able to find shaped clusters
-- Is able to handle noise points
+\paragraph{Advantages}
+\begin{itemize}
+    \item Does not need to know the number of clusters beforehand.
+    \item Is able to find shaped clusters.
+    \item Is able to handle noise points.
+\end{itemize}
 
-% \subsubsubsection{Disadvantages}
-- DBSCAN is not entirely deterministic
-- Defining the right epsilon value can be difficult
-- Unable to cluster data sets with large differences in densities
+\paragraph{Disadvantages}
+\begin{itemize}
+    \item DBSCAN is not entirely deterministic.
+    \item Defining the right epsilon value can be difficult.
+    \item Unable to cluster data sets with large differences in densities.
+\end{itemize}
 
 \subsubsection{HDBSCAN}
 
@@ -87,26 +108,31 @@ Another important quality of HDBSCAN is, that it does not need to know the numbe
 
 HDBSCAN is a extension of DBSCAN that converts DBSCAN into a hierarchical clustering algorithm.
 Therefore it only requires one parameter to be set:
-1. minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
+\begin{enumerate}
+    \item minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
+\end{enumerate}
 
-% \subsubsubsection{How does HDBSCAN work}
-1. Transform the space according to the density/sparsity.
-2. Build the minimum spanning tree of the distance weighted graph.
-3. Construct a cluster hierarchy of connected components.
-4. Condense the cluster hierarchy based on minimum cluster size.
-5. Extract the stable clusters from the condensed tree.
+\paragraph{How does HDBSCAN work}
+\begin{enumerate}
+    \item Transform the space according to the density/sparsity.
+    \item Build the minimum spanning tree of the distance weighted graph.
+    \item Construct a cluster hierarchy of connected components.
+    \item Condense the cluster hierarchy based on minimum cluster size.
+    \item Extract the stable clusters from the condensed tree.
+\end{enumerate}
 
-% \subsubsubsubsection{1. Transforming the space}
+\subparagraph{1. Transforming the space}
 One reason why HDBSCAN works so well, is that it is aware of noise.
 This is very important as real life data is often messy and sometimes even corrupt.
 
 Because of this, the very first thing HDBSCAN does, is to remove such data noise.
-In order to identify noise, the **mutual reachability distance** score between
-points is calculated. The mutual reachability distance score is defined as
+In order to identify noise, the \textbf{mutual reachability distance} score between
+points is calculated.
+%The mutual reachability distance score is defined as
 
-TODO: Formula
+% TODO: Formula
 
-whereas corek(x) stands for the core distance for a point x and a defined parameter k.
+%whereas corek(x) stands for the core distance for a point x and a defined parameter k.
 
 % \subsubsubsubsection{2. Building the minimum spanning tree}
-TODO.
+Todo.

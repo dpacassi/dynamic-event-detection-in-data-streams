@@ -57,8 +57,24 @@ An important consideration for determining existing or new clusters is the overl
 
 The online clustering implemented for this thesis does not operate in a true online setting, but rather it takes our existing test data and simulates a data stream over time. The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings. The implementation is done with Python and the application provides a command line interface to run the simulation with different parameters such as the start date, number of days to run and the batch size.
 
-\paragraph{Comparing clusters} To detect events between batches of clusterings, we have find pairs of clusters describing the same topic. This problem is solved in the evaluation framework as part of the scoring function, by calculating the similarity for each possible cluster pair. The resulting time complexity is $O(n^2)$, which we deemed acceptable for the static evaluation. However in a dynamic setting such as the online clustering, performance is an important factor, since it restricts the lengths of the time delta between batches and the overall batch size. Thus we decided to use Locality-Sensitive Hashing (LSH)\cite{alex2015practical} to find similar clusters. This reduces the time complexity to $O(log(n))$. The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2017_290602}. TODO explain LSH?
+\paragraph{Comparing clusters}
+To detect events between batches of clusterings,
+we have find pairs of clusters describing the same topic.
+This problem is solved in the evaluation framework as part of the scoring function,
+by calculating the similarity for each possible cluster pair.
+The resulting time complexity is $O(n^2)$, which we deemed acceptable for the static evaluation.
+However in a dynamic setting such as the online clustering, performance is an important factor,
+since it restricts the lengths of the time delta between batches and the overall batch size.
+Thus we decided to use Locality-Sensitive Hashing (LSH)\cite{alex2015practical} to find similar clusters.
+This reduces the time complexity to $O(log(n))$.
+The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2017_290602}.
+% TODO explain LSH?
 
-\paragraph{Detecting Events} Once we have found pairs of clusters, which represent the same topic, detecting events becomes trivial. For each pair we look for news articles, which are only present in the new cluster. These articles are then summarized in the event \textit{topic extended} for a specific topic. Clusters from the new batch without a matching cluster from the previous batch are seen as new topics and represented by the event \textit{topic added}.
+\paragraph{Detecting Events}
+Once we have found pairs of clusters, which represent the same topic, detecting events becomes trivial.
+For each pair we look for news articles, which are only present in the new cluster.
+These articles are then summarized in the event \textit{topic extended} for a specific topic.
+Clusters from the new batch without a matching cluster from the previous batch
+are seen as new topics and represented by the event \textit{topic added}.
 
-TODO clarify event vs topic vs story and be consistent with the usages!
+% TODO clarify event vs topic vs story and be consistent with the usages!

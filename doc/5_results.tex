@@ -88,8 +88,8 @@ As for the optimal preprocessing, lemmatization appears to provide the highest a
 
 After determining the optimal settings for text preprocessing and vectorization, we increase the sample sizes for our evaluation runs, to get a deeper insight into the behaviour of HDBSCAN with larger datasets. Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples. Based on this Figure we see the metric $cosine$ to be generally better than $euclidean$, even if $euclidean$ is occasionally more accurate.
 
-TODO explain why cosine is generally better than euclidean
-TODO explain min cluster sizes, but run with lemmatization
+% TODO explain why cosine is generally better than euclidean
+% TODO explain min cluster sizes, but run with lemmatization
 
 \begin{figure}[h]
     \centering
@@ -100,7 +100,7 @@ TODO explain min cluster sizes, but run with lemmatization
 
 One of the advantages HDBSCAN has over other clustering algorithms, is the ability to work with noise, since we intent on applying it in an online setting, where noisy data is to be expected. At the same time, the number of articles classified as noise should be kept to a minimum. However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is higher, than we would expect it to be based on our test data. A variety of factors play into the high noise ratio. One major influence is due to the used $min\_cluster\_size$. Each news article belonging to a cluster ignored due to a size too small, will be counted as noise. In addition to the false positives due to the min cluster size, the test data does still contain noisy data, even after our efforts in cleaning up the data as good as possible. Nonetheless the expected noise ratio based on the test data is less than 10\%, nowhere close to the 20\% of the current evaluation. Decreasing the noise ratio is certainly an important part in future improvements.
 
-TODO calculate expected noise ratio based our min cluster sizes.
+% TODO calculate expected noise ratio based our min cluster sizes.
 
 % experiment with min_samples
 
@@ -182,11 +182,11 @@ The clustering is run over 30 days with a total of 42'916 news articles. The dis
 
 \subsubsection{Evaluation}
 
-TODO evaluate different thresholds
+% TODO evaluate different thresholds
 
-TODO evaluate different time deltas
+% TODO evaluate different time deltas
 
-TODO show example with a specific topic e.g. when it first is detected, incoming news articles etc.
+% TODO show example with a specific topic e.g. when it first is detected, incoming news articles etc.
 
 \begin{figure}[h]
     \centering
