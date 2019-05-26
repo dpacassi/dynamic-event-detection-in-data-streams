@@ -93,7 +93,29 @@ To speed this process up, we've loaded the data set into a database and run 8 co
 retrieved the news articles content from the web in different batches.
 
 \subsubsection{Data cleansing}
-Todo.
+The data set contains news articles collected from March 10th to August 10th of 2014.
+Five years later, many resources are not online anymore or are not accessible from Europe due to GDPR.
+We've used following SQL query to filter out news articles that were most likely corrupt:
+
+\begin{lstlisting}[language=SQL, caption=Retrieve valid news articles., label={lst:valid_news_articles_sql}]
+    SELECT *
+    FROM news_article
+    WHERE
+        newspaper_text IS NOT NULL
+        AND TRIM(COALESCE(newspaper_text, '')) != ''
+        AND hostname NOT IN ('newsledge.com', 'www.newsledge.com')
+        AND newspaper_text NOT LIKE '%GDPR%'
+        AND newspaper_text NOT LIKE '%javascript%'
+        AND newspaper_text NOT LIKE '%404%'
+        AND newspaper_text NOT LIKE '%cookie%'
+        AND newspaper_keywords NOT LIKE '%GDPR%'
+        AND newspaper_keywords NOT LIKE '%javascript%'
+        AND newspaper_keywords NOT LIKE '%404%'
+        AND newspaper_keywords NOT LIKE '%cookie%'
+        AND title_keywords_intersection = 1
+\end{lstlisting}
+
+% Todo: Continue cleansing text.
 
 % Todo: The first important step is to create a test data set to run the evaluations with and verify them.
 % Todo: explain the source and structrue
