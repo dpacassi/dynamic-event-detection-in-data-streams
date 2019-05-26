@@ -11,10 +11,10 @@ The goal of this evaluation is to measure the accuracy of HDBSCAN, with differen
  The first step in working with text is to apply Natural Language Processing techniques for improving the quality of the data before clustering it. We look the five different preprocessing methods  as described in section \ref{} and evaluate each. The methods are:
  \begin{itemize}
      \item Full text with stop word removal
-     \item Keyterms
+     \item Key terms
      \item Named Entities
-     \item Lemmatization
-     \item Stemmatization
+     \item Text Lemmatisation
+     \item Text Stemming
  \end{itemize} 
 
 \paragraph{Text Vectorization} Before the text can be clustered, it has to be transformed into a vector space model. We look at two different models:
@@ -23,7 +23,7 @@ The goal of this evaluation is to measure the accuracy of HDBSCAN, with differen
     \item tf-idf
 \end{itemize}
 
-\paragraph{Parameters} HDBSCAN has a range of parameters, which can be tuned to fit our dataset. We focus on the two primary ones:
+\paragraph{Parameters} HDBSCAN has a range of parameters, which can be tuned to fit our data set. We focus on the two primary ones:
 \begin{itemize}
     \item Min cluster size: The minimum size of a cluster. We run the evaluation with a range from two to nine as the $min\_cluster\_size$. 
     \item Metric: The distance measure between points. We apply the metrics "cosine" and "euclidean". 
@@ -32,11 +32,11 @@ The goal of this evaluation is to measure the accuracy of HDBSCAN, with differen
 
 The primary parameter for K-Means is the number of clusters. Since K-Means is used as a baseline to evaluate HDBSCAN, we provide the true number of clusters for each run. Therefore K-Means runs with an optimal starting point. 
 
-\paragraph{Running the evaluation} The evaluation is done with different sets of news articles per run. This means if we define a run to use 30 stories and set it to repeat five times, each repeat will load 30 different stories from the dataset. This is done to get a more diverse set of samples. Each run will be repeated at least three times. Lower numbers of stories allow for more repetitions due to lower processing times.   
+\paragraph{Running the evaluation} The evaluation is done with different sets of news articles per run. This means if we define a run to use 30 stories and set it to repeat five times, each repeat will load 30 different stories from the data set. This is done to get a more diverse set of samples. Each run will be repeated at least three times. Lower numbers of stories allow for more repetitions due to lower processing times.   
 
 \subsubsection{Evaluation}
 
-The first run is done with 60 stories, which results in approximately 2000 news articles, over five repetitions. Table \ref{tab:cluster_parameters} shows the resulting accuracy for each parameter in combination with each preprocessing method and vector space model. The highest score per parameter is highlighted as bold. The first insight we get is the variety in accuracy scores for different min cluster sizes. The lowest min cluster size results in the lowest accuracy, while increasing this parameter leads to an increasingly better score. The highest accuracy is reached with a min cluster size of six, while increasing it further reduces the score again. The large difference in accuracies between different min cluster sizes, shows the importance this parameters has on the quality of the clustering and requires some knowledge of the data beforehand. In our case we have a wide range of different cluster sizes as shown in Figure \ref{fig:articles_per_story_distribution}, with clusters containing as little as two news articles. Based on this distribution we expected the min size cluster size to be low. The distribution also explains the drop in accuracy after a min cluster size of 6, since an increasingly number of clusters are being ignored.
+The first run is done with 60 stories, which results in approximately 2000 news articles, over five repetitions. Table \ref{tab:cluster_parameters} shows the resulting accuracy for each parameter in combination with each preprocessing method and vector space model. The highest score per parameter is highlighted as bold. The first insight we get is the variety in accuracy scores for different min cluster sizes. The lowest min cluster size results in the lowest accuracy, while increasing this parameter leads to an increasingly better score. The highest accuracy is reached with a min cluster size of six, while increasing it further reduces the score again. The large difference in accuracy between different min cluster sizes, shows the importance this parameters has on the quality of the clustering and requires some knowledge of the data beforehand. In our case we have a wide range of different cluster sizes as shown in Figure \ref{fig:articles_per_story_distribution}, with clusters containing as little as two news articles. Based on this distribution we expected the min size cluster size to be low. The distribution also explains the drop in accuracy after a min cluster size of 6, since an increasingly number of clusters are being ignored.
 
 \begin{table}[h]
     \centering
@@ -45,7 +45,7 @@ The first run is done with 60 stories, which results in approximately 2000 news 
         \hline
         \textbf{Clustering} & \multicolumn{5}{ |c| }{\textbf{Word Frequency}} & \multicolumn{5}{ |c| }{\textbf{tf-idf}} \\
         \hline
-        \textbf{HDBSCAN} & Full Text &  Keyterms & Entities & Lemmatized & Stemmed & Full Text &  Keyterms & Entities & Lemmatized & Stemmed \\
+        \textbf{HDBSCAN} & Full Text &  Key terms & Entities & Lemmatised & Stemmed & Full Text & Key terms & Entities & Lemmatised & Stemmed \\
         \hline
         min\_size: 2, metric: cosine    & 0.289 & 0.265 & 0.223 & \textbf{0.305} & 0.297 & 0.286     & 0.268 & 0.26      & 0.296     & 0.3       \\
         min\_size: 2, metric: euclidean & 0.101 & 0.093 & 0.110 & 0.101     & 0.106 & 0.301     & 0.170 & 0.241     & \textbf{0.306} & 0.301     \\
@@ -77,7 +77,15 @@ The first run is done with 60 stories, which results in approximately 2000 news 
 
 Comparing the two vector models, shows the majority of best scores per parameter achieved by tf-idf. Additionally the different metrics show a significant difference when using the vector model based on word count. With tf-idf the difference between both metrics is often negligible.
 
-As for the optimal preprocessing, lemmatization appears to provide the highest accuracy in general or at least being fairly close to the highest score. This is to be expected, since lemmatization reduces the dimensions by grouping words into their base form, while still retaining most of the text. In contrast to keyterm and entity extraction, which both result in a drastic reduction of the dimensions, and therefore less detail. It is important to note, that we used pretrained models for keyterm and entity extraction. Specifically training on a news corpus might improve the performance of both methods, but it was decided as to be out of scope for this thesis.
+As for the optimal preprocessing, text lemmatisation appears to provide the highest accuracy in general
+or at least being fairly close to the highest score.
+This is to be expected, since text lemmatisation reduces the dimensions by grouping words into their base form,
+while still retaining most of the text.
+In contrast to key term and entity extraction, which both result in a drastic reduction of the dimensions,
+and therefore less detail.
+It is important to note, that we used pretrained models for key term and entity extraction.
+Specifically training on a news corpus might improve the performance of both methods,
+but it was decided as to be out of scope for this thesis.
 
 \begin{figure}[h]
     \centering
@@ -86,21 +94,21 @@ As for the optimal preprocessing, lemmatization appears to provide the highest a
     \label{fig:articles_per_story_distribution}
 \end{figure}
 
-After determining the optimal settings for text preprocessing and vectorization, we increase the sample sizes for our evaluation runs, to get a deeper insight into the behaviour of HDBSCAN with larger datasets. Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples. Based on this Figure we see the metric $cosine$ to be generally better than $euclidean$, even if $euclidean$ is occasionally more accurate.
+After determining the optimal settings for text preprocessing and vectorization, we increase the sample sizes for our evaluation runs, to get a deeper insight into the behaviour of HDBSCAN with larger data sets. Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples. Based on this Figure we see the metric $cosine$ to be generally better than $euclidean$, even if $euclidean$ is occasionally more accurate.
 
-TODO explain why cosine is generally better than euclidean
-TODO explain min cluster sizes, but run with lemmatization
+% TODO explain why cosine is generally better than euclidean
+% TODO explain min cluster sizes, but run with lemmatization
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{hdbscan_parameters}
-    \caption{Accuracies for different parameters}
+    \caption{Accuracy for different parameters}
     \label{fig:hdbscan_parameters}
 \end{figure}
 
 One of the advantages HDBSCAN has over other clustering algorithms, is the ability to work with noise, since we intent on applying it in an online setting, where noisy data is to be expected. At the same time, the number of articles classified as noise should be kept to a minimum. However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is higher, than we would expect it to be based on our test data. A variety of factors play into the high noise ratio. One major influence is due to the used $min\_cluster\_size$. Each news article belonging to a cluster ignored due to a size too small, will be counted as noise. In addition to the false positives due to the min cluster size, the test data does still contain noisy data, even after our efforts in cleaning up the data as good as possible. Nonetheless the expected noise ratio based on the test data is less than 10\%, nowhere close to the 20\% of the current evaluation. Decreasing the noise ratio is certainly an important part in future improvements.
 
-TODO calculate expected noise ratio based our min cluster sizes.
+% TODO calculate expected noise ratio based our min cluster sizes.
 
 % experiment with min_samples
 
@@ -155,7 +163,7 @@ As a final note, we compare HDBSCAN with six different clustering methods taken 
 \subsubsection{Conclusion}
 
 % TODO: This conclusion belongs to the chapter "Conclusion"
-The evaluation has shown HDBSCAN to be a good candidate to use for news clustering. It provides an better accuracy than K-means, while being significantly faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. Additionally we have shown the required preprocessing and vectorization steps with the ideal parameters to achieve the most accurate results for our dataset. On the flip side the noise ratio is quite high and the space complexity is problematic with larger datasets. Overall HDBSCAN provides an acceptable accuracy, while still leaving room for further improvements.
+The evaluation has shown HDBSCAN to be a good candidate to use for news clustering. It provides an better accuracy than K-means, while being significantly faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. Additionally we have shown the required preprocessing and vectorization steps with the ideal parameters to achieve the most accurate results for our data set. On the flip side the noise ratio is quite high and the space complexity is problematic with larger data sets. Overall HDBSCAN provides an acceptable accuracy, while still leaving room for further improvements.
 
 \subsection{Online clustering}
 
@@ -164,7 +172,7 @@ The evaluation has shown HDBSCAN to be a good candidate to use for news clusteri
 The online clustering is done on a simulated stream of news articles based on the same data set as used in the clustering evaluation. This allows for direct comparison between the detected events and the ground truth. The settings to run the clustering are as follows:
 
 \begin{itemize}
-    \item Text preprocessing: Lemmatization
+    \item Text Lemmatisation
     \item Vectorizer: tf-idf
     \item Clustering method: HDBSCAN
     \item Min cluster size: 5
@@ -182,11 +190,11 @@ The clustering is run over 30 days with a total of 42'916 news articles. The dis
 
 \subsubsection{Evaluation}
 
-TODO evaluate different thresholds
+% TODO evaluate different thresholds
 
-TODO evaluate different time deltas
+% TODO evaluate different time deltas
 
-TODO show example with a specific topic e.g. when it first is detected, incoming news articles etc.
+% TODO show example with a specific topic e.g. when it first is detected, incoming news articles etc.
 
 \begin{figure}[h]
     \centering
