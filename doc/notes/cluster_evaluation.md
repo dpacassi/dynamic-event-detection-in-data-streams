@@ -121,3 +121,8 @@ ALTER TABLE data_database.method_evaluation CHANGE avg_precision avg_unique_accu
 2014-09-05
 
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 180 --rows 2000 --verbose
+
+
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --rows 1000,2000,3000,4000,5000 --verbose
+
+
