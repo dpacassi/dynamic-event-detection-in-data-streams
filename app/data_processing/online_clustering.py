@@ -299,25 +299,27 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--full-cluster", dest="full_cluster", action="store_true")
     ap.add_argument("--verbose", dest="verbose", action="store_true")
-    ap.add_argument("--rows", required=False, type=int, default=1000)
+    ap.add_argument("--rows", required=False, type=str, default=1000)
     ap.add_argument("--full_rows", required=False, type=int, default=10000)
     ap.add_argument("--date", required=False, type=str, default=None)
-    ap.add_argument("--run_n_days", required=False, type=int, default=0)
+    ap.add_argument("--run_n_days", required=False, type=int, default=1)
     ap.set_defaults(full_cluster=False)
     ap.set_defaults(verbose=False)
     args = vars(ap.parse_args())
 
     full_cluster = args["full_cluster"]
-    rows = args["rows"]
+    rows = list(map(int, args["rows"].split(",")))
     date = args["date"]
     verbose = args["verbose"]
     run_n_days = args["run_n_days"]
     full_rows = args["full_rows"]
 
+    # run the simulation:
+    db.reset_online_evaluation()
 
-    if run_n_days > 0:
-        # run the simulation:
-        db.reset_online_evaluation()
+    for nrows in rows:
+        print("Start simulation")
+        print("Batch size:", nrows)
         current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
         end_date = current_date + timedelta(days=run_n_days)
         clustering = []
@@ -330,9 +332,8 @@ if __name__ == "__main__":
             if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
                 clustering = run(current_date, full_rows, True, verbose, clustering)
             else:
-                clustering = run(current_date, rows, False, verbose, clustering)
+                clustering = run(current_date, nrows, False, verbose, clustering)
                 
             current_date += timedelta(hours=1)
-        
-    else:
-        run(date, rows, full_cluster, verbose)
+        print("End simulation")
+        print("--------------------\n")
