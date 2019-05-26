@@ -10,6 +10,26 @@ The final part applies the results obtained from the previous evaluation in an o
 % Todo: Add a box diagram of the data flow
 % E.g. News article -> Text preprocessing -> Clustering -> Output
 
+\begin{tikzpicture}[
+    squarednode/.style={rectangle, align=center, draw=black!60, very thick, minimum size=5mm},
+    ]
+
+    %Nodes
+    \node[squarednode] (newsarticle)                                {Collection of\\ news articles};
+    \node[squarednode] (preprocessing)  [right=of newsarticle]      {Text preprocessing};
+    \node[squarednode] (vectorization)  [right=of preprocessing]    {Vectorization};
+    \node[squarednode] (clustering)     [right=of vectorization]    {Clustering};
+    \node[squarednode] (result)         [right=of clustering]       {Result};
+     
+    %Lines
+    \draw[->] (newsarticle.east) -- (preprocessing.west);
+    \draw[->] (preprocessing.east) -- (vectorization.west);
+    \draw[->] (vectorization.east) -- (clustering.west);
+    \draw[->] (clustering.east) -- (result.west);
+
+\end{tikzpicture}
+    
+
 \input{4a_data_set}
 \input{4b_scoring_function}
 \input{4c_online_clustering}
