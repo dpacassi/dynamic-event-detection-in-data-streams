@@ -129,17 +129,19 @@ HDBSCAN only requires one parameter to be set beforehand:
 \end{enumerate}
 
 The algorithm consist of five steps, which are as follows: 
-\begin{enumerate}
-    \item Transform the space according to the density/sparsity.
-    \item Build the minimum spanning tree of the distance weighted graph.
-    \item Construct a cluster hierarchy of connected components.
-    \item Condense the cluster hierarchy based on minimum cluster size.
-    \item Extract the stable clusters from the condensed tree.
-\end{enumerate}
 
 \subparagraph{1. Transforming the space}
 
-At its core HDBSCAN is a single linkage clustering, which are typically rather sensitive to noise. A single noise point between clusters could act a bridge, which would result in both clusters to be seen as one. To reduce this issue, the first step is to increase the distances of lower density points. This is achieved by to comparing the core distances between two points with the original distance to get the the mutual reachability distance. The core distance $core_k(x)$ is defined as the radius of a circle around point $x$, so that $k$ neighbours are contained within this circle. TODO show figure. Once the core distances are known, the mutual reachability distance between two points is defined as follows:
+At its core HDBSCAN is a single linkage clustering, which are typically rather sensitive to noise. A single noise point between clusters could act a bridge, which would result in both clusters to be seen as one. To reduce this issue, the first step is to increase the distances of lower density points. This is achieved by to comparing the core distances between two points with the original distance to get the the mutual reachability distance. The core distance $core_k(x)$ is defined as the radius of a circle around point $x$, so that $k$ neighbours are contained within this circle. TODO describe example in Figure \ref{fig:hdbscan_1}. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{hdbscan_1}
+    \caption{The core distances. TODO give more detailed explanation.}
+    \label{fig:hdbscan_1}
+\end{figure}
+
+Once the core distances are known, the mutual reachability distance between two points is defined as follows:
 
 \begin{equation*}
     d_{mreach}(a, b) = max\{core_k(a), core_k(b), d(a, b)\}
@@ -153,13 +155,28 @@ Based on the mutual reachability distances, the next step is to find points clos
 
 \subparagraph{3. Build the cluster hierarchy}
 
-Once the minimum spanning tree is complete, it is converted into a hierarchy of connected clusters, by sorting edges of the tree by distance and iterate through, creating a new merged cluster for each edge. TODO rewrite this paragraph. TODO insert figure.
+Once the minimum spanning tree is complete, it is converted into a hierarchy of connected clusters, by sorting edges of the tree by distance and iterate through, creating a new merged cluster for each edge. The dendogram in Figure \ref{fig:hdbscan_2} shows a possible cluster hierarchy. %TODO rewrite this paragraph. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{hdbscan_2}
+    \caption{The cluster hierarchy shown as a dendogram}
+    \label{fig:hdbscan_2}
+\end{figure}
 
 At this stage we have to flatten the hierarchy to get the final clusters, which provide the best representation of the current data set. DBSCAN simply cuts through the hierarchy using a fixed parameter, usually called epsilon, to get the final clusters. This approach does not work well with clusters of varying densities and the epsilon parameter itself is unintuitive, requiring further exploration to find optimal values. This is were HDBSCAN improves upon DBSCAN, by taking additional steps for finding relevant clusters.
 
 \subparagraph{4. Condense the cluster tree}
 
-The fourth step consists of condensing the previously built cluster hierarchy into a smaller tree. The process starts at the top where all vertices still belong to the same cluster. Iterating through the hierarchy, for each split the two resulting clusters are compared against a predefined minimum cluster size. If the size of a cluster is below the minimum, its points will be discarded, while the other cluster remains in the parent cluster. If both cluster sizes are above or equal the minimum, the clusters are considered as true clusters. This is repeated until no more splits can be made.  
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{hdbscan_3}
+    \caption{Condensed cluster hierarchy}
+    \label{fig:hdbscan_3}
+\end{figure}
+
+The fourth step consists of condensing the previously built cluster hierarchy into a smaller tree. The process starts at the top where all vertices still belong to the same cluster. Iterating through the hierarchy, for each split the two resulting clusters are compared against a predefined minimum cluster size. If the size of a cluster is below the minimum, its points will be discarded, while the other cluster remains in the parent cluster. If both cluster sizes are above or equal the minimum, the clusters are considered as true clusters. This is repeated until no more splits can be made. 
+
 
 \subparagraph{5. Extract the clusters}
 
