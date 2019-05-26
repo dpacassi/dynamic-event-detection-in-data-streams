@@ -11,11 +11,27 @@ Todo.
 Todo.
 % TODO: "Named entity recognition"?
 
-\subsubsection{Text Lemmatisation}
-Todo.
-
 \subsubsection{Text Stemming}
-Todo.
+% TODO: cite https://tartarus.org/martin/PorterStemmer/
+Text Stemming is a form of Text Normalization which aims to simplify words
+by reducing the inflectional forms of each word into their word stems.
+The original algorithm paper was written in 1979 by Martin Porter who aimed
+to improve performance of information retrieval systems.
+He stated that words such as \textit{connect}, \textit{connected}, \textit{connecting},
+\textit{connection} and \textit{connections} will usually have a similar meaning and can therefor
+be simplified for text vectorisation.
+In his paper he was able to process his suffix stripping algorithm in 6'370 out of 10'000 words and thereby
+reducing the vocabulary size by one third.
+
+% TODO: cite https://pdfs.semanticscholar.org/1c0c/0fa35d4ff8a2f925eb955e48d655494bd167.pdf
+% http://snowball.tartarus.org/texts/quickintro.html
+% http://snowball.tartarus.org/texts/introduction.html
+\paragraph{Snowball stemmer}
+Todo
+
+\subsubsection{Text Lemmatisation}
+Text Lemmatisation is a form of Text Normalization which aims to simplify words
+by reducing the inflectional forms of each word into a common base or root.
 
 \subsection{Data Representation}
 Todo.
