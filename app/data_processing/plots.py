@@ -5,6 +5,7 @@ import pandas
 import json
 import db
 import collections
+from datetime import datetime
 
 from tabulate import tabulate
 from dotenv import load_dotenv
@@ -303,8 +304,10 @@ def plot_event_detection_by_date():
         Y_true_add_events = []
         Y_true_change_events = []
         Y_mp_score = []
-        Y_add = []
+        Y_add = collections.defaultdict(list)
         Y_change = []
+        Y_change_mp_score = []
+        Y_add_mp_score = []
 
         for index, row in data.iterrows():
             result = json.loads(row["result"].replace("'", '"'))
@@ -317,7 +320,11 @@ def plot_event_detection_by_date():
                 Y_true_change_events.append(result["topic_changed"]["true"])
                 Y_mp_score.append(row["mp_score"])
 
-                Y_add.append(abs(result["topic_added"]["detected"] - result["topic_added"]["true"]))
+                Y_change_mp_score.append(result["topic_changed"]["mp_score"])
+                Y_add_mp_score.append(result["topic_added"]["mp_score"])
+
+                day = row["last_processed_date"].strftime("%Y-%m-%d") 
+                Y_add[day].append(abs(result["topic_added"]["detected"] - result["topic_added"]["true"]))
                 Y_change.append(abs(result["topic_changed"]["detected"] - result["topic_changed"]["true"]))
 
         # Remove first entry, because the inital batch skews the scale for new topics.
@@ -327,40 +334,38 @@ def plot_event_detection_by_date():
 
         fig = plt.figure(figsize=(15, 5))
 
-        plt.subplot(1, 2, 1)
+        plt.subplot( 1, 2, 1)
 
         # plt.yticks(np.arange(0, max(max(Y_true_add_events), max(Y_pred_add_events)) + 1, step=1))
-
-        plt.plot(X, Y_add,  '-.', label="Difference")
+        plt.boxplot(Y_add.values())
        
         # plt.plot(X, Y_pred_add_events,  '-o', label="Detected")
         # plt.plot(X, Y_true_add_events,  '-^', label="True")
 
-        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-        plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
-        plt.gcf().autofmt_xdate()
+        #plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+        #plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+        #plt.gcf().autofmt_xdate()
 
-        plt.xlabel("Time")
-        plt.ylabel("Number of events")
-        plt.title("New Topics")
+        #plt.xlabel("Time")
+        #plt.ylabel("Number of events")
+        plt.title("Difference in predicted vs true new topics")
         plt.legend()
         plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
         plt.subplot(1, 2, 2)
 
-        plt.plot(X, Y_change,  '-o', label="Difference")
+        # plt.plot(X, Y_change,  '-')
+        plt.plot(X, Y_pred_change_events,  '.', label="Detected")
+        plt.plot(X, Y_true_change_events,  '.', label="True")
+
         plt.ylabel("Number of events")
-        plt.legend()
 
-        plt.twinx()
+        # plt.twinx()
+        # plt.plot(X, Y_mp_score,  '-', color='red')
+        # plt.plot(X, Y_change_mp_score,  '-', color='red', alpha=0.3)
+        # plt.ylabel("MP-Score")
 
-        plt.plot(X, Y_mp_score,  '-', label="MP-Score", color='red')
-        plt.ylabel("MP-Score")
-
-        plt.ylim(0,1)
-
-        # plt.plot(X, Y_pred_change_events,  '-o', label="Detected")
-        # plt.plot(X, Y_true_change_events,  '-^', label="True")
+        # plt.ylim(0,1)
 
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
         plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
@@ -369,9 +374,35 @@ def plot_event_detection_by_date():
         plt.xlabel("Time")
         plt.title("Topics extended")
         plt.legend()
+
+
         plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+        plt.legend()
 
         plt.savefig("../../doc/images/event_detection_by_date_{}.png".format(nrow))
+        plt.close(fig)
+
+        ##################
+
+        fig = plt.figure()
+
+        plt.plot(X, Y_mp_score,  '.', alpha=0.8, label="Overall")
+        plt.plot(X, Y_add_mp_score,  '.', alpha=0.8, label="New Topics")
+        plt.plot(X, Y_change_mp_score,  '.', alpha=0.8, label="Topic Extended")
+
+        plt.ylim(0,1)
+
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+        plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+        plt.gcf().autofmt_xdate()
+
+        plt.xlabel("Time")
+        plt.title("MP-Score")
+
+        plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+        plt.legend()
+
+        plt.savefig("../../doc/images/online_mp_score_{}.png".format(nrow))
         plt.close(fig)
 
 
