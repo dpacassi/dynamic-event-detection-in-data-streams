@@ -256,8 +256,6 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, p
         change_mp_score = score.calculate_mp_score(true_additions, change_additions)
         new_mp_score = score.calculate_mp_score(true_addition_events, new_clusters)
 
-        import ipdb; ipdb.set_trace()
-
         result = {
             "topic_added": {"detected": len(new_clusters) , "true": len(true_addition_events), "mp_score": new_mp_score},
             "topic_changed": {"detected": len(changed_clusters), "true": len(true_change_events), "mp_score": change_mp_score},

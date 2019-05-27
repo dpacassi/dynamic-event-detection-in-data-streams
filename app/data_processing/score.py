@@ -8,7 +8,8 @@ def calculate_mp_score(true_clusters, predicted_clusters):
         1. Create an similarity matrix by calculating the difference between each cluster of both clusterings.
         2. Select the most relevant values from the similarity matrix and make sure no two clusters are being used 
            at the same time.
-        3. Calculate the average with consideration for differences in number of clusters between true and predicted.
+        3. Calculate the weighted average, where the weight is based on the true and predicted amount of elements 
+           in a cluster.
     
     Parameters
     ----------
@@ -24,31 +25,9 @@ def calculate_mp_score(true_clusters, predicted_clusters):
         return 1
 
     similarity_matrix = create_similarity_matrix(true_clusters, predicted_clusters)
-    number_of_true_clusters = len(true_clusters)
-    number_of_predicted_clusters = len(predicted_clusters)
-
     unique_indices = select_max_values(similarity_matrix)
+    return calculate_weighted_average(unique_indices, true_clusters, predicted_clusters)
 
-    elements_per_true_cluster = [len(cluster) for cluster in true_clusters]
-    elements_per_predicted_cluster = [len(cluster) for cluster in predicted_clusters]
-    
-    total_true_elements = sum(elements_per_true_cluster)
-    total_pred_elements = sum(elements_per_predicted_cluster)
-    total_elements = total_true_elements + total_pred_elements
-
-    mp_score = 0
-    if total_elements > 0:
-        for column, value in unique_indices.items():
-            weight =  ((elements_per_true_cluster[value["row_index"]] + elements_per_predicted_cluster[column]) / (total_elements))
-            mp_score += value["max_value"] * weight
-
-    return mp_score
-
-def sum_unique_values(unique_indices):
-    sum_unique_precision = 0
-    for key, value in unique_indices.items():
-        sum_unique_precision += value["max_value"]
-    return sum_unique_precision
 
 def create_similarity_matrix(true_clusters, predicted_clusters):
     similarity_matrix = []
@@ -60,11 +39,14 @@ def create_similarity_matrix(true_clusters, predicted_clusters):
             cluster_set = set(predicted_cluster)
 
             # Calculate the similarity as the jaccard index = |X∩Y| / |X∪Y|
-            similarity = len(true_set.intersection(cluster_set)) / len(true_set.union(cluster_set))
+            similarity = len(true_set.intersection(cluster_set)) / len(
+                true_set.union(cluster_set)
+            )
             row.append(similarity)
 
         similarity_matrix.append(row)
     return similarity_matrix
+
 
 def select_max_values(precision_matrix):
     unique_indices = dict()
@@ -116,3 +98,25 @@ def select_max_values(precision_matrix):
                 row_index += 1
 
     return unique_indices
+
+
+def calculate_weighted_average(unique_indices, true_clusters, predicted_clusters):
+    mp_score = 0
+
+    elements_per_true_cluster = [len(cluster) for cluster in true_clusters]
+    elements_per_predicted_cluster = [len(cluster) for cluster in predicted_clusters]
+
+    total_true_elements = sum(elements_per_true_cluster)
+    total_pred_elements = sum(elements_per_predicted_cluster)
+    total_elements = total_true_elements + total_pred_elements
+
+    if total_elements > 0:
+        for column, value in unique_indices.items():
+            # The row of the similarity matrix equals the index of the true cluster, while the column is the index of the predicted cluster
+            weight = (
+                elements_per_true_cluster[value["row_index"]]
+                + elements_per_predicted_cluster[column]
+            ) / (total_elements)
+            mp_score += value["max_value"] * weight
+
+    return mp_score
