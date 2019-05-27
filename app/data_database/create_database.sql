@@ -72,7 +72,7 @@ CREATE TABLE `data_database`.`script_execution` (
   `result` LONGTEXT NULL,
   `new_rows` INT NULL,
   `nrows` INT NULL,
-  `mp_score` INT NULL,
+  `mp_score` FLOAT NOT NULL,
   `is_full_cluster` TINYINT NULL,
   `processing_time` FLOAT NULL,
   `execution_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

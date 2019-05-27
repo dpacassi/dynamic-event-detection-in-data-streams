@@ -258,9 +258,7 @@ class ClusterMethods:
 
         return errors
 
-    def store_result_to_db(
-        self, result, mp_score
-    ):
+    def store_result_to_db(self, result, mp_score):
         scores = result.create_evaluation(self.labels_true)
         return db.write_evaluation_result_in_db(
             str(result.title),
