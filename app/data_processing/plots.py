@@ -18,8 +18,8 @@ def plot_different_clusterings():
     connection = db.get_connection()
 
     sql = (
-        "select max(m.corrected_avg_unique_accuracy) as accuracy, avg(m.processing_time) as processing_time, m.method from method_evaluation as m"
-        " where m.sample_size < 2000 and m.corrected_avg_unique_accuracy is not null"
+        "select max(m.mp_score), avg(m.processing_time) as processing_time, m.method from method_evaluation as m"
+        " where m.sample_size < 2000 and m.mp_score is not null"
         " group by m.method"
     )
 
@@ -28,7 +28,7 @@ def plot_different_clusterings():
     fig = plt.figure()
 
     X = data["processing_time"].values
-    Y = data["accuracy"].values
+    Y = data["mp_score"].values
 
     colors = np.random.rand(len(X))
     plt.scatter(X, Y, c=colors, alpha=0.5)
@@ -94,8 +94,8 @@ def plot_accuracy_samples():
     parameters = '{"min_cluster_size": 5, "metric": "cosine"}'
     vectorizer = "TfidfVectorizer"
     sql = (
-        "select m.corrected_avg_unique_accuracy as accuracy, m.real_clusters, m.method from method_evaluation as m"
-        " where ((m.method = 'hdbscan' and parameters = %s) or m.method = 'kmeans') and m.corrected_avg_unique_accuracy is not null"
+        "select m.mp_score, m.real_clusters, m.method from method_evaluation as m"
+        " where ((m.method = 'hdbscan' and parameters = %s) or m.method = 'kmeans') and m.mp_score is not null"
         " and vectorizer = %s and tokenizer != 'None'"
         " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
         " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
@@ -109,7 +109,7 @@ def plot_accuracy_samples():
         accuracy_values = collections.defaultdict(list)
         for index, row in data.iterrows():
             if row["method"] == method:
-                accuracy_values[row["real_clusters"]].append(row["accuracy"])
+                accuracy_values[row["real_clusters"]].append(row["mp_score"])
 
         Y = []
         Y_lower_err = []
@@ -283,7 +283,7 @@ def plot_event_detection_by_date():
     connection = db.get_connection()
 
     sql = (
-        "select last_processed_date, result, new_rows, is_full_cluster from script_execution"
+        "select last_processed_date, result, new_rows, is_full_cluster, nrows, mp_score from script_execution"
         " where failed = 0"
         " order by last_processed_date"
     )
@@ -291,61 +291,88 @@ def plot_event_detection_by_date():
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
 
-    X = data["last_processed_date"].values
+    nrows = data["nrows"].unique()
+    for nrow in nrows:
 
-    cosine_values = collections.defaultdict(list)
-    euclidean_values = collections.defaultdict(list)
+        cosine_values = collections.defaultdict(list)
+        euclidean_values = collections.defaultdict(list)
 
-    Y_pred_add_events = []
-    Y_pred_change_events = []
-    Y_true_add_events = []
-    Y_true_change_events = []
+        X = []
+        Y_pred_add_events = []
+        Y_pred_change_events = []
+        Y_true_add_events = []
+        Y_true_change_events = []
+        Y_mp_score = []
+        Y_add = []
+        Y_change = []
 
-    for index, row in data.iterrows():
-        result = json.loads(row["result"].replace("'", '"'))
+        for index, row in data.iterrows():
+            result = json.loads(row["result"].replace("'", '"'))
+            if row["nrows"] == nrow:
+                X.append(row["last_processed_date"])
 
-        Y_pred_add_events.append(result["topic_added"]["detected"])
-        Y_pred_change_events.append(result["topic_changed"]["detected"])
-        Y_true_add_events.append(result["topic_added"]["true"])
-        Y_true_change_events.append(result["topic_changed"]["true"])
+                Y_pred_add_events.append(result["topic_added"]["detected"])
+                Y_pred_change_events.append(result["topic_changed"]["detected"])
+                Y_true_add_events.append(result["topic_added"]["true"])
+                Y_true_change_events.append(result["topic_changed"]["true"])
+                Y_mp_score.append(row["mp_score"])
 
-    fig = plt.figure(figsize=(15, 5))
+                Y_add.append(abs(result["topic_added"]["detected"] - result["topic_added"]["true"]))
+                Y_change.append(abs(result["topic_changed"]["detected"] - result["topic_changed"]["true"]))
 
-    plt.subplot(1, 2, 1)
+        # Remove first entry, because the inital batch skews the scale for new topics.
+        Y_pred_add_events[0] = 0
+        Y_true_add_events[0] = 0
+        Y_add[0] = 0
 
+        fig = plt.figure(figsize=(15, 5))
 
-    # plt.yticks(np.arange(0, max(max(Y_true_add_events), max(Y_pred_add_events)) + 1, step=1))
+        plt.subplot(1, 2, 1)
 
-    plt.plot(X, Y_pred_add_events,  '-o', label="Detected")
-    plt.plot(X, Y_true_add_events,  '-^', label="True")
+        # plt.yticks(np.arange(0, max(max(Y_true_add_events), max(Y_pred_add_events)) + 1, step=1))
 
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-    plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
-    plt.gcf().autofmt_xdate()
+        plt.plot(X, Y_add,  '-.', label="Difference")
+       
+        # plt.plot(X, Y_pred_add_events,  '-o', label="Detected")
+        # plt.plot(X, Y_true_add_events,  '-^', label="True")
 
-    plt.xlabel("Time")
-    plt.ylabel("Number of events")
-    plt.title("Event: topic added")
-    plt.legend()
-    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+        plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+        plt.gcf().autofmt_xdate()
 
-    plt.subplot(1, 2, 2)
+        plt.xlabel("Time")
+        plt.ylabel("Number of events")
+        plt.title("New Topics")
+        plt.legend()
+        plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    plt.plot(X, Y_pred_change_events,  '-o', label="Detected")
-    plt.plot(X, Y_true_change_events,  '-^', label="True")
+        plt.subplot(1, 2, 2)
 
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-    plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
-    plt.gcf().autofmt_xdate()
+        plt.plot(X, Y_change,  '-o', label="Difference")
+        plt.ylabel("Number of events")
+        plt.legend()
 
-    plt.xlabel("Time")
-    plt.ylabel("Number of events")
-    plt.title("Event: topic extended")
-    plt.legend()
-    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+        plt.twinx()
 
-    plt.savefig("../../doc/images/event_detection_by_date.png")
-    plt.close(fig)
+        plt.plot(X, Y_mp_score,  '-', label="MP-Score", color='red')
+        plt.ylabel("MP-Score")
+
+        plt.ylim(0,1)
+
+        # plt.plot(X, Y_pred_change_events,  '-o', label="Detected")
+        # plt.plot(X, Y_true_change_events,  '-^', label="True")
+
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+        plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+        plt.gcf().autofmt_xdate()
+
+        plt.xlabel("Time")
+        plt.title("Topics extended")
+        plt.legend()
+        plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+        plt.savefig("../../doc/images/event_detection_by_date_{}.png".format(nrow))
+        plt.close(fig)
 
 
 def plot_event_detection_overlap():

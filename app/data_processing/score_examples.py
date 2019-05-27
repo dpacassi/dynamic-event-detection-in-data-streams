@@ -16,7 +16,7 @@ import clusim.sim as sim
 
 
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
-    avg_similarity, weighted_similarity = score.cluster_similarity(true_clusters, predicted_clusters)
+    mp_score = score.calculate_mp_score(true_clusters, predicted_clusters)
     nmi = normalized_mutual_info_score(true_labels, predicted_labels, average_method='arithmetic')
     completeness = completeness_score(true_labels, predicted_labels)
     v_measure = v_measure_score(true_labels, predicted_labels)
@@ -35,8 +35,7 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
 
     print("------------------")
     print("Example ", nexperiment)
-    print("AVG Similarity: ", round(avg_similarity,3))
-    print("Weigthed Similarity: ", round(weighted_similarity,3))
+    print("Weigthed Similarity: ", round(mp_score,3))
     print("NMI: ", round(nmi,3))
     print("NMI2: ", round(nmi2,3))
     print("Completeness: ", round(completeness,3))

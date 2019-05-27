@@ -31,20 +31,20 @@ def get_last_script_execution(name):
 
 
 def add_script_execution(
-    name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows
+    name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score
 ):
     connection = get_connection()
 
     insert_sql = (
         "INSERT INTO script_execution"
-        " (script, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows)"
-        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        " (script, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     )
 
     with connection.cursor() as cursor:
         cursor.execute(
             insert_sql,
-            args=[name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows],
+            args=[name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score],
         )
 
     connection.commit()
@@ -246,8 +246,7 @@ def write_evaluation_result_in_db(
     vectorizer,
     tokenizer,
     parameters,
-    corrected_avg_unique_accuracy,
-    avg_unique_accuracy,
+    mp_score,
     normalized_mutual_info_score,
     adjusted_mutual_info_score,
     completeness_score,
@@ -260,8 +259,8 @@ def write_evaluation_result_in_db(
 
     insert_sql = (
         "INSERT INTO method_evaluation"
-        " (method, sample_size, vectorizer, tokenizer, parameters, corrected_avg_unique_accuracy, avg_unique_accuracy, normalized_mutual_info_score, adjusted_mutual_info_score, completeness_score, estimated_clusters, real_clusters, n_noise, processing_time)"
-        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        " (method, sample_size, vectorizer, tokenizer, parameters, mp_score, normalized_mutual_info_score, adjusted_mutual_info_score, completeness_score, estimated_clusters, real_clusters, n_noise, processing_time)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     )
 
     insert_id = None
@@ -274,8 +273,7 @@ def write_evaluation_result_in_db(
                 vectorizer,
                 tokenizer,
                 parameters,
-                corrected_avg_unique_accuracy,
-                avg_unique_accuracy,
+                mp_score,
                 normalized_mutual_info_score,
                 adjusted_mutual_info_score,
                 completeness_score,
@@ -294,7 +292,7 @@ def write_evaluation_result_in_db(
 
 def load_news_by_ids(news_ids):
     connection = get_connection()
-    id_str = ",".join(["'" + x + "'" for x in news_ids])
+    id_str = ",".join(["'" + str(x) + "'" for x in news_ids])
 
     news_sql = (
         "SELECT id, story"

@@ -222,7 +222,7 @@ class ClusterMethods:
                                 data_matrix, **parameter_combination
                             )
 
-                            corrected_avg_unique_accuracy, avg_unique_accuracy = self.calculate_cluster_accuracy(
+                            mp_score = self.calculate_cluster_accuracy(
                                 labels, self.labels_true
                             )
                             method_id = self.store_result_to_db(
@@ -235,8 +235,7 @@ class ClusterMethods:
                                     external_tokenizer, # "None" if tokenizer is None else tokenizer.__name__,
                                     parameter_combination,
                                 ),
-                                corrected_avg_unique_accuracy,
-                                avg_unique_accuracy,
+                                mp_score
                             )
 
                             self.create_clusters(method_id, labels)
@@ -260,7 +259,7 @@ class ClusterMethods:
         return errors
 
     def store_result_to_db(
-        self, result, corrected_avg_unique_accuracy, avg_unique_precision
+        self, result, mp_score
     ):
         scores = result.create_evaluation(self.labels_true)
         return db.write_evaluation_result_in_db(
@@ -269,8 +268,7 @@ class ClusterMethods:
             str(result.vectorizer),
             str(result.tokenizer),
             str(json.dumps(result.parameters)),
-            float(corrected_avg_unique_accuracy),
-            float(avg_unique_precision),
+            float(mp_score),
             float(scores["normalized_mutual_info_score"]),
             float(scores["completeness_score"]),
             float(scores["adjusted_mutual_info_score"]),
@@ -294,11 +292,11 @@ class ClusterMethods:
         predicted_clusters = [
             cluster_identifier.split(",") for cluster_identifier in cluster_identifiers
         ]
-        corrected_avg_unique_accuracy, avg_unique_accuracy = score.cluster_similarity(
+        mp_score = score.calculate_mp_score(
             true_clusters, predicted_clusters
         )
 
-        return corrected_avg_unique_accuracy, avg_unique_accuracy
+        return mp_score
 
     def create_clusters(self, method_id, labels):
         cluster_identifiers = utils.convert_labels_to_cluster_identifier(
