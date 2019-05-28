@@ -190,25 +190,45 @@ The clustering is run over 30 days with a total of 42'916 news articles. The dis
 
 \subsubsection{Evaluation}
 
+The goal of the online clustering is to detect new events in an incoming stream of news articles and changes in existing events. This evaluation analyses the results of our simulated test runs with different batch sizes.
+
+Figure \ref{fig:event_detection_differences} shows the differences between the number of detected events and the number of true events for both new and existing topics. Based on this data we see the impact of different batch sizes for the accuracy in detected events. The difference with a batch size of 5000 news articles is significantly lower than the batch size of 1000. The difference is especially noticeable in the time period between the 21.05 and 25.05. The reason for this spike can be found in the distribution of incoming news articles as shown in Figure \ref{fig:news_articles_over_time}. During this period we receive up to 3000 news articles in a single day. This means by using a lower batch size such as 1000, the overlap between batches gets too small to reliably detect changes between batches, which causes too many new topics to be detected.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{event_detection_differences}
+    \caption{Comparison between the difference in detected and true events}
+    \label{fig:event_detection_differences}
+\end{figure}
+
+Based on the overall differences, we still do not know the accuracy of those predictions. If the difference between newly detected events and true events is zero, there is still the possibility, that the events itself are different from the ground truth, and thus contain false positives. To measure the quality of events, we can look at the collection of events in a single batch as a subset of clusters, where each event is represented by a cluster containing all relevant news articles. Since we now have two clusterings, one containing detected events and the other with events taken from the ground truth, we can apply our MP-Score as a metric to get an insight into the quality of the detected events over the ground truth. Figure \ref{fig:event_detection_mp_score_1000} shows the MP-Scores for an online clustering using a batch size of 1000. Since there is quite a large variance, the score is shown as a boxplot, where a single box represents a full day. The large variance is already the first indication, that the quality is rather low. Meaning that there are still many false positives and false negatives.    
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{event_detection_mp_score_1000}
+    \caption{MP-Scores for clusterings using batch size of 1000}
+    \label{fig:event_detection_mp_score_1000}
+\end{figure}
+
+Looking at an increased batch size of 5000 in Figure \ref{fig:event_detection_mp_score_5000}, we note that there is less overall variance than with a batch size of 1000, but the variance is still fairly large for detected events. Additionally while the variance is large, the median for new topics is mostly below 0.2. This tells us that most of the newly detected events do not correspond with new events according to the ground truth. The detection of extensions of existing events is generally more accurate with a median between 0.5 and 0.8, but there is still are wide variance noticeable.  
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{event_detection_mp_score_5000}
+    \caption{MP-Scores for clusterings using batch size of 5000}
+    \label{fig:event_detection_mp_score_5000}
+\end{figure}
+
+The difference in the accuracy of the detection of new events and the extension of events can be explained by bla bla bla,
+
+\subsubsection{Conclusion}
+
 % TODO evaluate different thresholds
 
 % TODO evaluate different time deltas
 
 % TODO show example with a specific topic e.g. when it first is detected, incoming news articles etc.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{event_detection_by_date}
-    \caption{Comparison between detected and true events with batch size of 2000 samples}
-    \label{fig:event_detection_by_date}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{event_detection_overlap}
-    \caption{Plot work in progress}
-    \label{fig:event_detection_overlap}
-\end{figure}
 
 % analyse overlap size
 % show incoming news articles
