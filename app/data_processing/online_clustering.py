@@ -17,6 +17,7 @@ from datetime import timedelta
 
 script_name = os.path.basename(__file__)
 
+MIN_CLUSTER_SIZE = 5
 
 class Event:
     TOPIC_ADDED = 1
@@ -46,7 +47,7 @@ def cluster_news(news_articles):
         min_df=3, max_df=0.9, lowercase=True, analyzer="word", stop_words="english"
     )
 
-    model = HDBSCAN(min_cluster_size=5, metric="cosine")
+    model = HDBSCAN(min_cluster_size=MIN_CLUSTER_SIZE, metric="cosine")
 
     #data_matrix = vectorizer.fit_transform(news_articles["newspaper_text"])
     data_matrix = vectorizer.fit_transform(news_articles["text_lemmatized_without_stopwords"])
@@ -59,7 +60,6 @@ def cluster_news(news_articles):
     clusters = [set(map(int,identifier.split(","))) for identifier in cluster_identifiers]
     return clusters, news_articles["computed_publish_date"].values[0],
     
-
 
 def find_changes_in_clusters(existing_clusters, new_clusters):
     changed_clusters = []
@@ -133,7 +133,9 @@ def find_true_events(new_news_ids, existing_news_ids):
     addition_events = []
     addition_events_stories = new_stories.keys() - existing_stories.keys()
     for story in addition_events_stories:
-        addition_events.append(new_stories[story])
+        news = new_stories[story]
+        if len(news) >= MIN_CLUSTER_SIZE:
+            addition_events.append(new_stories[story])
 
     deletion_events = len(existing_stories.keys() - new_stories.keys())
 
