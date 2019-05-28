@@ -1,15 +1,58 @@
 \section{Theoretical basics}
-Todo.
+In order to fully understand our work,
+it is important to ensure a few basics in the area of natural language processing (NLP).
+In this chapter we'll explain how the most important techniques used in our thesis work.
 
 \subsection{Text preprocessing}
-Todo.
+When working with text data, many algorithms and processes will need to distinguish words from another.
+In most cases this is done by creating a dictionary of all known words and/or by \textit{vectorizing} text data
+in order to make them comparable.
+While this works in theory, in reality we deal with a tremendous amount of data.
+This results in huge directories or many vectors and does not only take up more disk space
+but also text processing (computation and comparison) will take more time to process.
+
+What does that mean?
+Let's have a look at the following words:
+
+\begin{itemize}
+    \item switzerland
+    \item Switzerland
+    \item SWITZERLAND
+\end{itemize}
+
+Anyone of us will be able to extract the same meaning out of these three words: The country \textit{Switzerland}.
+However, for machines the terms are different because they're written differently.
+That's why in most cases it makes sense to lowercase all text before processing them.
+That way we can ensure that the above words also share the same meaning for a machine and thus reduce the dictionary size.
+
+% TODO: \paragraph{extraction}
+
+Lowercasing text can just be the beginning though.
+Depending on the size of a document, it might make sense to not use all text inside a document.
+A good example for this would be books.
+Vectorising books would take too much computational power and time to process.
+In such cases, the text size would have to be reduced.
+This could be accomplished by processing a summary of the book instead of the book itself
+or by extracting the most relevant words from the whole book.
+Later could be done with \textit{Keyterm extraction} or with \textit{Entity extraction}.
+
+% TODO: \paragraph{lemma stemma}
+If we're not dealing with books but with articles or papers,
+there are also other alternatives to Keyterm and Entity extraction.
+Using \textit{Text Stemming} or \textit{Text Lemmatisation} we can simplify terms and group them together to reduce
+the dictionary size.
+More about this in the sub sections below.
+
+\paragraph{Exceptions}
+There are a few use cases where lowercasing a text isn't desired.
+For example when trying to detect the writer's sentiment.
+Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who doesn't.
 
 \subsubsection{Keyterm extraction}
 Todo.
 
-\subsubsection{Entity extraction}
+\subsubsection{Named Entity Recognition}
 Todo.
-% TODO: "Named entity recognition"?
 
 \subsubsection{Text Stemming}
 Text Stemming is a form of Text Normalization which aims to simplify words
