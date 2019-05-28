@@ -192,7 +192,7 @@ The clustering is run over 30 days with a total of 42'916 news articles. The dis
 
 The goal of the online clustering is to detect new events in an incoming stream of news articles and changes in existing events. This evaluation analyses the results of our simulated test runs with different batch sizes.
 
-Figure \ref{fig:event_detection_differences} shows the differences between the number of detected events and the number of true events for both new and existing topics. Based on this data we see the impact of different batch sizes for the accuracy in detected events. The difference with a batch size of 5000 news articles is significantly lower than the batch size of 1000. The difference is especially noticeable in the time period between the 21.05 and 25.05. The reason for this spike can be found in the distribution of incoming news articles as shown in Figure \ref{fig:news_articles_over_time}. During this period we receive up to 3000 news articles in a single day. This means by using a lower batch size such as 1000, the overlap between batches gets too small to reliably detect changes between batches, which causes too many new topics to be detected.
+Figure \ref{fig:event_detection_differences} shows the differences between the number of detected events and the number of true events for both new and existing topics. Based on this data we see the impact of different batch sizes for the accuracy in detected events. The difference with a batch size of 5000 news articles is significantly lower than the batch size of 1000. The difference is especially noticeable in the time period between the 21.05 and 25.05. The reason for this spike can be found in the distribution of incoming news articles as shown in Figure \ref{fig:news_articles_over_time}. During this period we receive up to 3000 news articles in a single day. This means by using a lower batch size such as 1000, the overlap between batches gets too small to reliably detect changes between batches, which causes too many new topics to be detected. 
 
 \begin{figure}[h]
     \centering
@@ -201,7 +201,9 @@ Figure \ref{fig:event_detection_differences} shows the differences between the n
     \label{fig:event_detection_differences}
 \end{figure}
 
-Based on the overall differences, we still do not know the accuracy of those predictions. If the difference between newly detected events and true events is zero, there is still the possibility, that the events itself are different from the ground truth, and thus contain false positives. To measure the quality of events, we can look at the collection of events in a single batch as a subset of clusters, where each event is represented by a cluster containing all relevant news articles. Since we now have two clusterings, one containing detected events and the other with events taken from the ground truth, we can apply our MP-Score as a metric to get an insight into the quality of the detected events over the ground truth. Figure \ref{fig:event_detection_mp_score_1000} shows the MP-Scores for an online clustering using a batch size of 1000. Since there is quite a large variance, the score is shown as a boxplot, where a single box represents a full day. The large variance is already the first indication, that the quality is rather low. Meaning that there are still many false positives and false negatives.    
+Although a larger batch size does not simply equal a better difference, as can be seen in Figure \ref{fig:event_detection_differences} by comparing the differences using a batch size of 3000 with a batch size of 5000. The batch size n=3000 shows a generally lower difference in the detection of new events than with n=5000. The differences between both batch sizes are less significant when detecting changes in existing events.
+
+Based on the overall differences, we do not know the accuracy of those predictions. If the difference between newly detected events and true events is zero, there is still the possibility, that the events itself are different from the ground truth, and thus contain false positives. To measure the quality of events, we can look at the collection of events in a single batch as a subset of clusters, where each event is represented by a cluster containing all relevant news articles. Since we now have two clusterings, one containing detected events and the other with events taken from the ground truth, we can apply our MP-Score as a metric to get an insight into the quality of the detected events over the ground truth. Figure \ref{fig:event_detection_mp_score_1000} shows the MP-Scores for an online clustering using a batch size of 1000. Since there is quite a large variance, the score is shown as a boxplot, where a single box represents a full day. The large variance is already the first indication, that the quality is rather low. Meaning that there are still many false positives and false negatives.    
 
 \begin{figure}[h]
     \centering
@@ -210,7 +212,7 @@ Based on the overall differences, we still do not know the accuracy of those pre
     \label{fig:event_detection_mp_score_1000}
 \end{figure}
 
-Looking at an increased batch size of 5000 in Figure \ref{fig:event_detection_mp_score_5000}, we note that there is less overall variance than with a batch size of 1000, but the variance is still fairly large for detected events. Additionally while the variance is large, the median for new topics is mostly below 0.2. This tells us that most of the newly detected events do not correspond with new events according to the ground truth. The detection of extensions of existing events is generally more accurate with a median between 0.5 and 0.8, but there is still are wide variance noticeable.  
+Looking at an increased batch size of 5000 in Figure \ref{fig:event_detection_mp_score_5000}, we note that there is less variance in the overall MP-Score, which compares the full clustering with the ground truth. Although the variance for new and existing event detections is still fairly high. Additionally while the variance is high, the median for new topics is mostly around 0.1. This tells us that most of the newly detected events do not correspond with new events according to the ground truth. The detection of extensions of existing events is generally more accurate with a median between 0.5 and 0.8 using n=5000, but there is still are wide variance noticeable.  
 
 \begin{figure}[h]
     \centering
@@ -219,17 +221,18 @@ Looking at an increased batch size of 5000 in Figure \ref{fig:event_detection_mp
     \label{fig:event_detection_mp_score_5000}
 \end{figure}
 
-The difference in the accuracy of the detection of new events and the extension of events can be explained by bla bla bla,
+One of the reasons for the difference in the accuracy of the detection of new events and the extension of events can be explained by the $min\_cluster\_size$. In the current setting the $min\_cluster\_size$ is set to 5, which means if an event occurs in batch one containing only four news articles, it will be discarded as noise. If the second batch contains additional news articles for the same event, it will be detected as a new occurrences, but the ground truth treats it as an existing event. To see how this affects the result we run the same simulation with a batch size of n=3000 a second time, but only considering new events from the ground truth if the number of news articles.
+
+TODO new figure
+
+Additional reasons for the general low performance might be due to the noise rate and the difference in the number of news articles. As described in the section about the cluster method evaluation, the noise rate for sample sizes between 1000 and 5000 ranges from 20\% to 30\%. This means a significant amount gets discarded as noise and thus potential new events might not even be detected, because too many of their news articles are discarded. Once an event is detected, detection in changes are more reliable than for new events, but as the variance in the MP-Score shows, there is still a fairly large error rate. The difference in the number of news articles in the overall clustering compared to the total number of news articles, which are part of an event in a single batch.      
+
+As a final note let us look at two specific examples. One where the detection was mostly accurate and a second where the detection failed.
+
+TODO 
 
 \subsubsection{Conclusion}
 
-% TODO evaluate different thresholds
+While the overall clustering results in good scores, the detection of new events and changes in existing events gives rather poor results. Possible reasons have been explored such as the $min\_cluster\_size$, the noise rate or the general difference in the number of news articles, but there exist no simple solutions for any of them. As a result we conclude that the accuracy of the clustering method used in this approach is insufficient for the detection of events in a news stream.    
 
-% TODO evaluate different time deltas
-
-% TODO show example with a specific topic e.g. when it first is detected, incoming news articles etc.
-
-
-% analyse overlap size
-% show incoming news articles
-% show deletion events on full clusterings
+% TODO elaborate a bit more

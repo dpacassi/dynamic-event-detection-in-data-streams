@@ -497,12 +497,13 @@ def plot_mp_scores_for_event_detection_by_date():
         Y_mp_score = collections.defaultdict(list)
         Y_change_mp_score = collections.defaultdict(list)
         Y_add_mp_score = collections.defaultdict(list)
+        X = dict()
 
         for index, row in data.iterrows():
             result = json.loads(row["result"].replace("'", '"'))
             if row["nrows"] == nrow:
                 day = row["last_processed_date"].strftime("%Y-%m-%d") 
-
+                X[day] = row["last_processed_date"].strftime("%d.%m.")
                 Y_mp_score[day].append(row["mp_score"])
 
                 Y_change_mp_score[day].append(result["topic_changed"]["mp_score"])
@@ -519,6 +520,7 @@ def plot_mp_scores_for_event_detection_by_date():
 
         plt.title("Overall MP-Score")
         plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+        replace_x_ticks_with_date(plt, X)
 
         #####
         plt.subplot(1, 3, 2)
@@ -528,6 +530,7 @@ def plot_mp_scores_for_event_detection_by_date():
 
         plt.title("MP-Score of new topics")
         plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+        replace_x_ticks_with_date(plt, X)
 
         #####
         plt.subplot(1, 3, 3)
@@ -538,10 +541,20 @@ def plot_mp_scores_for_event_detection_by_date():
         plt.title("MP-Score of extended topic")
         plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
+        # hide every second tick and replace with date labels
+        replace_x_ticks_with_date(plt, X)
+
+        plt.gcf().autofmt_xdate()
 
         plt.savefig("../../doc/images/event_detection_mp_score_{}.png".format(nrow))
         plt.close(fig)
 
+
+def replace_x_ticks_with_date(plt, X):     
+    loc, labels = plt.xticks()
+    plt.xticks(loc, X.values())
+    for label in plt.gca().xaxis.get_ticklabels()[::2]:
+        label.set_visible(False)
 
 
 def plot_event_detection_overlap():
@@ -735,6 +748,6 @@ def plot_news_article_distribution_per_day():
 # Online clustering evaluation
 # plot_news_article_distribution_per_day()
 # plot_event_detection_by_date()
-plot_event_detection_differences()
+# plot_event_detection_differences()
 plot_mp_scores_for_event_detection_by_date()
 # plot_event_detection_overlap()
