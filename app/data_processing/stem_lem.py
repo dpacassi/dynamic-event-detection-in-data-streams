@@ -22,23 +22,29 @@ def stem_word(a_word):
     return sno.stem(a_word)
 
 
-words = ['greatest', 'best', 'fastest', 'highest', 'compute', 'computer', 'computed', 'computing', 'studies', 'studying', 'university', 'universities', 'universe', 'universal']
+words = ['written', 'greatest', 'best', 'fastest', 'highest', 'compute', 'computer', 'computed', 'computing', 'studies', 'studying', 'university', 'universities', 'universe', 'universal']
+stemmed = []
+lemmatised = []
 
-print("Lemmatization:")
 start_time = time.time()
 for word in words:
     w = lemmatize_word(word)
-    print(word + ' -> ' + w)
+    lemmatised.append(w)
+    # print(word + ' -> ' + w)
 end_time = time.time()
 total_time = (end_time - start_time) * 1000
 print("Lemmatization took %f ms" % (total_time))
 
-print("")
-print("Stemming:")
 start_time = time.time()
 for word in words:
     w = stem_word(word)
-    print(word + ' -> ' + w)
+    stemmed.append(w)
+    # print(word + ' -> ' + w)
 end_time = time.time()
 total_time = (end_time - start_time) * 1000
 print("Stemming took %f ms" % (total_time))
+
+print("")
+
+for idx, word in enumerate(words):
+    print(words[idx] + " & " + stemmed[idx] + " & " + lemmatised[idx] + " \\\\ \\hline")

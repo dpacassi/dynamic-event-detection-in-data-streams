@@ -15,7 +15,7 @@ Todo.
 Text Stemming is a form of Text Normalization which aims to simplify words
 by reducing the inflectional forms of each word into their word stems.
 For example, the words \textit{connected}, \textit{connecting}, \textit{connection} share a similar meaning and could
-therefor be simplified to the base term \textit{connect}.
+therefor be simplified to the base term \textbf{connect}.
 
 The first paper describing a stemming algorithm was written by Julie Beth Lovins\cite{LovinsStemmer}
 as early as in 1968.
@@ -37,8 +37,40 @@ and the WordNet stemming algorithm\cite{WordNetStemmer}.
 Since M.F. Porter's snowball stemming algorithm is the most widely used one, we decided to go with his algorithm.
 
 \subsubsection{Text Lemmatisation}
-Text Lemmatisation is a form of Text Normalization which aims to simplify words
-by reducing the inflectional forms of each word into a common base or root.
+Similar to \textit{Text Stemming}, Text Lemmatisation has the same goal to group together the inflected forms of a word
+but follows a different approach to do so.
+Instead of processing terms with fixed steps and defined rules,
+Text Lemmatisation normally includes a dictionary lookup for the words
+and also takes in consideration to which part of a sentence a term belongs to.
+This results in more accurate root terms but also asks for more computational power than Text Stemming.
+See following table for a comparison:
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|l|r|r|}
+    \hline
+    \textbf{\#} & \textbf{Original word} & \textbf{Stemmed} & \textbf{Lemmatised} \\ \hline
+    1 & written & written & write \\ \hline
+    2 & greatest & greatest & great \\ \hline
+    3 & best & best & best \\ \hline
+    4 & fastest & fastest & fastest \\ \hline
+    5 & highest & highest & high \\ \hline
+    6 & compute & comput & compute \\ \hline
+    7 & computer & comput & computer \\ \hline
+    8 & computed & comput & compute \\ \hline
+    9 & computing & comput & compute \\ \hline
+    10 & studies & studi & study \\ \hline
+    11 & studying & studi & study \\ \hline
+    12 & university & univers & university \\ \hline
+    13 & universities & univers & university \\ \hline
+    14 & universe & univers & universe \\ \hline
+    15 & universal & univers & universal \\ \hline
+    \end{tabular}
+    \caption{Comparison of Text Stemming and Text Lemmatisation.}
+    \label{tab:comparison_stemming_lemmatisation}
+\end{table}
+
+% TODO: Talk about time.
 
 \subsection{Data Representation}
 Todo.
