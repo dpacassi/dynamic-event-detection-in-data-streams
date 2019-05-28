@@ -327,7 +327,7 @@ if __name__ == "__main__":
     full_rows = args["full_rows"]
 
     # run the simulation:
-    db.reset_online_evaluation()
+    # db.reset_online_evaluation()
 
     for nrows in rows:
         print("Start simulation")
