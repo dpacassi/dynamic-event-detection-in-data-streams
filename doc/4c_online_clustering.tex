@@ -1,5 +1,7 @@
 \subsection{Online Clustering}
 
+\subsubsection{Design}
+
 Detecting events in a stream of news articles will be achieved by using an online clustering approach. An event is described by the occurrence of multiple news articles to the same subject.  The events of interest for this application are the discovery of new topics and the extension of existing topics. Thus we define our two events as follows:
 
 \begin{itemize}
@@ -54,6 +56,7 @@ To be able to compare clusters of different batches with each other, we have to 
 An important consideration for determining existing or new clusters is the overlap of samples between batches. If the overlap is too small, similar clusters will no longer be detected as such, which would result in an increasingly high error rate. Finding optimal values for the step size between batches and the number of samples for each batch is therefore essential for our online clustering approach.
 
 \subsubsection{Implementation}
+\label{sec:online_clustering_implementation}
 
 The online clustering implemented for this thesis does not operate in a true online setting, but rather it takes our existing test data and simulates a data stream over time. The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings. The implementation is done with Python and the application provides a command line interface to run the simulation with different parameters such as the start date, number of days to run and the batch size.
 

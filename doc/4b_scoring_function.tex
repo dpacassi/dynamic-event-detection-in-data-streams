@@ -38,7 +38,7 @@ To illustrate the process we start with an example. We use $T$ and $C$ as our cl
     C = \{\{1,2\},\{3,4,5,6\},\{7\},\{8,9\}\}
 \end{gather*}
 
-We calculate the similarity as defined in Equation \ref{equ:similarity}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
+We calculate the similarity as defined in Equation \eqref{equ:similarity}, for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
 
 \begin{align*}
     similarity(t_1,c_1) &=\frac{|t_1 \cap c_1|}{|t_1 \cup c_1|}
@@ -93,7 +93,7 @@ As we can see, there were no collisions between columns and we simply get the hi
     \end{array}
 \end{gather*}
 
-The selected similarity for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row, while having an similarity greater than 0.8. Therefore based on our assumption that clusters cannot be associated twice, the second highest similarity is used for the second column. In case no association could be found, the value would be set to zero. The full algorithm for the selection process can be found in the appendix as listing \ref{lst:select_max_values}.
+The selected similarity for the second row is 0.667 instead of 0.8. This is because the fourth column is already associated with the third row, while having an similarity greater than 0.8. Therefore based on our assumption that clusters cannot be associated twice, the second highest similarity is used for the second column. In case no association could be found, the value would be set to zero. 
 
 As a third step we have to calculate the weights to be used for the final  The weight is based on the number of elements inside the cluster and necessary to represent differences in predicted and true number of clusters in the final score. It is defined as follows
 
@@ -157,7 +157,11 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
     \label{tab:avg_predict_kmeans_example}
 \end{table}
 
+The full implementation of the scoring function can be found in the appendix as Listing \ref{lst:select_max_values}.
+
 \subsubsection{Implementation}
+TODO this section does not belong to the scoring function
+
 The evaluation process is done with our own evaluation framework.
 The framework allows for automated and repeatable evaluation runs.
 Results are stored in a database for later analysis.

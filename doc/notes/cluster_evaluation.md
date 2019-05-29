@@ -118,6 +118,8 @@ docker-compose run -d  cluster_evaluation python cluster_evaluation_table.py --m
 
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --rows 1000,2000,3000,4000,5000 --verbose
 
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --rows 3000 --threshold 0.1,0.25,0.5,0.75 --verbose
+
 
 -------- Test
 
