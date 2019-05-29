@@ -31,20 +31,20 @@ def get_last_script_execution(name):
 
 
 def add_script_execution(
-    name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score
+    name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score, threshold
 ):
     connection = get_connection()
 
     insert_sql = (
         "INSERT INTO script_execution"
-        " (script, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score)"
-        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        " (script, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score, threshold)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     )
 
     with connection.cursor() as cursor:
         cursor.execute(
             insert_sql,
-            args=[name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score],
+            args=[name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score, threshold],
         )
 
     connection.commit()

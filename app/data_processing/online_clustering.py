@@ -61,12 +61,12 @@ def cluster_news(news_articles):
     return clusters, news_articles["computed_publish_date"].values[0],
     
 
-def find_changes_in_clusters(existing_clusters, new_clusters):
+def find_changes_in_clusters(existing_clusters, new_clusters, threshold):
     changed_clusters = []
     unchanged_clusters = []
     additional_clusters = []
 
-    lsh = MinHashLSH(threshold=0.75, num_perm=256)
+    lsh = MinHashLSH(threshold=threshold, num_perm=256)
     min_hashes = dict()
     clusters_by_index = dict()
 
@@ -134,7 +134,8 @@ def find_true_events(new_news_ids, existing_news_ids):
     addition_events_stories = new_stories.keys() - existing_stories.keys()
     for story in addition_events_stories:
         news = new_stories[story]
-        if len(news) >= MIN_CLUSTER_SIZE:
+        #if len(news) >= MIN_CLUSTER_SIZE:
+        if len(news):
             addition_events.append(new_stories[story])
 
     deletion_events = len(existing_stories.keys() - new_stories.keys())
@@ -201,7 +202,7 @@ def persist_cluster_and_events(new_clusters, changed_clusters):
             pass
 
 
-def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, persit_clusters_in_db=False):
+def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, threshold=0.75, persit_clusters_in_db=False):
     # The online method works by regularly fetching articles from a certain date
     # and cluster them. Once in a while the whole (limited by nrows) dataset will be clustered again.
     # After each clustering step, the result is compared with the previous one
@@ -225,7 +226,7 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, p
 
 
         changed_clusters, unchanged_clusters, new_clusters = find_changes_in_clusters(
-            existing_clusters, clusters
+            existing_clusters, clusters, threshold
         )
 
         if persit_clusters_in_db:
@@ -276,7 +277,7 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, p
     end = time.time()
     processing_time = end - start
     db.add_script_execution(
-        script_name, str(date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows, mp_score
+        script_name, str(date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows, mp_score, threshold
     )
 
     return clusters
@@ -317,12 +318,14 @@ if __name__ == "__main__":
     ap.add_argument("--full_rows", required=False, type=int, default=10000)
     ap.add_argument("--date", required=False, type=str, default=None)
     ap.add_argument("--run_n_days", required=False, type=int, default=1)
+    ap.add_argument("--threshold", required=False, type=str, default=None)
     ap.set_defaults(full_cluster=False)
     ap.set_defaults(verbose=False)
     args = vars(ap.parse_args())
 
     full_cluster = args["full_cluster"]
     rows = list(map(int, args["rows"].split(",")))
+    thresholds = list(map(float, args["threshold"].split(","))) if args["threshold"] is not None else [0.75]
     date = args["date"]
     verbose = args["verbose"]
     run_n_days = args["run_n_days"]
@@ -332,22 +335,24 @@ if __name__ == "__main__":
     # db.reset_online_evaluation()
 
     for nrows in rows:
-        print("Start simulation")
-        print("Batch size:", nrows)
-        current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-        end_date = current_date + timedelta(days=run_n_days)
-        clustering = []
-        while current_date < end_date:
+        for threshold in thresholds:
+            print("Start simulation")
+            print("Batch size:", nrows)
+            print("Threshold:", threshold)
+            current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+            end_date = current_date + timedelta(days=run_n_days)
+            clustering = []
+            while current_date < end_date:
 
-            if verbose:
-                print()
-                print("Date: ", current_date)
-                
-            if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
-                clustering = run(current_date, full_rows, True, verbose, clustering)
-            else:
-                clustering = run(current_date, nrows, False, verbose, clustering)
-                
-            current_date += timedelta(hours=1)
-        print("End simulation")
-        print("--------------------\n")
+                if verbose:
+                    print()
+                    print("Date: ", current_date)
+                    
+                if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
+                    clustering = run(current_date, full_rows, True, verbose, clustering, threshold=threshold)
+                else:
+                    clustering = run(current_date, nrows, False, verbose, clustering, threshold=threshold)
+                    
+                current_date += timedelta(hours=1)
+            print("End simulation")
+            print("--------------------\n")
