@@ -6,6 +6,7 @@ import math
 import numpy as np
 import gc
 
+from argparse import RawTextHelpFormatter
 from datetime import datetime
 from itertools import chain
 from dotenv import load_dotenv
@@ -322,20 +323,20 @@ class ClusterMethods:
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description='Run different clustering methods, with a variety of different settings.', formatter_class=RawTextHelpFormatter)
 
-    ap.add_argument("--rows", required=False, type=int, default=1000)
-    ap.add_argument("--stories", required=False, type=str, default=None)
-    ap.add_argument("--methods", required=False, type=str, default=None)
-    ap.add_argument("--vectorizers", required=False, type=str, default=None, help="Options: CountVectorizer, TfidfVectorizer")
+    ap.add_argument("--rows", required=False, type=int, default=1000, help="number of samples to use for clustering \ndefault: 1000")
+    ap.add_argument("--stories", required=False, type=str, default=None, help="number of stories to load samples from. This parmeter overrides the rows parameter if set.")
+    ap.add_argument("--methods", required=False, type=str, default=None, help="options: kmeans, hdbscan, meanshift, birch, affinity_propagation, spectral_clustering \ndefault: all available options")
+    ap.add_argument("--vectorizers", required=False, type=str, default=None, help="options: CountVectorizer, TfidfVectorizer \ndefault: all available options")
     ap.add_argument(
         "--tokenizers",
         required=False,
         type=str,
         default=None,
-        help="Options: newspaper_text, text_keyterms, text_entities, text_keyterms_and_entities, text_lemmatized_without_stopwords, text_stemmed_without_stopwords",
+        help="options: newspaper_text, text_keyterms, text_entities, text_keyterms_and_entities, text_lemmatized_without_stopwords, text_stemmed_without_stopwords \ndefault: all available options",
     )
-    ap.add_argument("--runs", required=False, type=int, default=1)
+    ap.add_argument("--runs", required=False, type=int, default=1, help="number runs per clustering method \ndefault: 1")
     args = vars(ap.parse_args())
 
     number_of_runs = args["runs"]

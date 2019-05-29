@@ -1,9 +1,16 @@
-\subsection{Scoring Function}
+\subsection{Clustering Evaluation}
+
+\subsubsection{Design}
+
+The goal of the clustering evaluation is to find the optimal parameters and preprocessing methods for applying HDBSCAN in an online setting. Therefore the clustering evaluation is designed to run HDBSCAN on our test data, using a combination of different text processing methods, vectorizers and parameters. Additionally each evaluation includes \textit{k}-means as well, to provide a benchmark to compare HDBSCAN to. Once a clustering has been performed, the result is measured based on the ground truth and stored in a database for later analysis.
+
+Another important consideration is the variety of samples to use for a clustering run. Using only a single set of samples might bias the score against this specific set of samples, and some methods might perform better or worse depending on the samples. To introduce variability, while still retaining repeatability, an evaluation run will be repeated a certain number of times and each repetition will load a new sample set. New sets of samples are chosen linearly instead of randomly. For example if we define the number of repetitions as two with a sample size of 1000, the evaluation will first be done on the first 1000 samples with all possible settings and the second run will load the next 1000 samples, thus containing sample with indices ranging from 1001 to 2000. The reason we do not load random sets of samples is repeatability. If we make any changes in the implementation or the scoring function, we want to be able to compare the new results with the previous ones in a deterministic manner.
+
+\subsubsection{Scoring Function}
 
 The scoring function is essential for measuring the result of a clustering method. The score should reflect the quality of the individual clusters and of the clustering as a whole. The number of existing measures for clustering is vast and can be split into two main categories. Internal measures determine the score based on criteria derived from the data itself and external measures depend on criteria non-existent in the data itself such as class labels. Since the ground truth is known in our test data, we are going to apply an external measure.
-Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI is a entropy-based measure and tries to quantify the amount shared information between the clusterings. The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found. An example is given in table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless of the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$.
 
-% TODO explain the reason for the big difference
+Initially we used Normalized Mutual Information (NMI) as our primary scoring function. The NMI is an entropy-based measure and tries to quantify the amount shared information between the clusterings. The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found. An example is given in table \ref{tab:nmi_kmeans_example}, where K-means achieved a rather high score, regardless of the significant difference between the true amount of clusters and the approximation using $\sqrt{n}$. One explanation for this result is the bias of NMI for higher numbers of clusters\cite{LEI201758}.
 
 % TODO add number of estimated clusters
 \begin{table}[h]
@@ -18,13 +25,13 @@ Initially we used Normalized Mutual Information (NMI) as our primary scoring fun
     \label{tab:nmi_kmeans_example}
 \end{table}
 
-Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching and the Jaccard index.
+Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings. Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching\cite{data_mining} and the Jaccard Index, which we call MP-Score.
 
 % TODO find citations
 
 \paragraph{Calculating the score}
 
-The scoring function first calculates the similarity between pairs of clusters, where each cluster belongs to a different clustering. We use the Jaccard index to measure the similarity, which is defined as
+The scoring function first calculates the similarity between pairs of clusters, where each cluster belongs to a different clustering. We use the Jaccard Index to measure the similarity, which is defined as
 
 \begin{equation}
     \label{equ:similarity}
@@ -160,8 +167,6 @@ As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_exa
 The full implementation of the scoring function can be found in the appendix as Listing \ref{lst:select_max_values}.
 
 \subsubsection{Implementation}
-TODO this section does not belong to the scoring function
-
 The evaluation process is done with our own evaluation framework.
 The framework allows for automated and repeatable evaluation runs.
 Results are stored in a database for later analysis.
@@ -175,6 +180,63 @@ The main features include:
     \item Storing the result the result in a database and creating relations between news articles, clusters and evaluation runs. This allows for manual inspection and analysis of individual articles inside a predicted cluster.
 \end{itemize}
 
-The implementation is done with Python. Clustering methods and vectorizers are provided by the scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This principle was useful for developing and testing the framework in a local environment and deploying it on a remote server for running the final evaluations, without worrying about setting up and installing all dependencies again.
+The implementation is done with Python. Clustering methods and vectorizers are provided by the scikit-learn library\cite{scikit-learn}. We decided to use Scikit-learn because of its rich documentation, the wide range of tools and algorithms it provides for clustering and our previous experience with it. Additionally the framework runs in a fully dockerized environment, which includes the database. This allows the framework to run independently from the underlying host, as long as the host supports docker. This principle was useful for developing and testing the framework in a local environment and deploying it on a remote server for long running evaluations, without worrying about setting up and installing all dependencies again.
+
+\paragraph{Defining cluster parameters} The parameters for each available clustering method are defined beforehand in a dictionary as can be seen in Listing \ref{lst:cluster_method_parameters}. Parameters are defined as a list of possible variations. For example if we want to run HDBSCAN with two different metrics  \textit{cosine} and \textit{euclidean}, we define the metric parameter as \lstinline{"metric": ["cosine", "euclidean"]}. When running a clustering method, it will be executed with each possible combination of parameters. This means a single evaluation of HDBSCAN, will include 16 different runs, since there are two different metrics and eight different options for $min\_cluster\_size$. This is important to consider for running clustering methods with long processing times or running evaluations on large sample sizes. 
+
+\begin{lstlisting}[caption=Predefined parameters for different clustering methods,label={lst:cluster_method_parameters}]
+parameters_by_method = {
+    self.kmeans: {
+        "n_cluster": ["n_square", "n_true"]
+    },
+    self.hdbscan: {
+        "min_cluster_size": range(2, 10),
+        "metric": ["cosine", "euclidean"]
+    },
+    self.meanshift: {"cluster_all": [True, False]},
+    self.birch: {
+        "branching_factor": range(10, 100, 10),
+        "threshold": range(2, 6),
+    },
+    self.affinity_propagation: {
+        "affinity": ["euclidean"],
+        "convergence_iter": [15],
+        "damping": np.arange(0.5, 0.9, 0.1),
+        "max_iter": [50, 100, 200, 500],
+    },
+    self.spectral_clustering: {
+        "affinity": ["rbf"],
+        "assign_labels": ["kmeans", "discretize"],
+    },
+}
+\end{lstlisting}
+
+\paragraph{CLI} The evaluation framework provides a command line interface to start evaluation runs and specify a number of settings. Listing \ref{lst:cluster_evaluation_framework} shows the full interface.  
+
+\begin{lstlisting}[caption=Command line interface for the evaluation framework, label={lst:cluster_evaluation_framework}]
+usage: cluster_evaluation_framework.py [-h] [--rows ROWS] [--stories STORIES]
+                                       [--methods METHODS]
+                                       [--vectorizers VECTORIZERS]
+                                       [--tokenizers TOKENIZERS] [--runs RUNS]
+
+Run different clustering methods, with a variety of different settings.
+data_mining
+optional arguments:
+  -h, --help            show this help message and exit
+  --rows ROWS           number of samples to use for clustering 
+                        default: 1000
+  --stories STORIES     number of stories to load samples from. This parameter overrides the rows parameter if set.
+  --methods METHODS     options: kmeans, hdbscan, meanshift, birch, affinity_propagation, spectral_clustering 
+                        default: all available options
+  --vectorizers VECTORIZERS
+                        options: CountVectorizer, TfidfVectorizer 
+                        default: all available options
+  --tokenizers TOKENIZERS
+                        options: newspaper_text, text_keyterms, text_entities, text_keyterms_and_entities, text_lemmatized_without_stopwords, text_stemmed_without_stopwords 
+                        default: all available options
+  --runs RUNS           number of runs per clustering method 
+                        default: 1
+\end{lstlisting}
+
 
 % TODO write it better

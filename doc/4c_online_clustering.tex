@@ -2,11 +2,11 @@
 
 \subsubsection{Design}
 
-Detecting events in a stream of news articles will be achieved by using an online clustering approach. An event is described by the occurrence of multiple news articles to the same subject.  The events of interest for this application are the discovery of new topics and the extension of existing topics. Thus we define our two events as follows:
+Detecting events in a stream of news articles will be achieved by using an online clustering approach. An event is described by the occurrence of multiple news articles to the same subject. The events of interest for this application are the discovery of new stories and the extension of existing stories. Thus we define our two types events as follows:
 
 \begin{itemize}
-    \item Topic added: A new cluster of news articles appears in the data stream.
-    \item Topic extended: An existing topic is extended by additional news articles.
+    \item New event: A new cluster of news articles appears in the data stream, which describe the same story.
+    \item Event extended: An existing story is extended by additional news articles.
 \end{itemize}
 
 HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the previous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustering.
@@ -49,7 +49,7 @@ Since HDBSCAN only supports static data sets, the clustering will be done in bat
 
 \paragraph{Finding pairs clusters}
 Thus we define our two events as follows:
-To be able to compare clusters of different batches with each other, we have to find pairs of clusters between batches, which describe the same topic. This is done by applying the same assumptions as for the scoring function used in the evaluation. Therefore clusters are paired based on their similarity calculated with the Jaccard index as shown in equation \ref{equ:similarity}. If the similarity is above a certain threshold, both clusters are seen as describing the same topic.
+To be able to compare clusters of different batches with each other, we have to find pairs of clusters between batches, which describe the same story. This is done by applying the same assumptions as for the scoring function used in the evaluation. Therefore clusters are paired based on their similarity calculated with the Jaccard index as shown in equation \ref{equ:similarity}. If the similarity is above a certain threshold, both clusters are seen as describing the same story.
 
 \paragraph{Sliding window}
 
@@ -62,7 +62,7 @@ The online clustering implemented for this thesis does not operate in a true onl
 
 \paragraph{Comparing clusters}
 To detect events between batches of clusterings,
-we have find pairs of clusters describing the same topic.
+we have find pairs of clusters describing the same story.
 This problem is solved in the evaluation framework as part of the scoring function,
 by calculating the similarity for each possible cluster pair.
 The resulting time complexity is $O(n^2)$, which we deemed acceptable for the static evaluation.
@@ -74,10 +74,10 @@ The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2
 % TODO explain LSH?
 
 \paragraph{Detecting Events}
-Once we have found pairs of clusters, which represent the same topic, detecting events becomes trivial.
+Once we have found pairs of clusters, which represent the same story, detecting events becomes trivial.
 For each pair we look for news articles, which are only present in the new cluster.
-These articles are then summarized in the event \textit{topic extended} for a specific topic.
+These articles are then summarized in as an extension of an existing event.
 Clusters from the new batch without a matching cluster from the previous batch
-are seen as new topics and represented by the event \textit{topic added}.
+are seen as new events.
 
 % TODO clarify event vs topic vs story and be consistent with the usages!
