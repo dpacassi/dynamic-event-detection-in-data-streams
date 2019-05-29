@@ -58,7 +58,7 @@ An important consideration for determining existing or new clusters is the overl
 \subsubsection{Implementation}
 \label{sec:online_clustering_implementation}
 
-The online clustering implemented for this thesis does not operate in a true online setting, but rather it takes our existing test data and simulates a data stream over time. The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings. The implementation is done with Python and the application provides a command line interface to run the simulation with different parameters such as the start date, number of days to run and the batch size.
+The online clustering implemented for this thesis does not operate in a true online setting, but rather it takes our existing test data and simulates a data stream over time. The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings. The implementation is done with Python and runs in a similar dockerized environment as the evaluation framework.
 
 \paragraph{Comparing clusters}
 To detect events between batches of clusterings,
@@ -71,6 +71,7 @@ since it restricts the lengths of the time delta between batches and the overall
 Thus we decided to use Locality-Sensitive Hashing (LSH)\cite{alex2015practical} to find similar clusters.
 This reduces the time complexity to $O(log(n))$.
 The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2017_290602}.
+
 % TODO explain LSH?
 
 \paragraph{Detecting Events}
@@ -79,5 +80,39 @@ For each pair we look for news articles, which are only present in the new clust
 These articles are then summarized in as an extension of an existing event.
 Clusters from the new batch without a matching cluster from the previous batch
 are seen as new events.
+
+\paragraph{Measuring the quality of events} 
+Since events are themselves clusters of news articles, we apply the MP-Score to measure detected events against events taken from the ground truth. This gives an indication if the detected events contain the same news articles as true events and thus the rate of false positives and false negatives. Calculating the score is $O(n^2)$, but since the application runs on a simulated timeline, time complexity is only a minor concern. 
+
+\paragraph{CLI} The application provides a command line interface to run the simulation with different parameters such as the start date, number of days to run and the batch size.
+
+\begin{lstlisting}[caption=Command line interface for the online clustering, label={lst:cli_online_clustering}]
+    usage: online_clustering.py [-h] [--full-cluster] [--verbose] [--rows ROWS]
+                            [--full_rows FULL_ROWS] --date DATE
+                            [--run_n_days RUN_N_DAYS] [--threshold THRESHOLD]
+
+Run the batchwise clustering over a simulated stream of news articles.
+
+required arguments:
+  --date DATE           
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --full-cluster        run a full clustering once a day
+                        default: False
+  --verbose             
+                        default: False
+  --rows ROWS           number of samples to process per batch
+                        default: 1000
+  --full_rows FULL_ROWS
+                        number of samples to process for the full clustering
+  --run_n_days RUN_N_DAYS
+                        number of days to run the batchwise clustering
+                        default: 1
+  --threshold THRESHOLD
+                        similarity threshold for cluster matching
+                        default: 0.75
+
+\end{lstlisting}
 
 % TODO clarify event vs topic vs story and be consistent with the usages!

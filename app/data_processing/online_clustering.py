@@ -7,6 +7,7 @@ import collections
 
 import score
 
+from argparse import RawTextHelpFormatter
 from itertools import chain
 from dotenv import load_dotenv
 from hdbscan import HDBSCAN
@@ -311,14 +312,14 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, t
 if __name__ == "__main__":
     load_dotenv()
 
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--full-cluster", dest="full_cluster", action="store_true")
-    ap.add_argument("--verbose", dest="verbose", action="store_true")
-    ap.add_argument("--rows", required=False, type=str, default=1000)
-    ap.add_argument("--full_rows", required=False, type=int, default=10000)
-    ap.add_argument("--date", required=False, type=str, default=None)
-    ap.add_argument("--run_n_days", required=False, type=int, default=1)
-    ap.add_argument("--threshold", required=False, type=str, default=None)
+    ap = argparse.ArgumentParser(description="Run the batchwise clustering over a simulated stream of news articles.", formatter_class=RawTextHelpFormatter)
+    ap.add_argument("--full-cluster", dest="full_cluster", action="store_true", help="run a full clustering once a day\ndefault: False")
+    ap.add_argument("--verbose", dest="verbose", action="store_true", help="\ndefault: False")
+    ap.add_argument("--rows", required=False, type=str, default=1000, help="number of samples to process per batch\ndefault: 1000")
+    ap.add_argument("--full_rows", required=False, type=int, default=10000, help="number of samples to process for the full clustering" )
+    ap.add_argument("--date", required=True, type=str, default=None, help="start date")
+    ap.add_argument("--run_n_days", required=False, type=int, default=1, help="number of days to run the batchwise clustering\ndefault: 1")
+    ap.add_argument("--threshold", required=False, type=str, default=None, help="similarity threshold for cluster matching\ndefault: 0.75")
     ap.set_defaults(full_cluster=False)
     ap.set_defaults(verbose=False)
     args = vars(ap.parse_args())

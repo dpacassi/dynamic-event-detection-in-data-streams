@@ -446,6 +446,81 @@ def plot_event_detection_differences():
     plt.savefig("../../doc/images/event_detection_differences.png")
     plt.close(fig)
 
+def plot_event_detection_differences_with_threshold():
+    connection = db.get_connection()
+
+    sql = (
+        "select last_processed_date, result, new_rows, is_full_cluster, nrows, mp_score, threshold from script_execution"
+        " where failed = 0"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
+
+    nrows = data["nrows"].unique()
+    for nrow in [0.1,0.25,0.5,0.75]:
+
+        X = []
+        Y_add = collections.defaultdict(list)
+        Y_change = collections.defaultdict(list)
+
+        for index, row in data.iterrows():
+            result = json.loads(row["result"].replace("'", '"'))
+            if row["threshold"] == nrow:
+                
+                day = row["last_processed_date"].strftime("%Y-%m-%d") 
+                Y_add[day].append(abs(result["topic_added"]["detected"] - result["topic_added"]["true"]))
+                Y_change[day].append(abs(result["topic_changed"]["detected"] - result["topic_changed"]["true"]))
+
+        Y_lower_error = []
+        Y_higher_error = []
+        Y_median = []
+        X = []
+        for date, values in Y_add.items():
+            X.append(datetime.strptime(date, "%Y-%m-%d"))
+            Y_lower_error.append(min(values))
+            Y_higher_error.append(max(values))
+            Y_median.append(statistics.median(values))
+
+        ax1.plot(X, Y_median, label="threshold={}".format(nrow))
+        ax1.fill_between(X, Y_lower_error, Y_higher_error, alpha=0.3)
+        # ax1.title("Difference in topic extended events")
+
+        Y_lower_error = []
+        Y_higher_error = []
+        Y_median = []
+        for date, values in Y_change.items():
+            Y_lower_error.append(min(values))
+            Y_higher_error.append(max(values))
+            Y_median.append(statistics.median(values))
+
+        ax2.plot(X, Y_median, label="threshold={}".format(nrow))
+        ax2.fill_between(X, Y_lower_error, Y_higher_error, alpha=0.3)
+        # ax2.title("Difference in topic extended events")
+
+    ax1.get_xaxis().set_major_formatter(mdates.DateFormatter("%d.%m"))
+    ax1.get_xaxis().set_major_locator(mdates.AutoDateLocator())
+
+    ax2.get_xaxis().set_major_formatter(mdates.DateFormatter("%d.%m"))
+    ax2.get_xaxis().set_major_locator(mdates.AutoDateLocator())
+    
+    plt.gcf().autofmt_xdate()
+
+    plt.ylim(top=100)
+    ax1.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    ax1.legend()
+    ax1.set_title("Difference in new topic detections vs ground truth")
+    ax1.set_ylabel("Number of events")
+    ax2.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+    ax2.legend()
+    ax2.set_title("Difference in topic extension detections vs ground truth")
+    ax2.set_ylabel("Number of events")
+    plt.savefig("../../doc/images/event_detection_differences_threshold.png")
+    plt.close(fig)
+
 
 def plot_event_detection_differences_with_cluster_size():
     connection = db.get_connection()
@@ -778,8 +853,9 @@ def plot_news_article_distribution_per_day():
 
 # Online clustering evaluation
 # plot_news_article_distribution_per_day()
-plot_event_detection_by_date()
+# plot_event_detection_by_date()
 # plot_event_detection_differences()
-plot_event_detection_differences_with_cluster_size()
+plot_event_detection_differences_with_threshold()
+# plot_event_detection_differences_with_cluster_size()
 # plot_mp_scores_for_event_detection_by_date()
 # plot_event_detection_overlap()
