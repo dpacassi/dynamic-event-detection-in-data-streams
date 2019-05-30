@@ -3,7 +3,8 @@ from textacy import extract, keyterms, Doc
 
 # sentence = 'London is the capital and most populous city of England and the United Kingdom.'
 # sentence = 'Mr. Best flew to New York on Saturday morning.'
-sentence = 'Trump says he will increase tariffs on Chinese goods on Friday as he complains about pace of trade talks.'
+# sentence = 'Trump says he will increase tariffs on Chinese goods on Friday as he complains about pace of trade talks.'
+sentence = 'CERN in Geneva pays tribute to Murray Gell-Mann, who won the Nobel Prize in Physics in 1969.'
 
 '''
 # Run first following command in a shell:
@@ -30,6 +31,7 @@ for r in res:
     print(r)
 print("")
 
+'''
 print("Keyterms (textrank):")
 res = keyterms.textrank(doc, n_keyterms=100)
 for r in res:
@@ -47,3 +49,4 @@ res = keyterms.key_terms_from_semantic_network(doc, n_keyterms=100)
 for r in res:
     print(r)
 print("")
+'''

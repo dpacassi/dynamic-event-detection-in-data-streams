@@ -54,10 +54,10 @@ The most well-known tagging procedures are probably hash tags and user names in 
 Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
 \begin{quotation}
-This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
-at our \textbf{\detokenize{@ESA_Tech}} centre in the Netherlands.
-SpaceBok is a quadruped robot designed by a Swiss student team from \textbf{\detokenize{@ETH}}
-and \textbf{\detokenize{@ZHAW}}.
+    This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
+    at our \textbf{\detokenize{@ESA_Tech}} centre in the Netherlands.
+    SpaceBok is a quadruped robot designed by a Swiss student team from \textbf{\detokenize{@ETH}}
+    and \textbf{\detokenize{@ZHAW}}.
 \end{quotation}
 
 If we only read the hash tags and user names \textit{\#robot}, \textit{\detokenize{@ESA_Tech}},
@@ -78,8 +78,45 @@ Since the dictionary size would be extremely smaller,
 the data processing time could be drastically improved.
 
 \subsubsection{Named Entity Recognition}
-Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out of text.
+Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out from a given text.
+However, it does not only extract terms but also states what kind of term it is.
+Consider following sentence:
 
+\begin{quotation}
+    CERN in Geneva pays tribute to Murray Gell-Mann, who won the Nobel Prize in Physics in 1969.
+\end{quotation}
+
+When using spaCy's \gls{ner} model, we retrieve following entities:
+
+\begin{itemize}
+    \item CERN (Organisation)
+    \item Geneva (Location)
+    \item Murray Gell-Mann (Person)
+    \item the Nobel Prize in Physics (Work of art)
+    \item 1969 (Date)
+\end{itemize}
+
+For comparison, the same sentence would extract following \textit{Keyphrases}:
+
+\begin{itemize}
+    \item Nobel Prize
+    \item Murray Gell
+    \item tribute
+    \item Mann
+    \item Geneva
+    \item Physics
+    \item CERN
+\end{itemize}
+
+Comparing the the numbers of the extracted terms solely, Keyphrase extraction seems to have delivered a better job.
+However, when evaluating the results, we can see that \gls{ner} \textit{understood} the terms and their
+relations better.
+
+Not only was it able to correctly keep the subject's name, Murray Gell-Mann, but also the type of Nobel prize.
+It extracts more accurate information compared to Keyphrase extraction but does this also result
+in improved clustering results?
+
+% TODO: Talk about time.
 
 \subsubsection{Text Stemming}
 Text Stemming is a form of Text Normalization which aims to simplify words
