@@ -461,7 +461,7 @@ def plot_event_detection_differences_with_threshold():
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
     nrows = data["nrows"].unique()
-    for nrow in [0.1,0.25,0.5,0.75]:
+    for nrow in [0.75,0.5,0.1]:
 
         X = []
         Y_add = collections.defaultdict(list)
@@ -587,7 +587,7 @@ def plot_mp_scores_for_event_detection_by_date():
 
     sql = (
         "select last_processed_date, result, new_rows, is_full_cluster, nrows, mp_score from script_execution"
-        " where failed = 0"
+        " where failed = 0 and threshold < 0.2"
         " order by last_processed_date"
     )
 
@@ -652,7 +652,7 @@ def plot_mp_scores_for_event_detection_by_date():
 
         plt.gcf().autofmt_xdate()
 
-        plt.savefig("../../doc/images/event_detection_mp_score_{}.png".format(nrow))
+        plt.savefig("../../doc/images/event_detection_mp_score_{}_0_1.png".format(nrow))
         plt.close(fig)
 
 
@@ -855,7 +855,7 @@ def plot_news_article_distribution_per_day():
 # plot_news_article_distribution_per_day()
 # plot_event_detection_by_date()
 # plot_event_detection_differences()
-plot_event_detection_differences_with_threshold()
+# plot_event_detection_differences_with_threshold()
 # plot_event_detection_differences_with_cluster_size()
-# plot_mp_scores_for_event_detection_by_date()
+plot_mp_scores_for_event_detection_by_date()
 # plot_event_detection_overlap()

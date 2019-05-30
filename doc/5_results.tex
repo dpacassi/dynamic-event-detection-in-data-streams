@@ -247,18 +247,30 @@ The raw data in Figure \ref{fig:event_detection_by_date_3000} also shows a direc
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_differences_threshold}
-    \caption{TODO}
+    \caption{Differences in detected over true events with different thresholds}
     \label{fig:event_detection_differences_threshold}
 \end{figure}
 
-TODO
+Figure \ref{fig:event_detection_differences_threshold} shows the effect of the threshold on the difference in decided over true events. We see how the initial threshold of 0.75 was set too high, as lower threshold values such as 0.1 provide a significant lower difference. While there is still a substantial variance per day the median of 0.1 and 0.5 is generally more stable and lower than with a threshold value of 0.75. The reason for the better performance of lower threshold values, is that the overlap between batches decreases with an increase in the volume of news articles. This is clearly visible during the peaks in Figure \ref{fig:event_detection_differences_threshold}. Thus a high similarity threshold cannot be met, since there exists only an overlap of a few news articles for the same cluster between batches. The MP-Score is also improved for new events as can be seen in Figure \ref{fig:event_detection_mp_score_3000_0_1}. While there is more variance than in similar plots from Figure \ref{fig:event_detection_mp_score_1000} and Figure \ref{fig:event_detection_mp_score_5000}, the median from using threshold=0.1 clearly surpasses any measure from using threshold=0.75. The high variance in the boxplot is due to the fact, that there are only a few new events per hour, if any. This means detecting no events, when there are none leads to a score of 1, while detecting one event, when there is none leads to a score of 0.
 
-Additional reasons for the general low performance might be due to the noise rate and the difference in the number of news articles. As described in the section about the cluster method evaluation, the noise rate for sample sizes between 1000 and 5000 ranges from 20\% to 30\%. This means a significant amount gets discarded as noise and thus potential new events might not even be detected, because too many of their news articles are discarded. Once an event is detected, detection in changes are more reliable than for new events, but as the variance in the MP-Score shows, there is still a fairly large error rate. The difference in the number of news articles in the overall clustering compared to the total number of news articles, which are part of an event in a single batch.      
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{event_detection_mp_score_3000_0_1}
+    \caption{MP-Scores for online clustering with batch size n=3000 and threshold=0.1}
+    \label{fig:event_detection_mp_score_3000_0_1}
+\end{figure}
+
+
+Additional reasons for the general low performance in the quality of events might be due to the noise rate and the difference in the number of news articles. As described in the section about the cluster method evaluation, the noise rate for sample sizes between 1000 and 5000 ranges from 20\% to 30\%. This means a significant amount gets discarded as noise and thus potential new events might not even be detected, because too many of their news articles are discarded. Once an event is detected, detection in changes are more reliable than for new events, but as the variance in the MP-Score shows, there is still a fairly large error rate.
+
+% TODO how large?
 
 As a final note let us look at two specific examples. One where the detection was mostly accurate and a second where the detection failed.
 
 TODO or OPTIONAL? % :thinking_face:
 
 \subsubsection{Conclusion}
+
+TODO rewrite with new findings e.g. not as bad as initially thought but still not very good.
 
 While the overall clustering results in good scores, the detection of new events and changes in existing events gives rather poor results. Possible reasons have been explored such as the $min\_cluster\_size$, the noise rate or the general difference in the number of news articles, but there exist no simple solutions for any of them. As a result we conclude that the accuracy of the clustering method used in this approach is insufficient for the detection of events in a news stream. TODO elaborate a bit more
