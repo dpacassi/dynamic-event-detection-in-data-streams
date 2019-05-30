@@ -18,13 +18,16 @@
 \usepackage[utf8]{inputenc} % Needed for the Umlaut in our title
 \usepackage{pdfpages}
 \usepackage{tikz}
-\usepackage{glossaries}
+\usepackage[acronym]{glossaries}
 \usepackage[]{listofsymbols}
 \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
 \usepackage{wrapfig}
 
 \addbibresource{citations.bib}
+
 \makeglossaries
+\newacronym{ner}{NER}{Named Entity Recognition}
+
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{positioning}
 \lstset{upquote=true}

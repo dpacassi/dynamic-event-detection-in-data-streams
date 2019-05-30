@@ -34,11 +34,11 @@ Vectorising books would take too much computational power and time to process.
 In such cases, the text size would have to be reduced.
 This could be accomplished by processing a summary of the book instead of the book itself
 or by extracting the most relevant words from the whole book.
-Later could be done with \textit{Keyterm extraction} or with \textit{Entity extraction}.
+Later could be done with \textit{Keyphrase extraction} or with \textit{Entity extraction}.
 
 % TODO: \paragraph{lemma stemma}
 If we are not dealing with books but with articles or papers,
-there are also other alternatives to Keyterm and Entity extraction.
+there are also other alternatives to Keyphrase and Entity extraction.
 Using \textit{Text Stemming} or \textit{Text Lemmatisation} we can simplify terms and group them together to reduce
 the dictionary size.
 More about this in the sub sections below.
@@ -48,11 +48,38 @@ There are a few use cases where lowercasing a text is not desired.
 For example when trying to detect the writer's sentiment.
 Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who does not.
 
-\subsubsection{Keyterm extraction}
-Todo.
+\subsubsection{Keyphrase extraction}
+When describing data, a popular thing to do is tagging.
+The most well-known tagging procedures are probably hash tags and user names in social media.
+Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
+
+\begin{quotation}
+This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
+at our \textbf{\detokenize{@ESA_Tech}} centre in the Netherlands.
+SpaceBok is a quadruped robot designed by a Swiss student team from \textbf{\detokenize{@ETH}}
+and \textbf{\detokenize{@ZHAW}}.
+\end{quotation}
+
+If we only read the hash tags and user names \textit{\#robot}, \textit{\detokenize{@ESA_Tech}},
+\textit{\detokenize{@ETH}} and \textit{\detokenize{@ZHAW}},
+we do not retrieve all information but we can already think of what the Tweet is about.
+These words would be our \textit{Keyphrases}.
+
+Now, in above example the Keyphrases were defined manually by a user.
+But in our data set (and most data sources), there are no Keyphrases.
+Luckily there are different approaches on how to retrieve Keyphrases from text data.
+
+We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used
+Keyphrase extraction algorithms.
+Our goal is to check if working with Keyphrases alone is more, less or equal accurate
+than with the whole text.
+
+Since the dictionary size would be extremely smaller,
+the data processing time could be drastically improved.
 
 \subsubsection{Named Entity Recognition}
-Todo.
+Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out of text.
+
 
 \subsubsection{Text Stemming}
 Text Stemming is a form of Text Normalization which aims to simplify words
