@@ -5,5 +5,8 @@
 *.toc
 *.bbl
 *.blg
+*.acn
+*.acr
+*.alg
 *.synctex.gz
 /auto

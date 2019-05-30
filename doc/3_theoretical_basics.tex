@@ -1,7 +1,7 @@
 \section{Theoretical basics}
 In order to fully understand our work,
 it is important to ensure a few basics in the area of natural language processing (NLP).
-In this chapter we'll explain how the most important techniques used in our thesis work.
+In this chapter we will explain how the most important techniques used in our thesis work.
 
 \subsection{Text preprocessing}
 \label{sec:text_preprocessing}
@@ -14,7 +14,7 @@ This results in huge directories or many vectors and does not only take up more 
 but also text processing (computation and comparison) will take more time to process.
 
 What does that mean?
-Let's have a look at the following words:
+Consider the following words:
 
 \begin{itemize}
     \item switzerland
@@ -23,8 +23,8 @@ Let's have a look at the following words:
 \end{itemize}
 
 Anyone of us will be able to extract the same meaning out of these three words: The country \textit{Switzerland}.
-However, for machines the terms are different because they're written differently.
-That's why in most cases it makes sense to lowercase all text before processing them.
+However, for machines the terms are different because they are written differently.
+That is why in most cases it makes sense to lowercase all text before processing them.
 That way we can ensure that the above words also share the same meaning for a machine and thus reduce the dictionary size.
 
 % TODO: \paragraph{extraction}
@@ -36,25 +36,90 @@ Vectorising books would take too much computational power and time to process.
 In such cases, the text size would have to be reduced.
 This could be accomplished by processing a summary of the book instead of the book itself
 or by extracting the most relevant words from the whole book.
-Later could be done with \textit{Keyterm extraction} or with \textit{Entity extraction}.
+Later could be done with \textit{Keyphrase extraction} or with \textit{Entity extraction}.
 
 % TODO: \paragraph{lemma stemma}
-If we're not dealing with books but with articles or papers,
-there are also other alternatives to Keyterm and Entity extraction.
+If we are not dealing with books but with articles or papers,
+there are also other alternatives to Keyphrase and Entity extraction.
 Using \textit{Text Stemming} or \textit{Text Lemmatisation} we can simplify terms and group them together to reduce
 the dictionary size.
 More about this in the sub sections below.
 
 \paragraph{Exceptions}
-There are a few use cases where lowercasing a text isn't desired.
+There are a few use cases where lowercasing a text is not desired.
 For example when trying to detect the writer's sentiment.
-Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who doesn't.
+Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who does not.
 
-\subsubsection{Keyterm extraction}
-Todo.
+\subsubsection{Keyphrase extraction}
+When describing data, a popular thing to do is tagging.
+The most well-known tagging procedures are probably hash tags and user names in social media.
+Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
+
+\begin{quotation}
+    This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
+    at our \textbf{\detokenize{@ESA_Tech}} centre in the Netherlands.
+    SpaceBok is a quadruped robot designed by a Swiss student team from \textbf{\detokenize{@ETH}}
+    and \textbf{\detokenize{@ZHAW}}.
+\end{quotation}
+
+If we only read the hash tags and user names \textit{\#robot}, \textit{\detokenize{@ESA_Tech}},
+\textit{\detokenize{@ETH}} and \textit{\detokenize{@ZHAW}},
+we do not retrieve all information but we can already think of what the Tweet is about.
+These words would be our \textit{Keyphrases}.
+
+Now, in above example the Keyphrases were defined manually by a user.
+But in our data set (and most data sources), there are no Keyphrases.
+Luckily there are different approaches on how to retrieve Keyphrases from text data.
+
+We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used
+Keyphrase extraction algorithms.
+Our goal is to check if working with Keyphrases alone is more, less or equal accurate
+than with the whole text.
+
+Since the dictionary size would be extremely smaller,
+the data processing time could be drastically improved.
 
 \subsubsection{Named Entity Recognition}
-Todo.
+Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out from a given text.
+However, it does not only extract terms but also states what kind of term it is.
+Consider following sentence:
+
+\begin{quotation}
+    CERN in Geneva pays tribute to Murray Gell-Mann, who won the Nobel Prize in Physics in 1969.
+\end{quotation}
+
+When using spaCy's \gls{ner} model, which is based on a transition-based \gls{cnn}\cite{LampleBSKD16},
+we retrieve following entities:
+
+\begin{itemize}
+    \item CERN (Organisation)
+    \item Geneva (Location)
+    \item Murray Gell-Mann (Person)
+    \item the Nobel Prize in Physics (Work of art)
+    \item 1969 (Date)
+\end{itemize}
+
+For comparison, the same sentence would extract following \textit{Keyphrases}:
+
+\begin{itemize}
+    \item Nobel Prize
+    \item Murray Gell
+    \item tribute
+    \item Mann
+    \item Geneva
+    \item Physics
+    \item CERN
+\end{itemize}
+
+Comparing the the numbers of the extracted terms solely, Keyphrase extraction seems to have delivered a better job.
+However, when evaluating the results, we can see that \gls{ner} \textit{understood} the terms and their
+relations better.
+
+Not only was it able to correctly keep the subject's name, Murray Gell-Mann, but also the type of Nobel prize.
+It extracts more accurate information compared to Keyphrase extraction but does this also result
+in improved clustering results?
+
+% TODO: Talk about time.
 
 \subsubsection{Text Stemming}
 Text Stemming is a form of Text Normalization which aims to simplify words
@@ -70,7 +135,7 @@ modified furtherly.
 
 Lovins' stemming algorithm was very successful but got mostly replaced by
 M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
-In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6'370 out of 10'000 words and thereby
+In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6,370 out of 10,000 words and thereby
 reducing the vocabulary size by \textbf{one third}.
 The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
 
@@ -177,11 +242,11 @@ DBSCAN requires two parameters in order to work:
 
 Having these two parameters defined, DBSCAN will iterate through the data points
 and try to assign them to clusters if the provided parameters match.
-If a data point can't be assigned to a cluster, it will be marked as noise point.
+If a data point can not be assigned to a cluster, it will be marked as noise point.
 
-Data points that belong to a cluster but don't dense themselves are known as \textbf{border points}.
+Data points that belong to a cluster but do not dense themselves are known as \textbf{border points}.
 Some border points could theoretically belong to two or more clusters
-if the distance from the point to the clusters don't differ.
+if the distance from the point to the clusters do not differ.
 
 \paragraph{Advantages}
 \begin{itemize}
