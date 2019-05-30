@@ -24,7 +24,26 @@ for ent in doc.ents:
     print(ent.text, ent.start_char, ent.end_char, ent.label_)
 print("")
 
-print("Keyterms:")
+print("Keyterms (sgrank):")
 res = keyterms.sgrank(doc, n_keyterms=100)
 for r in res:
     print(r)
+print("")
+
+print("Keyterms (textrank):")
+res = keyterms.textrank(doc, n_keyterms=100)
+for r in res:
+    print(r)
+print("")
+
+print("Keyterms (singlerank):")
+res = keyterms.singlerank(doc, n_keyterms=100)
+for r in res:
+    print(r)
+print("")
+
+print("Keyterms (semantic network):")
+res = keyterms.key_terms_from_semantic_network(doc, n_keyterms=100)
+for r in res:
+    print(r)
+print("")
