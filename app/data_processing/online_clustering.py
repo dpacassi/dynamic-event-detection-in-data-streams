@@ -172,35 +172,56 @@ def get_stories_from_news_ids(news_ids):
 def persist_cluster_and_events(new_clusters, changed_clusters):
     # Add new clusters
     for cluster in new_clusters:
-        cluster_id = db.add_cluster(cluster)
+        identifier = ",".join(map(str, cluster))
+        cluster_id = db.add_cluster(identifier)
+
+        for news_id in cluster:
+            db.add_news_to_cluster(cluster_id, news_id)
+
         db.add_event(Event.TOPIC_ADDED, cluster_id)
 
-    # Process changed clusters
+    # Add changed clusters as new clusters per batch
     for cluster in changed_clusters:
-        cluster_id = cluster["cluster_id"]
-        changes = {}
+        identifier = ",".join(map(str, cluster["new_news"]))
+        cluster_id = db.add_cluster(identifier)
 
-        if full_cluster:
-            identifier = cluster["new_identifier"]
+        for news_id in cluster["new_news"]:
+            db.add_news_to_cluster(cluster_id, news_id)
+
+        if "additions" in cluster and len(cluster["additions"]) > 0:
+            changes = dict()
             changes["additions"] = cluster["additions"]
             changes["deletions"] = cluster["deletions"]
-        else:
-            # In partial clusters deletions will be ignored, since the deleted articles are most likely not part of
-            # the sample subset. We could check in the future if deleted articles are part of the current subset.
-            changes["additions"] = cluster["additions"]
-            identifier = cluster["old_identifier"].split(",")
-            identifier += cluster["additions"]
-            identifier.sort()
-            identifier = ",".join(identifier)
-
-        db.update_cluster(cluster_id, identifier)
-        if "additions" in changes and len(changes["additions"]) > 0:
             db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
 
-        if "deletions" in changes and len(changes["deletions"]) > 0:
-            # We ignore deletions for now, since single batches might miss older articles, 
-            # which we don't want to count as events. 
-            pass
+    # Ignore update of existing clusters for now
+    #
+    # # Process changed clusters
+    # for cluster in changed_clusters:
+    #     cluster_id = cluster["cluster_id"]
+    #     changes = {}
+
+    #     if full_cluster:
+    #         identifier = cluster["new_news"]
+    #         changes["additions"] = cluster["additions"]
+    #         changes["deletions"] = cluster["deletions"]
+    #     else:
+    #         # In partial clusters deletions will be ignored, since the deleted articles are most likely not part of
+    #         # the sample subset. We could check in the future if deleted articles are part of the current subset.
+    #         changes["additions"] = cluster["additions"]
+    #         identifier = cluster["old_news"]
+    #         identifier = list(identifier.union(cluster["additions"]))
+    #         identifier.sort()
+            
+    #     identifier = ",".join(map(str,identifier))
+
+    #     if "additions" in changes and len(changes["additions"]) > 0:
+    #         db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
+
+    #     if "deletions" in changes and len(changes["deletions"]) > 0:
+    #         # We ignore deletions for now, since single batches might miss older articles, 
+    #         # which we don't want to count as events. 
+    #         pass
 
 
 def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, threshold=0.75, persit_clusters_in_db=False):
@@ -300,11 +321,6 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, t
 # * python data_processing/online_clustering.py --date "2014-03-11 00:00:00" --run_n_days 2 --full_rows 10000 --rows 2000 --verbose
 #  2014-05-01 might be a better date to start
 
-# ToDos:
-# Detect type of change:
-# * Topic deletion
-# Add most important keyterms to name a cluster
-#
 # Considerations:
 # * Consider deletions only on full clusterings, otherwise the article was simply not part of the sample size.
 
@@ -352,7 +368,7 @@ if __name__ == "__main__":
                 if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
                     clustering = run(current_date, full_rows, True, verbose, clustering, threshold=threshold)
                 else:
-                    clustering = run(current_date, nrows, False, verbose, clustering, threshold=threshold)
+                    clustering = run(current_date, nrows, False, verbose, clustering, threshold=threshold, persit_clusters_in_db=True)
                     
                 current_date += timedelta(hours=1)
             print("End simulation")
