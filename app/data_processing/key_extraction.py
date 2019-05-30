@@ -2,7 +2,8 @@ import spacy
 from textacy import extract, keyterms, Doc
 
 # sentence = 'London is the capital and most populous city of England and the United Kingdom.'
-sentence = 'Mr. Best flew to New York on Saturday morning.'
+# sentence = 'Mr. Best flew to New York on Saturday morning.'
+sentence = 'Trump says he will increase tariffs on Chinese goods on Friday as he complains about pace of trade talks.'
 
 '''
 # Run first following command in a shell:

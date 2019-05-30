@@ -1,7 +1,7 @@
 \section{Theoretical basics}
 In order to fully understand our work,
 it is important to ensure a few basics in the area of natural language processing (NLP).
-In this chapter we'll explain how the most important techniques used in our thesis work.
+In this chapter we will explain how the most important techniques used in our thesis work.
 
 \subsection{Text preprocessing}
 When working with text data, many algorithms and processes will need to distinguish words from another.
@@ -12,7 +12,7 @@ This results in huge directories or many vectors and does not only take up more 
 but also text processing (computation and comparison) will take more time to process.
 
 What does that mean?
-Let's have a look at the following words:
+Consider the following words:
 
 \begin{itemize}
     \item switzerland
@@ -21,8 +21,8 @@ Let's have a look at the following words:
 \end{itemize}
 
 Anyone of us will be able to extract the same meaning out of these three words: The country \textit{Switzerland}.
-However, for machines the terms are different because they're written differently.
-That's why in most cases it makes sense to lowercase all text before processing them.
+However, for machines the terms are different because they are written differently.
+That is why in most cases it makes sense to lowercase all text before processing them.
 That way we can ensure that the above words also share the same meaning for a machine and thus reduce the dictionary size.
 
 % TODO: \paragraph{extraction}
@@ -37,16 +37,16 @@ or by extracting the most relevant words from the whole book.
 Later could be done with \textit{Keyterm extraction} or with \textit{Entity extraction}.
 
 % TODO: \paragraph{lemma stemma}
-If we're not dealing with books but with articles or papers,
+If we are not dealing with books but with articles or papers,
 there are also other alternatives to Keyterm and Entity extraction.
 Using \textit{Text Stemming} or \textit{Text Lemmatisation} we can simplify terms and group them together to reduce
 the dictionary size.
 More about this in the sub sections below.
 
 \paragraph{Exceptions}
-There are a few use cases where lowercasing a text isn't desired.
+There are a few use cases where lowercasing a text is not desired.
 For example when trying to detect the writer's sentiment.
-Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who doesn't.
+Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who does not.
 
 \subsubsection{Keyterm extraction}
 Todo.
@@ -68,7 +68,7 @@ modified furtherly.
 
 Lovins' stemming algorithm was very successful but got mostly replaced by
 M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
-In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6'370 out of 10'000 words and thereby
+In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6,370 out of 10,000 words and thereby
 reducing the vocabulary size by \textbf{one third}.
 The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
 
@@ -175,11 +175,11 @@ DBSCAN requires two parameters in order to work:
 
 Having these two parameters defined, DBSCAN will iterate through the data points
 and try to assign them to clusters if the provided parameters match.
-If a data point can't be assigned to a cluster, it will be marked as noise point.
+If a data point can not be assigned to a cluster, it will be marked as noise point.
 
-Data points that belong to a cluster but don't dense themselves are known as \textbf{border points}.
+Data points that belong to a cluster but do not dense themselves are known as \textbf{border points}.
 Some border points could theoretically belong to two or more clusters
-if the distance from the point to the clusters don't differ.
+if the distance from the point to the clusters do not differ.
 
 \paragraph{Advantages}
 \begin{itemize}
