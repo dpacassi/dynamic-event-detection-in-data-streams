@@ -884,6 +884,57 @@ def table_preprocessing():
     print(latex)
 
 
+def table_expected_noise_rate():
+    connection = db.get_connection()
+
+    story_sizes = range(2,10)
+    n_articles = []
+
+    sql = ("select count(id) as counter"
+        "	 FROM news_article"
+        "	 WHERE newspaper_processed = 1"
+        "	     AND preprocessed = 1"
+        "	     AND title_keywords_intersection = 1"
+        "	     AND hostname != 'newsledge.com'"
+        "	     AND hostname != 'www.newsledge.com'"
+        "	     AND newspaper_text IS NOT NULL"
+        "	     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "	     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "	     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "	     AND newspaper_text NOT LIKE '%%404%%'"
+        "	     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "	     AND computed_publish_date is not NULL")
+
+    rows = pandas.read_sql(sql=sql, con=connection)
+    total_articles = rows["counter"].values[0]
+
+    for size in story_sizes:
+        sql = ("select sum(counter) as total from ("
+        "	select count(id) as counter"
+        "	 FROM news_article"
+        "	 WHERE newspaper_processed = 1"
+        "	     AND preprocessed = 1"
+        "	     AND title_keywords_intersection = 1"
+        "	     AND hostname != 'newsledge.com'"
+        "	     AND hostname != 'www.newsledge.com'"
+        "	     AND newspaper_text IS NOT NULL"
+        "	     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "	     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "	     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "	     AND newspaper_text NOT LIKE '%%404%%'"
+        "	     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "	     AND computed_publish_date is not NULL"
+        "	group by story having count(id) < %s"
+        ") as c")
+
+        rows = pandas.read_sql(sql=sql, con=connection, params=[size])
+
+        n_articles.append([size, rows["total"].values[0] / total_articles * 100])
+
+    latex = tabulate(n_articles, tablefmt="latex", floatfmt=".3f")
+    print(latex)
+    
+
 def plot_news_article_distribution_per_day():
     connection = db.get_connection()
 
@@ -1034,10 +1085,11 @@ def plot_online_clustering_example(story, keyword):
 #plot_accuracy_samples()
 # plot_processing_time_samples()
 #plot_noise_ratio_samples()
-plot_cluster_differences()
+#plot_cluster_differences()
 #plot_hdbscan_parameters()
 # table_preprocessing()
 # plot_articles_per_story_distribution()
+table_expected_noise_rate()
 
 # Online clustering evaluation
 # plot_news_article_distribution_per_day()

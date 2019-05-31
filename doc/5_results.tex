@@ -107,9 +107,7 @@ Furthermore the variance with smaller sample sizes can partially be explained th
     \label{fig:cluster_differences}
 \end{figure}
 
-One of the advantages HDBSCAN has over other clustering algorithms, is the ability to work with noise, since we intent on applying it in an online setting, where noisy data is to be expected. At the same time, the number of articles classified as noise should be kept to a minimum. However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is higher, than we would expect it to be based on our test data. A variety of factors play into the high noise ratio. One major influence is due to the used $min\_cluster\_size$. Each news article belonging to a cluster ignored due to a size too small, will be counted as noise. In addition to the false positives due to the min cluster size, the test data does still contain noisy data, even after our efforts in cleaning up the data as good as possible. Nonetheless the expected noise ratio based on the test data is less than 10\%, nowhere close to the 20\% of the current evaluation. Decreasing the noise ratio is certainly an important part in future improvements.
-
-% TODO calculate expected noise ratio based our min cluster sizes.
+One of the advantages HDBSCAN has over other clustering algorithms, is the ability to work with noise, since we intent on applying it in an online setting, where noisy data is to be expected. At the same time, the number of articles classified as noise should be kept to a minimum. However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is significantly higher, than we would expect it to be based on our test data. A variety of factors play into the high noise ratio. One influence is due to the $min\_cluster\_size$. Each news article belonging to a cluster, which has less articles than the minimum cluster size, will be counted as noise. Table \ref{tab:expected_noise} lists the calculated percentage of news articles, which would be ignored based on different minimum cluster sizes. Although the percentages show that the impact the minimum cluster size has on the overall noise ratio is very limited. It is reasonably to assume, that the test data still contains a fair amount noisy data, even after cleaning up the data to the best of our efforts. Decreasing the noise ratio is certainly an important part in future improvements.
 
 \begin{figure}[h]
     \centering
@@ -118,6 +116,26 @@ One of the advantages HDBSCAN has over other clustering algorithms, is the abili
     \label{fig:noise_ratio_samples}
 \end{figure}
 
+\begin{table}[h]
+    \label{tab:expected_noise}
+    \centering
+    \begin{tabular}{|r|r|}
+        \hline
+        \textbf{min cluster size} & \textbf{Ignored articles} \\
+        \hline
+        2 & 0.032\% \\ \hline
+        3 & 0.126\% \\ \hline
+        4 & 0.304\% \\ \hline
+        5 & 0.593\% \\ \hline
+        6 & 0.985\% \\ \hline
+        7 & 1.548\% \\ \hline
+        8 & 2.168\% \\ \hline
+        9 & 2.712\% \\ \hline
+    \end{tabular}
+    \caption{Percentages of ignored news articles because of their cluster size. The values are calculated directly based on the test data.}
+\end{table}
+
+% TODO hello saturday mile. Continue your work here 
 
 Having determined the optimal settings to run HDBSCAN with, as text stemming with tf-idf, cosine as the similarity measure and six as the minimum size of clusters, we can start comparing the overall performance with \textit{k}-means. Figure \ref{fig:accuracy_kmeans_hdbscan} shows  a similar behaviour for both clustering methods in value and variance of the accuracy. Although HDBSCAN is generally more accurate than \textit{k}-means, the difference gets smaller with an increase in the sample size. Increasing the sample size results for both HDBSCAN and \textit{k}-means in a small loss regarding the accuracy as can be seen in Figure \ref{fig:accuracy_kmeans_hdbscan}. However the accuracy seems to stabilize around the 0.7 mark.
 
