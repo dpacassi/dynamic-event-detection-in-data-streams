@@ -96,7 +96,7 @@ def plot_accuracy_samples():
     connection = db.get_connection()
 
     # Fixate hdbscan parameters and vectorizer for showing errors of best approach
-    parameters = '{"min_cluster_size": 5, "metric": "cosine"}'
+    parameters = '{"min_cluster_size": 6, "metric": "cosine"}'
     vectorizer = "TfidfVectorizer"
     sql = (
         "select m.mp_score, m.real_clusters, m.method from method_evaluation as m"
@@ -160,8 +160,8 @@ def plot_hdbscan_parameters():
     connection = db.get_connection()
 
     sql = (
-        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.parameters, m.sample_size from method_evaluation as m"
-        " where m.method = 'hdbscan' and m.corrected_avg_unique_accuracy is not null"
+        "select avg(m.mp_score) as accuracy, m.parameters, m.sample_size from method_evaluation as m"
+        " where m.method = 'hdbscan' and m.mp_score is not null"
         " group by m.parameters, m.sample_size"
         " order by m.sample_size"
     )
@@ -200,7 +200,7 @@ def plot_hdbscan_parameters():
     plt.plot(X, Y_cosine, label="Cosine")
     plt.plot(X, Y_euclidean, label="Euclidean")
     plt.xlabel("Number of news articles")
-    plt.ylabel("Average Accuracy")
+    plt.ylabel("Average MP-Score")
     plt.ylim(top=1, bottom=0)
     plt.title("HDBSCAN Metrics")
     plt.legend()
@@ -216,7 +216,7 @@ def plot_hdbscan_parameters():
         plt.plot(X, Y, label="m = {}".format(size))
 
     plt.xlabel("Number of news articles")
-    plt.ylabel("Average Accuracy")
+    plt.ylabel("Average MP-Score")
     plt.ylim(top=1, bottom=0)
     plt.title("HDBSCAN Min cluster sizes")
     plt.legend()
@@ -230,11 +230,10 @@ def plot_hdbscan_parameters():
 def plot_noise_ratio_samples():
     connection = db.get_connection()
 
-    # TODO with different min_cluster_sizes
     sql = (
-        "select min(m.n_noise / m.sample_size) as n_noise, m.sample_size from method_evaluation as m"
-        " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
-        " group by m.sample_size"
+        "select avg(m.n_noise / m.sample_size) as n_noise, m.sample_size, m.parameters from method_evaluation as m"
+        " where m.method in ('hdbscan') and m.mp_score is not null"
+        " group by m.sample_size, m.parameters"
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
@@ -243,14 +242,69 @@ def plot_noise_ratio_samples():
     X = data["sample_size"].unique()
     Y_hdbscan = data["n_noise"].values
 
-    fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label="HDBSCAN")
+    Y_min_cluster_sizes_cosine = dict()
+    Y_min_cluster_sizes_euclidean = dict()
+    for index, row in data.iterrows():
+        parameters = json.loads(row["parameters"])
+
+        if parameters["metric"] == "cosine":
+            if parameters["min_cluster_size"] not in Y_min_cluster_sizes_cosine:
+                Y_min_cluster_sizes_cosine[
+                    parameters["min_cluster_size"]
+                ] = collections.defaultdict(list)
+
+            Y_min_cluster_sizes_cosine[parameters["min_cluster_size"]][row["sample_size"]].append(
+                row["n_noise"]
+            )
+        else:
+            if parameters["min_cluster_size"] not in Y_min_cluster_sizes_euclidean:
+                Y_min_cluster_sizes_euclidean[
+                    parameters["min_cluster_size"]
+                ] = collections.defaultdict(list)
+
+            Y_min_cluster_sizes_euclidean[parameters["min_cluster_size"]][row["sample_size"]].append(
+                row["n_noise"]
+            )
+
+    fig = plt.figure(figsize=(15, 5))
+
+    min_size_to_show = [2,6,9]
+
+    plt.subplot(1, 2, 1)
+
+    for size, values in Y_min_cluster_sizes_cosine.items():
+        if size in min_size_to_show:
+            Y = [max(x) for x in values.values()]
+            if len(Y) < len(X):
+                Y += [0] * (len(X) - len(Y))
+
+            plt.plot(X, Y, label="m = {}".format(size))
+
     plt.xlabel("Number of news articles")
     plt.ylabel("Noise ratio")
     plt.ylim(top=1, bottom=0)
-    plt.title("Ratio of samples classified as noise")
+    plt.title("Ratio of samples classified as noise using metric=cosine")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.subplot(1, 2, 2)
+
+    for size, values in Y_min_cluster_sizes_euclidean.items():
+        if size in min_size_to_show:
+            Y = [max(x) for x in values.values()]
+            if len(Y) < len(X):
+                Y += [0] * (len(X) - len(Y))
+
+            plt.plot(X, Y, label="m = {}".format(size))
+
+    plt.xlabel("Number of news articles")
+    plt.ylabel("Noise ratio")
+    plt.ylim(top=1, bottom=0)
+    plt.title("Ratio of samples classified as noise using metric=euclidean")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+
     plt.savefig("../../doc/images/noise_ratio_samples.png")
     plt.close(fig)
 
@@ -260,8 +314,8 @@ def plot_cluster_difference_samples():
     connection = db.get_connection()
 
     sql = (
-        "select min(abs(m.real_clusters - m.estimated_clusters) / m.real_clusters) as diff, m.real_clusters from method_evaluation as m"
-        " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
+        "select avg(abs(m.real_clusters - m.estimated_clusters) / m.real_clusters) as diff, m.real_clusters from method_evaluation as m"
+        " where m.method in ('hdbscan') and m.mp_score is not null"
         " group by m.real_clusters"
     )
 
@@ -763,8 +817,9 @@ def table_preprocessing():
     connection = db.get_connection()
 
     sql = (
-        "select m.corrected_avg_unique_accuracy as accuracy, m.parameters, m.real_clusters, tokenizer, vectorizer from method_evaluation as m"
-        " where  m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null and tokenizer != 'None'"
+        "select avg(mp_score) as mp_score , m.parameters, m.real_clusters, tokenizer, vectorizer from method_evaluation as m"
+        " where  m.method in ('kmeans', 'hdbscan') and m.mp_score > 0 and tokenizer != 'None' and m.real_clusters=60"
+        " group by m.parameters, m.method, m.real_clusters, tokenizer, vectorizer"
         " order by m.parameters"
     )
 
@@ -792,7 +847,7 @@ def table_preprocessing():
 
         key = row["vectorizer"] + "_" + row["tokenizer"]
         if key in indicies:
-            table_dict[row["parameters"]][indicies[key]] = round(row["accuracy"], 3)
+            table_dict[row["parameters"]][indicies[key]] = round(row["mp_score"], 3)
             table_dict[row["parameters"]][0] = (
                 row["parameters"]
                 .replace("{", "")
@@ -958,12 +1013,12 @@ def plot_online_clustering_example(story, keyword):
 
 
 # Clustering method evaluation
-# plot_accuracy_samples()
+plot_accuracy_samples()
 # plot_processing_time_samples()
-# plot_cluster_difference_samples()
-# plot_noise_ratio_samples()
+plot_cluster_difference_samples()
+plot_noise_ratio_samples()
 # plot_different_clusterings()
-# plot_hdbscan_parameters()
+plot_hdbscan_parameters()
 # table_preprocessing()
 # plot_articles_per_story_distribution()
 
