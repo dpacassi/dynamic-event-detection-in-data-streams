@@ -18,7 +18,7 @@ from datetime import timedelta
 
 script_name = os.path.basename(__file__)
 
-MIN_CLUSTER_SIZE = 5
+MIN_CLUSTER_SIZE = 6
 
 class Event:
     TOPIC_ADDED = 1
@@ -51,7 +51,8 @@ def cluster_news(news_articles):
     model = HDBSCAN(min_cluster_size=MIN_CLUSTER_SIZE, metric="cosine")
 
     #data_matrix = vectorizer.fit_transform(news_articles["newspaper_text"])
-    data_matrix = vectorizer.fit_transform(news_articles["text_lemmatized_without_stopwords"])
+    #data_matrix = vectorizer.fit_transform(news_articles["text_lemmatized_without_stopwords"])
+    data_matrix = vectorizer.fit_transform(news_articles["text_stemmed_without_stopwords"])
     labels = model.fit_predict(data_matrix)
 
     # Clusters are identified by a sorted string of news ids

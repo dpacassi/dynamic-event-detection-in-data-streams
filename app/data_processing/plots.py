@@ -110,7 +110,7 @@ def plot_accuracy_samples():
     data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
     connection.close()
 
-    def format_data(data, method):
+    def _format_data(data, method):
         accuracy_values = collections.defaultdict(list)
         for index, row in data.iterrows():
             if row["method"] == method:
@@ -139,11 +139,11 @@ def plot_accuracy_samples():
 
     X = data["real_clusters"].unique()
 
-    Y, Y_lower_err, Y_higher_err = format_data(data, 'hdbscan')
-    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, label='HDBSCAN')
+    Y, Y_lower_err, Y_higher_err = _format_data(data, 'hdbscan')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, alpha=0.5, label='HDBSCAN')
 
-    Y, Y_lower_err, Y_higher_err = format_data(data, 'kmeans')
-    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, label='K-means')
+    Y, Y_lower_err, Y_higher_err = _format_data(data, 'kmeans')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, alpha=0.5, label='K-means')
 
     plt.xlabel("Number of stories")
     plt.ylabel("MP-Score")
@@ -156,69 +156,109 @@ def plot_accuracy_samples():
 
 
 # Accuracy by different parameters with hdbscan
-def plot_hdbscan_parameters():
+def plot_cluster_differences():
     connection = db.get_connection()
 
     sql = (
-        "select avg(m.mp_score) as accuracy, m.parameters, m.sample_size from method_evaluation as m"
+        "select abs(m.real_clusters - m.estimated_clusters) as difference, m.parameters, m.real_clusters from method_evaluation as m"
         " where m.method = 'hdbscan' and m.mp_score is not null"
-        " group by m.parameters, m.sample_size"
-        " order by m.sample_size"
+        " order by m.real_clusters"
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
 
-    X = data["sample_size"].unique()
-
-    cosine_values = collections.defaultdict(list)
-    euclidean_values = collections.defaultdict(list)
-    Y_min_cluster_sizes = dict()
-
-    for index, row in data.iterrows():
-        parameters = json.loads(row["parameters"])
-        if parameters["metric"] == "cosine":
-            cosine_values[row["sample_size"]].append(row["accuracy"])
-        if parameters["metric"] == "euclidean":
-            euclidean_values[row["sample_size"]].append(row["accuracy"])
-
-        if parameters["min_cluster_size"] not in Y_min_cluster_sizes:
-            Y_min_cluster_sizes[
-                parameters["min_cluster_size"]
-            ] = collections.defaultdict(list)
-
-        Y_min_cluster_sizes[parameters["min_cluster_size"]][row["sample_size"]].append(
-            row["accuracy"]
-        )
+    X = data["real_clusters"].unique()
 
     fig = plt.figure(figsize=(15, 5))
 
-    Y_cosine = [max(x) for x in cosine_values.values()]
-    Y_euclidean = [max(x) for x in euclidean_values.values()]
+    min_size_to_show = [4,5,6,8]
+    marker = {
+        2: 'o',
+        4: 'D',
+        5: 'X',
+        6: 's',
+        8: '^'
+    }
 
     plt.subplot(1, 2, 1)
-    plt.plot(X, Y_cosine, label="Cosine")
-    plt.plot(X, Y_euclidean, label="Euclidean")
-    plt.xlabel("Number of news articles")
-    plt.ylabel("Average MP-Score")
-    plt.ylim(top=1, bottom=0)
-    plt.title("HDBSCAN Metrics")
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "cosine", "difference")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("$|n_{true} - n_{predicted}|$")
+    plt.yscale("log")
+    plt.title("HDBSCAN Difference in clusters using metric=cosine")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
     plt.subplot(1, 2, 2)
 
-    for size, values in Y_min_cluster_sizes.items():
-        Y = [max(x) for x in values.values()]
-        if len(Y) < len(X):
-            Y += [0] * (len(X) - len(Y))
+    Y, Y_lower_err, Y_higher_err = format_data(data, "euclidean", "difference")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
 
-        plt.plot(X, Y, label="m = {}".format(size))
+    plt.xlabel("Number of stories")
+    plt.ylabel("$|n_{true} - n_{predicted}|$")
+    plt.yscale("log")
+    plt.title("HDBSCAN Difference in clusters using metric=euclidean")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    plt.xlabel("Number of news articles")
-    plt.ylabel("Average MP-Score")
+    plt.savefig("../../doc/images/cluster_differences.png")
+    plt.close(fig)
+
+
+# Accuracy by different parameters with hdbscan
+def plot_hdbscan_parameters():
+    connection = db.get_connection()
+
+    sql = (
+        "select m.mp_score as mp_score, m.parameters, m.real_clusters from method_evaluation as m"
+        " where m.method = 'hdbscan' and m.mp_score is not null"
+        " order by m.real_clusters"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["real_clusters"].unique()
+
+    fig = plt.figure(figsize=(15, 5))
+
+    min_size_to_show = [2,4,6,8]
+    marker = {
+        2: 'o',
+        4: 'D',
+        6: 's',
+        8: '^'
+    }
+
+    plt.subplot(1, 2, 1)
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "cosine", "mp_score")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("MP-Score")
     plt.ylim(top=1, bottom=0)
-    plt.title("HDBSCAN Min cluster sizes")
+    plt.title("HDBSCAN Min cluster sizes using metric=cosine")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.subplot(1, 2, 2)
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "euclidean", "mp_score")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("MP-Score")
+    plt.ylim(top=1, bottom=0)
+    plt.title("HDBSCAN Min cluster sizes using metric=euclidean")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
@@ -226,61 +266,70 @@ def plot_hdbscan_parameters():
     plt.close(fig)
 
 
+def format_data(data, metric, key):
+    Y_min_cluster_sizes = dict()
+
+    for index, row in data.iterrows():
+        parameters = json.loads(row["parameters"])
+
+        if parameters["metric"] == metric:
+            if parameters["min_cluster_size"] not in Y_min_cluster_sizes:
+                Y_min_cluster_sizes[
+                    parameters["min_cluster_size"]
+                ] = collections.defaultdict(list)
+
+            Y_min_cluster_sizes[parameters["min_cluster_size"]][row["real_clusters"]].append(
+                row[key]
+            )
+
+    Y = collections.defaultdict(list)
+    Y_lower_err = collections.defaultdict(list)
+    Y_higher_err = collections.defaultdict(list)
+    for size, values_per_clusters in Y_min_cluster_sizes.items():
+        for values in values_per_clusters.values():
+            v = list(values)
+            mean = statistics.median(v)
+            Y[size].append(mean)
+            Y_lower_err[size].append(mean - min(v))
+            Y_higher_err[size].append(max(v) - mean)
+
+    return Y, Y_lower_err, Y_higher_err
+
+
 # HDBSCAN Noise ratio with number of samples
 def plot_noise_ratio_samples():
     connection = db.get_connection()
 
     sql = (
-        "select avg(m.n_noise / m.sample_size) as n_noise, m.sample_size, m.parameters from method_evaluation as m"
+        "select (m.n_noise / m.sample_size) as n_noise, m.real_clusters, m.parameters from method_evaluation as m"
         " where m.method in ('hdbscan') and m.mp_score is not null"
-        " group by m.sample_size, m.parameters"
+        " "
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
 
-    X = data["sample_size"].unique()
-    Y_hdbscan = data["n_noise"].values
-
-    Y_min_cluster_sizes_cosine = dict()
-    Y_min_cluster_sizes_euclidean = dict()
-    for index, row in data.iterrows():
-        parameters = json.loads(row["parameters"])
-
-        if parameters["metric"] == "cosine":
-            if parameters["min_cluster_size"] not in Y_min_cluster_sizes_cosine:
-                Y_min_cluster_sizes_cosine[
-                    parameters["min_cluster_size"]
-                ] = collections.defaultdict(list)
-
-            Y_min_cluster_sizes_cosine[parameters["min_cluster_size"]][row["sample_size"]].append(
-                row["n_noise"]
-            )
-        else:
-            if parameters["min_cluster_size"] not in Y_min_cluster_sizes_euclidean:
-                Y_min_cluster_sizes_euclidean[
-                    parameters["min_cluster_size"]
-                ] = collections.defaultdict(list)
-
-            Y_min_cluster_sizes_euclidean[parameters["min_cluster_size"]][row["sample_size"]].append(
-                row["n_noise"]
-            )
+    X = data["real_clusters"].unique()
 
     fig = plt.figure(figsize=(15, 5))
 
-    min_size_to_show = [2,6,9]
+    min_size_to_show = [2,4,6,8]
+    marker = {
+        2: 'o',
+        4: 'D',
+        6: 's',
+        8: '^'
+    }
 
     plt.subplot(1, 2, 1)
 
-    for size, values in Y_min_cluster_sizes_cosine.items():
+    Y, Y_lower_err, Y_higher_err = format_data(data, "cosine", "n_noise")
+
+    for size, values in Y.items():
         if size in min_size_to_show:
-            Y = [max(x) for x in values.values()]
-            if len(Y) < len(X):
-                Y += [0] * (len(X) - len(Y))
+            plt.errorbar(X, list(values), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
 
-            plt.plot(X, Y, label="m = {}".format(size))
-
-    plt.xlabel("Number of news articles")
+    plt.xlabel("Number of stories")
     plt.ylabel("Noise ratio")
     plt.ylim(top=1, bottom=0)
     plt.title("Ratio of samples classified as noise using metric=cosine")
@@ -289,15 +338,12 @@ def plot_noise_ratio_samples():
 
     plt.subplot(1, 2, 2)
 
-    for size, values in Y_min_cluster_sizes_euclidean.items():
+    Y, Y_lower_err, Y_higher_err = format_data(data, "euclidean", "n_noise")
+    for size, values in Y.items():
         if size in min_size_to_show:
-            Y = [max(x) for x in values.values()]
-            if len(Y) < len(X):
-                Y += [0] * (len(X) - len(Y))
+            plt.errorbar(X, list(values), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
 
-            plt.plot(X, Y, label="m = {}".format(size))
-
-    plt.xlabel("Number of news articles")
+    plt.xlabel("Number of stories")
     plt.ylabel("Noise ratio")
     plt.ylim(top=1, bottom=0)
     plt.title("Ratio of samples classified as noise using metric=euclidean")
@@ -306,34 +352,6 @@ def plot_noise_ratio_samples():
 
 
     plt.savefig("../../doc/images/noise_ratio_samples.png")
-    plt.close(fig)
-
-
-# HDBSCAN cluster difference
-def plot_cluster_difference_samples():
-    connection = db.get_connection()
-
-    sql = (
-        "select avg(abs(m.real_clusters - m.estimated_clusters) / m.real_clusters) as diff, m.real_clusters from method_evaluation as m"
-        " where m.method in ('hdbscan') and m.mp_score is not null"
-        " group by m.real_clusters"
-    )
-
-    data = pandas.read_sql(sql=sql, con=connection)
-    connection.close()
-
-    X = data["real_clusters"].unique()
-    Y_hdbscan = data["diff"].values
-
-    fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label="HDBSCAN")
-    plt.xlabel("Number of clusters")
-    plt.ylabel("|n_true - n_predicted| / n_true")
-    plt.ylim(top=0.1, bottom=0)
-    plt.title("Difference in predicted number of clusters")
-    plt.legend()
-    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
-    plt.savefig("../../doc/images/cluster_difference_samples.png")
     plt.close(fig)
 
 
@@ -1013,12 +1031,11 @@ def plot_online_clustering_example(story, keyword):
 
 
 # Clustering method evaluation
-plot_accuracy_samples()
+#plot_accuracy_samples()
 # plot_processing_time_samples()
-plot_cluster_difference_samples()
-plot_noise_ratio_samples()
-# plot_different_clusterings()
-plot_hdbscan_parameters()
+#plot_noise_ratio_samples()
+plot_cluster_differences()
+#plot_hdbscan_parameters()
 # table_preprocessing()
 # plot_articles_per_story_distribution()
 
