@@ -89,20 +89,27 @@ In contrast to key term and entity extraction, which both result in a drastic re
 However it is important to note, that we used pretrained models for key term and entity extraction.
 Specifically training on a news corpus might improve the performance of both methods, but it was decided as to be out of scope for this thesis.
 
-After determining the optimal settings for text preprocessing and vectorization, we increase the sample sizes for our evaluation runs, to get a deeper insight into the behaviour of HDBSCAN with larger data sets. Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples. Based on this Figure we see the metric $cosine$ to be generally better than $euclidean$ and significantly more stable.
+After determining the optimal settings for text preprocessing and vectorization, we increase the sample sizes for our evaluation runs, to get a deeper insight into the behaviour of HDBSCAN with larger data sets. Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples. Based on this Figure we see the metric \textit{cosine} to be generally better than $euclidean$ and significantly more stable based on the range of the score and the quality of the clustering seems to decrease with larger sample sizes.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{hdbscan_parameters}
-    \caption{Accuracy for different parameters}
+    \caption{MP-Score for different parameters, where min stands for the min cluster size. The marker represents the median, while the vertical line indicates the range between the min and max values. Each run contains at least five repetitions.}
     \label{fig:hdbscan_parameters}
+\end{figure}
+
+Furthermore the variance with smaller sample sizes can partially be explained through differences in the number of detected clusters, since missing a few clusters has a bigger impact if the overall number of clusters is small. Figure \label{fig:cluster_difference_samples} shows the difference between the number of predicted clusters and the number of true clusters. The Figure provides us with an interesting observation: While so far the minimum cluster size of six has given the best scores, the difference in the number of clusters is much smaller with a minimum cluster size of four. The MP-Score weights the similarity of a pair of clusters with their number of elements. This means ignoring smaller clusters has a lesser impact than ignoring larger clusters. We know our data set contains stories with news articles ranging from one up to 400. Based on this knowledge and the workings of the score, we can conclude that using a minimum cluster size of four gives us more clusters, which are ignored by using a larger minimum cluster size, but at the same time fragmenting larger clusters. Therefore resulting in a lower score, while having a better difference in the number of cluster predictions. This can be validated by analysing our data directly, where we observe the number of predicted cluster to be higher the lower the minimum cluster size is. Using $min\_cluster\_size=6$ tends to give a lower number compared the the true amount, while $min\_cluster\_size=3$ gives usually a higher number than there are actual clusters.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{cluster_differences}
+    \caption{Difference between the predicted and true number of clusters.}
+    \label{fig:cluster_differences}
 \end{figure}
 
 One of the advantages HDBSCAN has over other clustering algorithms, is the ability to work with noise, since we intent on applying it in an online setting, where noisy data is to be expected. At the same time, the number of articles classified as noise should be kept to a minimum. However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is higher, than we would expect it to be based on our test data. A variety of factors play into the high noise ratio. One major influence is due to the used $min\_cluster\_size$. Each news article belonging to a cluster ignored due to a size too small, will be counted as noise. In addition to the false positives due to the min cluster size, the test data does still contain noisy data, even after our efforts in cleaning up the data as good as possible. Nonetheless the expected noise ratio based on the test data is less than 10\%, nowhere close to the 20\% of the current evaluation. Decreasing the noise ratio is certainly an important part in future improvements.
 
 % TODO calculate expected noise ratio based our min cluster sizes.
-
-% experiment with min_samples
 
 \begin{figure}[h]
     \centering
@@ -112,9 +119,7 @@ One of the advantages HDBSCAN has over other clustering algorithms, is the abili
 \end{figure}
 
 
-Having found the optimal settings to run HDBSCAN with, we can start comparing the overall performance with \textit{k}-means. Figure \ref{fig:accuracy_kmeans_hdbscan} shows  a similar behaviour for both clustering methods in value and variance of the accuracy. Although HDBSCAN is generally more accurate than \textit{k}-means, the difference gets smaller with an increase in the sample size. 
-
-Increasing the sample size results for both HDBSCAN and \textit{k}-means in a small loss regarding the accuracy as can be seen in Figure \ref{fig:accuracy_kmeans_hdbscan}. However the accuracy seems to stabilize around the 0.7 mark.
+Having determined the optimal settings to run HDBSCAN with, as text stemming with tf-idf, cosine as the similarity measure and six as the minimum size of clusters, we can start comparing the overall performance with \textit{k}-means. Figure \ref{fig:accuracy_kmeans_hdbscan} shows  a similar behaviour for both clustering methods in value and variance of the accuracy. Although HDBSCAN is generally more accurate than \textit{k}-means, the difference gets smaller with an increase in the sample size. Increasing the sample size results for both HDBSCAN and \textit{k}-means in a small loss regarding the accuracy as can be seen in Figure \ref{fig:accuracy_kmeans_hdbscan}. However the accuracy seems to stabilize around the 0.7 mark.
 
 \begin{figure}[h]
     \centering
@@ -134,19 +139,9 @@ While HDBSCAN and \textit{k}-means provide a similar accuracy, the biggest diffe
     \label{fig:processing_time_kmeans_hdbscan}
 \end{figure}
 
-Figure \ref{fig:cluster_difference_samples} shows, that the difference between predicted over the true number of clusters is fairly low and appears to be roughly linear with the overall number of clusters.  
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{cluster_difference_samples}
-    \caption{Ratio of difference over predicted with true number of clusters}
-    \label{fig:cluster_difference_samples}
-\end{figure}
-
-
 
 As a final note, we compare HDBSCAN with six different clustering methods taken from scikit-learn. Each method is run with a variety of parameters and the best scores are shown in Figure \ref{fig:different_clusterings}. HDBSCAN provides the highest accuracy, while being still being one of the fastest algorithms. Based on this data, we can assume HDBSCAN to be a good candidate for our use case.
-
+% TODO rewrite
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{different_clusterings}
@@ -165,15 +160,14 @@ The evaluation has shown HDBSCAN to be a good candidate to use for text based cl
 The online clustering is done on a simulated stream of news articles based on the same data set as used in the clustering evaluation. This allows for direct comparison between the detected events and the ground truth. The settings to run the clustering are as follows:
 
 \begin{itemize}
-    \item Text Lemmatisation
-    \item Vectorizer: tf-idf
+    \item Preprocessing: Text stemming
+    \item Vector space model: tf-idf
     \item Clustering method: HDBSCAN
-    \item Min cluster size: 5
+    \item Minimum cluster size: 6
     \item Distance metric: cosine
 \end{itemize}
 
 The clustering is run over 30 days with a total of 42'916 news articles. The distribution of news articles this time period is illustrated in Figure \ref{fig:news_articles_over_time}. The time delta, which is the amount of time between two batches, is set to one hour. 
-
 
 \begin{figure}[h]
     \centering

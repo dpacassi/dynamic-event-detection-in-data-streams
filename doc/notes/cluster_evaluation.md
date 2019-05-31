@@ -113,6 +113,9 @@ docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py
 
 docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 150,250,400,700,900 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
 
+docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 350,450,550,650,750,850,950 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+
+
 docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 1500,2000,3000 --runs 2 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
 
 
