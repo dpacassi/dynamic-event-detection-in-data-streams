@@ -935,6 +935,54 @@ def table_expected_noise_rate():
     print(latex)
     
 
+def table_specific_examples(story, method_evaluation):
+    connection = db.get_connection()
+    n_articles = 10
+
+    sql = (
+        "select title, newspaper_text, story, cluster.id, publisher from news_article"
+        " join cluster_news_article on news_article.id = cluster_news_article.news_article_id"
+        " join cluster on cluster.id = cluster_news_article.cluster_id"
+        " where method_evaluation_id = %s and story = %s"
+    )
+
+    detected_articles = pandas.read_sql(sql=sql, con=connection, params=[method_evaluation, story])
+
+    sql = (
+        "select title, newspaper_text, story, publisher from news_article"
+        " where id not in ("
+        "	select  news_article.id from news_article"
+        "	join cluster_news_article on news_article.id = cluster_news_article.news_article_id"
+        "	join cluster on cluster.id = cluster_news_article.cluster_id"
+        "	where method_evaluation_id = %s)"
+        " and story = %s"
+        " and preprocessed = 1;"
+    )
+
+    missed_articles = pandas.read_sql(sql=sql, con=connection, params=[method_evaluation, story])
+
+    print("Detected:", len(detected_articles))
+    print("Missed:", len(missed_articles))
+
+    detected_table = []
+    missed_table = []
+
+    i = 1
+    for index, row in detected_articles[:n_articles].iterrows():
+        detected_table.append([i, row["title"], len(row["newspaper_text"]), row["publisher"]])
+        i += 1
+
+    for index, row in missed_articles[:n_articles].iterrows():
+        missed_table.append([i ,row["title"], len(row["newspaper_text"]), row["publisher"]])
+        i += 1
+
+    latex = tabulate(detected_table, headers=["Nr.", "Title", "Text length", "Source"], tablefmt="latex", floatfmt=".3f")
+    print(latex)
+
+    latex = tabulate(missed_table, headers=["Nr.", "Title", "Text length", "Source"], tablefmt="latex", floatfmt=".3f")
+    print(latex)
+    
+
 def plot_news_article_distribution_per_day():
     connection = db.get_connection()
 
@@ -1089,7 +1137,8 @@ def plot_online_clustering_example(story, keyword):
 #plot_hdbscan_parameters()
 # table_preprocessing()
 # plot_articles_per_story_distribution()
-table_expected_noise_rate()
+#table_expected_noise_rate()
+table_specific_examples('d2_970npmWUODiMcylX3Bo3yrz0_M', 4368)
 
 # Online clustering evaluation
 # plot_news_article_distribution_per_day()

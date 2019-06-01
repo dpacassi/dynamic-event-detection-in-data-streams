@@ -107,6 +107,8 @@ AND newspaper_text NOT LIKE '%%404%%'
      
 ## Evaluation runs
 
+docker-compose run -d cluster_evaluation python cluster_evaluation_framework.py --stories 60 --runs 3
+
 python cluster_evaluation_framework.py --stories 60 --methods hdbscan,kmeans --tokenizers newspaper_text,text_keyterms,text_entities,text_keyterms_and_entities,text_lemmatized_without_stopwords,text_stemmed_without_stopwords --runs 5
 
 docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 30,60,100,200,300,500,600,800,1000 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
