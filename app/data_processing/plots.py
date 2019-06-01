@@ -1,13 +1,16 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.patches as mpatches
 import numpy as np
 import pandas
 import json
 import db
 import collections
 import statistics
-from datetime import datetime
 
+from matplotlib.collections import PatchCollection
+from datetime import datetime
+from datetime import timedelta
 from tabulate import tabulate
 from dotenv import load_dotenv
 
@@ -93,7 +96,7 @@ def plot_accuracy_samples():
     connection = db.get_connection()
 
     # Fixate hdbscan parameters and vectorizer for showing errors of best approach
-    parameters = '{"min_cluster_size": 5, "metric": "cosine"}'
+    parameters = '{"min_cluster_size": 6, "metric": "cosine"}'
     vectorizer = "TfidfVectorizer"
     sql = (
         "select m.mp_score, m.real_clusters, m.method from method_evaluation as m"
@@ -107,7 +110,7 @@ def plot_accuracy_samples():
     data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
     connection.close()
 
-    def format_data(data, method):
+    def _format_data(data, method):
         accuracy_values = collections.defaultdict(list)
         for index, row in data.iterrows():
             if row["method"] == method:
@@ -136,11 +139,11 @@ def plot_accuracy_samples():
 
     X = data["real_clusters"].unique()
 
-    Y, Y_lower_err, Y_higher_err = format_data(data, 'hdbscan')
-    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, label='HDBSCAN')
+    Y, Y_lower_err, Y_higher_err = _format_data(data, 'hdbscan')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, alpha=0.5, label='HDBSCAN')
 
-    Y, Y_lower_err, Y_higher_err = format_data(data, 'kmeans')
-    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, label='K-means')
+    Y, Y_lower_err, Y_higher_err = _format_data(data, 'kmeans')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, alpha=0.5, label='K-means')
 
     plt.xlabel("Number of stories")
     plt.ylabel("MP-Score")
@@ -153,69 +156,109 @@ def plot_accuracy_samples():
 
 
 # Accuracy by different parameters with hdbscan
-def plot_hdbscan_parameters():
+def plot_cluster_differences():
     connection = db.get_connection()
 
     sql = (
-        "select max(m.corrected_avg_unique_accuracy) as accuracy, m.parameters, m.sample_size from method_evaluation as m"
-        " where m.method = 'hdbscan' and m.corrected_avg_unique_accuracy is not null"
-        " group by m.parameters, m.sample_size"
-        " order by m.sample_size"
+        "select abs(m.real_clusters - m.estimated_clusters) as difference, m.parameters, m.real_clusters from method_evaluation as m"
+        " where m.method = 'hdbscan' and m.mp_score is not null"
+        " order by m.real_clusters"
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
 
-    X = data["sample_size"].unique()
-
-    cosine_values = collections.defaultdict(list)
-    euclidean_values = collections.defaultdict(list)
-    Y_min_cluster_sizes = dict()
-
-    for index, row in data.iterrows():
-        parameters = json.loads(row["parameters"])
-        if parameters["metric"] == "cosine":
-            cosine_values[row["sample_size"]].append(row["accuracy"])
-        if parameters["metric"] == "euclidean":
-            euclidean_values[row["sample_size"]].append(row["accuracy"])
-
-        if parameters["min_cluster_size"] not in Y_min_cluster_sizes:
-            Y_min_cluster_sizes[
-                parameters["min_cluster_size"]
-            ] = collections.defaultdict(list)
-
-        Y_min_cluster_sizes[parameters["min_cluster_size"]][row["sample_size"]].append(
-            row["accuracy"]
-        )
+    X = data["real_clusters"].unique()
 
     fig = plt.figure(figsize=(15, 5))
 
-    Y_cosine = [max(x) for x in cosine_values.values()]
-    Y_euclidean = [max(x) for x in euclidean_values.values()]
+    min_size_to_show = [4,5,6,8]
+    marker = {
+        2: 'o',
+        4: 'D',
+        5: 'X',
+        6: 's',
+        8: '^'
+    }
 
     plt.subplot(1, 2, 1)
-    plt.plot(X, Y_cosine, label="Cosine")
-    plt.plot(X, Y_euclidean, label="Euclidean")
-    plt.xlabel("Number of news articles")
-    plt.ylabel("Average Accuracy")
-    plt.ylim(top=1, bottom=0)
-    plt.title("HDBSCAN Metrics")
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "cosine", "difference")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("$|n_{true} - n_{predicted}|$")
+    plt.yscale("log")
+    plt.title("HDBSCAN Difference in clusters using metric=cosine")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
     plt.subplot(1, 2, 2)
 
-    for size, values in Y_min_cluster_sizes.items():
-        Y = [max(x) for x in values.values()]
-        if len(Y) < len(X):
-            Y += [0] * (len(X) - len(Y))
+    Y, Y_lower_err, Y_higher_err = format_data(data, "euclidean", "difference")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
 
-        plt.plot(X, Y, label="m = {}".format(size))
+    plt.xlabel("Number of stories")
+    plt.ylabel("$|n_{true} - n_{predicted}|$")
+    plt.yscale("log")
+    plt.title("HDBSCAN Difference in clusters using metric=euclidean")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    plt.xlabel("Number of news articles")
-    plt.ylabel("Average Accuracy")
+    plt.savefig("../../doc/images/cluster_differences.png")
+    plt.close(fig)
+
+
+# Accuracy by different parameters with hdbscan
+def plot_hdbscan_parameters():
+    connection = db.get_connection()
+
+    sql = (
+        "select m.mp_score as mp_score, m.parameters, m.real_clusters from method_evaluation as m"
+        " where m.method = 'hdbscan' and m.mp_score is not null"
+        " order by m.real_clusters"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["real_clusters"].unique()
+
+    fig = plt.figure(figsize=(15, 5))
+
+    min_size_to_show = [2,4,6,8]
+    marker = {
+        2: 'o',
+        4: 'D',
+        6: 's',
+        8: '^'
+    }
+
+    plt.subplot(1, 2, 1)
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "cosine", "mp_score")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("MP-Score")
     plt.ylim(top=1, bottom=0)
-    plt.title("HDBSCAN Min cluster sizes")
+    plt.title("HDBSCAN Min cluster sizes using metric=cosine")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.subplot(1, 2, 2)
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "euclidean", "mp_score")
+    for size in min_size_to_show:
+        plt.errorbar(X, list(Y[size]), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("MP-Score")
+    plt.ylim(top=1, bottom=0)
+    plt.title("HDBSCAN Min cluster sizes using metric=euclidean")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
@@ -223,60 +266,92 @@ def plot_hdbscan_parameters():
     plt.close(fig)
 
 
+def format_data(data, metric, key):
+    Y_min_cluster_sizes = dict()
+
+    for index, row in data.iterrows():
+        parameters = json.loads(row["parameters"])
+
+        if parameters["metric"] == metric:
+            if parameters["min_cluster_size"] not in Y_min_cluster_sizes:
+                Y_min_cluster_sizes[
+                    parameters["min_cluster_size"]
+                ] = collections.defaultdict(list)
+
+            Y_min_cluster_sizes[parameters["min_cluster_size"]][row["real_clusters"]].append(
+                row[key]
+            )
+
+    Y = collections.defaultdict(list)
+    Y_lower_err = collections.defaultdict(list)
+    Y_higher_err = collections.defaultdict(list)
+    for size, values_per_clusters in Y_min_cluster_sizes.items():
+        for values in values_per_clusters.values():
+            v = list(values)
+            mean = statistics.median(v)
+            Y[size].append(mean)
+            Y_lower_err[size].append(mean - min(v))
+            Y_higher_err[size].append(max(v) - mean)
+
+    return Y, Y_lower_err, Y_higher_err
+
+
 # HDBSCAN Noise ratio with number of samples
 def plot_noise_ratio_samples():
     connection = db.get_connection()
 
-    # TODO with different min_cluster_sizes
     sql = (
-        "select min(m.n_noise / m.sample_size) as n_noise, m.sample_size from method_evaluation as m"
-        " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
-        " group by m.sample_size"
-    )
-
-    data = pandas.read_sql(sql=sql, con=connection)
-    connection.close()
-
-    X = data["sample_size"].unique()
-    Y_hdbscan = data["n_noise"].values
-
-    fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label="HDBSCAN")
-    plt.xlabel("Number of news articles")
-    plt.ylabel("Noise ratio")
-    plt.ylim(top=1, bottom=0)
-    plt.title("Ratio of samples classified as noise")
-    plt.legend()
-    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
-    plt.savefig("../../doc/images/noise_ratio_samples.png")
-    plt.close(fig)
-
-
-# HDBSCAN cluster difference
-def plot_cluster_difference_samples():
-    connection = db.get_connection()
-
-    sql = (
-        "select min(abs(m.real_clusters - m.estimated_clusters) / m.real_clusters) as diff, m.real_clusters from method_evaluation as m"
-        " where m.method in ('hdbscan') and m.corrected_avg_unique_accuracy is not null"
-        " group by m.real_clusters"
+        "select (m.n_noise / m.sample_size) as n_noise, m.real_clusters, m.parameters from method_evaluation as m"
+        " where m.method in ('hdbscan') and m.mp_score is not null"
+        " "
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
     connection.close()
 
     X = data["real_clusters"].unique()
-    Y_hdbscan = data["diff"].values
 
-    fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label="HDBSCAN")
-    plt.xlabel("Number of clusters")
-    plt.ylabel("|n_true - n_predicted| / n_true")
-    plt.ylim(top=0.1, bottom=0)
-    plt.title("Difference in predicted number of clusters")
+    fig = plt.figure(figsize=(15, 5))
+
+    min_size_to_show = [2,4,6,8]
+    marker = {
+        2: 'o',
+        4: 'D',
+        6: 's',
+        8: '^'
+    }
+
+    plt.subplot(1, 2, 1)
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "cosine", "n_noise")
+
+    for size, values in Y.items():
+        if size in min_size_to_show:
+            plt.errorbar(X, list(values), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("Noise ratio")
+    plt.ylim(top=1, bottom=0)
+    plt.title("Ratio of samples classified as noise using metric=cosine")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
-    plt.savefig("../../doc/images/cluster_difference_samples.png")
+
+    plt.subplot(1, 2, 2)
+
+    Y, Y_lower_err, Y_higher_err = format_data(data, "euclidean", "n_noise")
+    for size, values in Y.items():
+        if size in min_size_to_show:
+            plt.errorbar(X, list(values), yerr=[list(Y_lower_err[size]), list(Y_higher_err[size])], fmt=marker[size], capsize=3, alpha=0.5, label="min = {}".format(size))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("Noise ratio")
+    plt.ylim(top=1, bottom=0)
+    plt.title("Ratio of samples classified as noise using metric=euclidean")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+
+    plt.savefig("../../doc/images/noise_ratio_samples.png")
     plt.close(fig)
 
 
@@ -760,8 +835,9 @@ def table_preprocessing():
     connection = db.get_connection()
 
     sql = (
-        "select m.corrected_avg_unique_accuracy as accuracy, m.parameters, m.real_clusters, tokenizer, vectorizer from method_evaluation as m"
-        " where  m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null and tokenizer != 'None'"
+        "select avg(mp_score) as mp_score , m.parameters, m.real_clusters, tokenizer, vectorizer from method_evaluation as m"
+        " where  m.method in ('kmeans', 'hdbscan') and m.mp_score > 0 and tokenizer != 'None' and m.real_clusters=60"
+        " group by m.parameters, m.method, m.real_clusters, tokenizer, vectorizer"
         " order by m.parameters"
     )
 
@@ -789,7 +865,7 @@ def table_preprocessing():
 
         key = row["vectorizer"] + "_" + row["tokenizer"]
         if key in indicies:
-            table_dict[row["parameters"]][indicies[key]] = round(row["accuracy"], 3)
+            table_dict[row["parameters"]][indicies[key]] = round(row["mp_score"], 3)
             table_dict[row["parameters"]][0] = (
                 row["parameters"]
                 .replace("{", "")
@@ -807,6 +883,57 @@ def table_preprocessing():
     latex = latex.replace("aa", "\\textbf{").replace("bb", "}")
     print(latex)
 
+
+def table_expected_noise_rate():
+    connection = db.get_connection()
+
+    story_sizes = range(2,10)
+    n_articles = []
+
+    sql = ("select count(id) as counter"
+        "	 FROM news_article"
+        "	 WHERE newspaper_processed = 1"
+        "	     AND preprocessed = 1"
+        "	     AND title_keywords_intersection = 1"
+        "	     AND hostname != 'newsledge.com'"
+        "	     AND hostname != 'www.newsledge.com'"
+        "	     AND newspaper_text IS NOT NULL"
+        "	     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "	     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "	     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "	     AND newspaper_text NOT LIKE '%%404%%'"
+        "	     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "	     AND computed_publish_date is not NULL")
+
+    rows = pandas.read_sql(sql=sql, con=connection)
+    total_articles = rows["counter"].values[0]
+
+    for size in story_sizes:
+        sql = ("select sum(counter) as total from ("
+        "	select count(id) as counter"
+        "	 FROM news_article"
+        "	 WHERE newspaper_processed = 1"
+        "	     AND preprocessed = 1"
+        "	     AND title_keywords_intersection = 1"
+        "	     AND hostname != 'newsledge.com'"
+        "	     AND hostname != 'www.newsledge.com'"
+        "	     AND newspaper_text IS NOT NULL"
+        "	     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "	     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "	     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "	     AND newspaper_text NOT LIKE '%%404%%'"
+        "	     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "	     AND computed_publish_date is not NULL"
+        "	group by story having count(id) < %s"
+        ") as c")
+
+        rows = pandas.read_sql(sql=sql, con=connection, params=[size])
+
+        n_articles.append([size, rows["total"].values[0] / total_articles * 100])
+
+    latex = tabulate(n_articles, tablefmt="latex", floatfmt=".3f")
+    print(latex)
+    
 
 def plot_news_article_distribution_per_day():
     connection = db.get_connection()
@@ -841,15 +968,128 @@ def plot_news_article_distribution_per_day():
     plt.close(fig)
 
 
+def plot_online_clustering_example(story, keyword):
+    connection = db.get_connection()
+
+    sql = (
+        "select id, computed_publish_date, title, story from news_article"
+        " where story = %s and preprocessed = 1 order by computed_publish_date asc"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection, params=[story])
+
+    articles = collections.defaultdict(int)
+    articles_ids = collections.defaultdict(list)
+    article_position_by_id = dict()
+
+    dates = data["computed_publish_date"].values
+    patches = []
+
+    current_time = datetime.fromtimestamp(dates[0].astype(datetime)  / 1e9)
+    end_time = datetime.fromtimestamp(dates[-1].astype(datetime)  / 1e9)
+
+    while current_time < end_time:
+        current_hour = current_time.strftime("%d.%m %H:00") 
+        articles[current_hour] = 0
+        current_time += timedelta(hours=1)
+
+    for i, date in enumerate(dates):
+        data_hour = datetime.fromtimestamp(date.astype(datetime) / 1e9).strftime("%d.%m %H:00") 
+        articles[data_hour] += 50
+        articles_ids[data_hour].append(data["id"].values[i])
+
+    X = articles.keys()
+    Y = [1]*len(X)
+    S = list(articles.values())
+    blue_points = [0]*len(X)
+
+    # prepare coordinates
+    for i, hour in enumerate(articles):
+        if hour in articles_ids:
+            for article_id in articles_ids[hour]:
+                article_position_by_id[article_id] = i
+
+    
+    event_sql = (
+        "select event.id as event_id, news_article.id as news_id, event.type as event_type from event"
+        " join cluster_news_article on cluster_news_article.cluster_id = event.cluster_id"
+        " join cluster on cluster.id = event.cluster_id"
+        " join news_article on cluster_news_article.news_article_id = news_article.id and news_article.story = %s and preprocessed = 1"
+        " where event.insert_date > '2019-05-30 09:00:00'"
+        " order by event.insert_date, news_article.computed_publish_date asc"
+    )
+
+    event_data = pandas.read_sql(sql=event_sql, con=connection, params=[story])
+
+    events = collections.defaultdict(list)
+    colors = dict()
+    for index, row in event_data.iterrows():
+        events[row["event_id"]].append(row["news_id"])
+
+        if row["event_type"] == 1:
+            colors[row["event_id"]] = "tab:green"
+        else:
+            colors[row["event_id"]] = "tab:blue"
+
+    height = 0.0005
+    decrement = 0.0008
+
+    y_pos = 1 + (len(events)-1) / 2 * (decrement)
+
+    draw = True
+    for key, values in events.items():
+        values.sort(key=lambda x: article_position_by_id[x])
+        # we are only interested in complete events
+        if values[0] in article_position_by_id:
+            start_x = article_position_by_id[values[0]]
+            length = article_position_by_id[values[-1]] - start_x + 1
+
+            for value in values:
+                index = article_position_by_id[value]
+                blue_points[index] = S[index]
+
+            #if start_x > 0 or draw:
+            rect = mpatches.Rectangle([start_x - 0.5, y_pos], length, height)
+            patches.append(rect)
+
+            y_pos -= decrement
+        # height += increment
+
+    fig = plt.figure(figsize=(15, 8))
+
+    #plt.ylim(bottom=0.985, top=1.035)
+    plt.yticks([])
+
+    collection = PatchCollection(patches, color=list(colors.values()), alpha=0.3)
+    ax = plt.gca()
+    ax.add_collection(collection)
+
+    plt.scatter(X, Y, s=S, c="black")
+    plt.scatter(X, Y, s=blue_points)
+
+    plt.gcf().autofmt_xdate()
+
+    for label in plt.gca().xaxis.get_ticklabels()[::2]:
+        label.set_visible(False)
+
+    plt.title("News articles and clusters of a single story")
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    if len(patches) > 0:
+        plt.savefig("../../doc/images/online_clustering_example_{}.png".format(story
+        ))
+    plt.close(fig)
+
+
 # Clustering method evaluation
-# plot_accuracy_samples()
+#plot_accuracy_samples()
 # plot_processing_time_samples()
-# plot_cluster_difference_samples()
-# plot_noise_ratio_samples()
-# plot_different_clusterings()
-# plot_hdbscan_parameters()
+#plot_noise_ratio_samples()
+#plot_cluster_differences()
+#plot_hdbscan_parameters()
 # table_preprocessing()
 # plot_articles_per_story_distribution()
+table_expected_noise_rate()
 
 # Online clustering evaluation
 # plot_news_article_distribution_per_day()
@@ -857,5 +1097,18 @@ def plot_news_article_distribution_per_day():
 # plot_event_detection_differences()
 # plot_event_detection_differences_with_threshold()
 # plot_event_detection_differences_with_cluster_size()
-plot_mp_scores_for_event_detection_by_date()
+# plot_mp_scores_for_event_detection_by_date()
 # plot_event_detection_overlap()
+#plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
+#plot_online_clustering_example(story = 'dMz8NzNxiPqTctM7zwUCIuAs__DyM', keyword="hillshire")
+
+# connection = db.get_connection()
+
+# sql = "select story from news_article WHERE newspaper_processed = 1 AND title_keywords_intersection = 1 AND newspaper_text IS NOT NULL and preprocessed = 1 and CAST(computed_publish_date AS DATE) > '2014-05-10' and CAST(computed_publish_date AS DATE) < '2014-06-01' GROUP BY  story HAVING count(id) > 20 and count(id) < 40"
+
+# data = pandas.read_sql(sql=sql, con=connection)
+# print(len(data))
+# for i, story in enumerate(data["story"].values):
+#     print(i)
+#     plot_online_clustering_example(story, i)
+

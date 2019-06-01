@@ -107,13 +107,16 @@ AND newspaper_text NOT LIKE '%%404%%'
      
 ## Evaluation runs
 
-python cluster_evaluation_table.py --stories 60 --methods hdbscan,kmeans --tokenizers newspaper_text,text_keyterms,text_entities,text_keyterms_and_entities,text_lemmatized_without_stopwords,text_stemmed_without_stopwords --runs 5
+python cluster_evaluation_framework.py --stories 60 --methods hdbscan,kmeans --tokenizers newspaper_text,text_keyterms,text_entities,text_keyterms_and_entities,text_lemmatized_without_stopwords,text_stemmed_without_stopwords --runs 5
 
-docker-compose run -d  cluster_evaluation python cluster_evaluation_table.py --methods kmeans,hdbscan  --stories 30,60,100,200,300,500,600,800,1000 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 30,60,100,200,300,500,600,800,1000 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
 
-docker-compose run -d  cluster_evaluation python cluster_evaluation_table.py --methods kmeans,hdbscan  --stories 150,250,400,700,900 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 150,250,400,700,900 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
 
-docker-compose run -d  cluster_evaluation python cluster_evaluation_table.py --methods kmeans,hdbscan  --stories 1500,2000,3000 --runs 2 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 350,450,550,650,750,850,950 --runs 5 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+
+
+docker-compose run -d  cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 1500,2000,3000 --runs 2 --tokenizers text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
 
 
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --rows 1000,2000,3000,4000,5000 --verbose
@@ -123,4 +126,4 @@ docker-compose run -d cluster_evaluation python online_clustering.py --date "201
 
 -------- Test
 
-docker-compose run cluster_evaluation python cluster_evaluation_table.py --methods kmeans,hdbscan  --stories 30 --runs 1 --tokenizers newspaper_text,text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+docker-compose run cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 30 --runs 1 --tokenizers newspaper_text,text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
