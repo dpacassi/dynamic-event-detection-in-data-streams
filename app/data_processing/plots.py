@@ -50,49 +50,8 @@ def plot_different_clusterings():
     plt.savefig("../../doc/images/different_clusterings.png")
     plt.close(fig)
 
-
-# Processing time by number of samples with hdbscan and kmeans
-def plot_processing_time_samples():
-    connection = db.get_connection()
-
-    sql = (
-        "select avg(m.processing_time) as processing_time, m.sample_size, m.method from method_evaluation as m"
-        " where m.method in ('kmeans', 'hdbscan') and m.corrected_avg_unique_accuracy is not null"
-        " and exists (select id from method_evaluation as m2 where m2.sample_size = m.sample_size and m2.method = 'kmeans') "
-        " and exists (select id from method_evaluation as m3 where m3.sample_size = m.sample_size and m3.method = 'hdbscan') "
-        " group by m.sample_size, m.method"
-    )
-
-    data = pandas.read_sql(sql=sql, con=connection)
-    connection.close()
-
-    X = data["sample_size"].unique()
-    Y_hdbscan = data[data["method"] == "hdbscan"]["processing_time"].values
-    Y_kmeans = data[data["method"] == "kmeans"]["processing_time"].values
-
-    fig = plt.figure()
-    plt.plot(X, Y_hdbscan, label="HDBSCAN")
-    plt.plot(X, Y_kmeans, label="K-means")
-    plt.xlabel("Number of news articles")
-    plt.ylabel("Processing time in seconds")
-    plt.yscale("log")
-    plt.xscale("log")
-
-    k = np.array(Y_hdbscan.argmax())
-    plt.text(X[k],Y_hdbscan[k], round(Y_hdbscan[k], 0))
-    
-    k = np.array(Y_kmeans.argmax())
-    plt.text(X[k],Y_kmeans[k], round(Y_kmeans[k], 0))
-
-    plt.title("Average Processing Time by number of samples")
-    plt.legend()
-    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
-    plt.savefig("../../doc/images/processing_time_kmeans_hdbscan.png")
-    plt.close(fig)
-
-
 # Accuracy by number of samples with hdbscan and kmeans
-def plot_accuracy_samples():
+def plot_accuracy_and_processing_time_samples():
     connection = db.get_connection()
 
     # Fixate hdbscan parameters and vectorizer for showing errors of best approach
@@ -108,7 +67,6 @@ def plot_accuracy_samples():
     )
 
     data = pandas.read_sql(sql=sql, con=connection, params=[parameters, vectorizer])
-    connection.close()
 
     def _format_data(data, method):
         accuracy_values = collections.defaultdict(list)
@@ -128,7 +86,8 @@ def plot_accuracy_samples():
 
         return Y, Y_lower_err, Y_higher_err
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(15, 5))
+    plt.subplot(1, 2, 1)
 
     # X = data[data["method"] == "hdbscan"]["real_clusters"].values
     # Y_hdbscan = data[data["method"] == "hdbscan"]["accuracy"].values
@@ -140,10 +99,10 @@ def plot_accuracy_samples():
     X = data["real_clusters"].unique()
 
     Y, Y_lower_err, Y_higher_err = _format_data(data, 'hdbscan')
-    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, alpha=0.5, label='HDBSCAN')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='o', capsize=3, alpha=1, label='HDBSCAN')
 
     Y, Y_lower_err, Y_higher_err = _format_data(data, 'kmeans')
-    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, alpha=0.5, label='K-means')
+    plt.errorbar(X, Y, yerr=[Y_lower_err, Y_higher_err], fmt='^', capsize=3, alpha=1, label='K-means')
 
     plt.xlabel("Number of stories")
     plt.ylabel("MP-Score")
@@ -151,7 +110,44 @@ def plot_accuracy_samples():
     plt.title("MP-Score by number of stories")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
-    plt.savefig("../../doc/images/accuracy_kmeans_hdbscan.png")
+
+    # Processing time by number of samples with hdbscan and kmeans
+
+    sql = (
+        "select avg(m.processing_time) as processing_time, m.real_clusters, m.method from method_evaluation as m"
+        " where m.method in ('kmeans', 'hdbscan') and m.mp_score > 0"
+        " and exists (select id from method_evaluation as m2 where m2.real_clusters = m.real_clusters and m2.method = 'kmeans') "
+        " and exists (select id from method_evaluation as m3 where m3.real_clusters = m.real_clusters and m3.method = 'hdbscan') "
+        " group by m.real_clusters, m.method"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    X = data["real_clusters"].unique()
+    Y_hdbscan = data[data["method"] == "hdbscan"]["processing_time"].values
+    Y_kmeans = data[data["method"] == "kmeans"]["processing_time"].values
+
+
+    plt.subplot(1, 2, 2)
+
+    plt.scatter(X, Y_hdbscan, marker='o', label="HDBSCAN")
+    plt.annotate(str(round(Y_hdbscan[-1], 0)) + " s", (X[-1], Y_hdbscan[-1]))
+
+    plt.scatter(X, Y_kmeans, marker='^', label="K-means")
+    plt.annotate(str(round(Y_kmeans[-1], 0)) + " s", (X[-1], Y_kmeans[-1]))
+
+    plt.xlabel("Number of stories")
+    plt.ylabel("Processing time in seconds")
+    plt.yscale("log")
+    # plt.xscale("log")
+
+    plt.title("Average processing time by number of stories")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+
+    plt.savefig("../../doc/images/accuracy_and_processing_time_kmeans_hdbscan.png")
     plt.close(fig)
 
 
@@ -1130,15 +1126,14 @@ def plot_online_clustering_example(story, keyword):
 
 
 # Clustering method evaluation
-#plot_accuracy_samples()
-# plot_processing_time_samples()
+plot_accuracy_and_processing_time_samples()
 #plot_noise_ratio_samples()
 #plot_cluster_differences()
 #plot_hdbscan_parameters()
 # table_preprocessing()
 # plot_articles_per_story_distribution()
 #table_expected_noise_rate()
-table_specific_examples('d2_970npmWUODiMcylX3Bo3yrz0_M', 4368)
+#table_specific_examples('d2_970npmWUODiMcylX3Bo3yrz0_M', 4368)
 
 # Online clustering evaluation
 # plot_news_article_distribution_per_day()

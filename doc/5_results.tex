@@ -117,7 +117,6 @@ One of the advantages HDBSCAN has over other clustering algorithms, is the abili
 \end{figure}
 
 \begin{table}[h]
-    \label{tab:expected_noise}
     \centering
     \begin{tabular}{|r|r|}
         \hline
@@ -133,6 +132,7 @@ One of the advantages HDBSCAN has over other clustering algorithms, is the abili
         9 & 2.712\% \\ \hline
     \end{tabular}
     \caption{Percentages of ignored news articles because of their cluster size. The values are calculated directly based on the test data.}
+    \label{tab:expected_noise}
 \end{table}
 
 Let us look closer at the data to get insights behind just the score or noise ratio. The first story we focus on is about the hacking of U.S firms by chinese military hackers. Table \ref{tab:clustering_example} shows a number of detected and missed news articles. Based on the text length we see that the missed articles are generally shorter compared with detected articles with one major exception. Nr. 18 with a length of 13980 is nearly twice as long compared with the second longest article. The content of Nr. 18 is a collection of different stories, only the first being about the chinese hackers. It seems reasonable for this article to be missed in the clustering. Articles Nr. 17, 19 and 20 all have a significantly lower length than the others, which might already be enough to classify them as noise. Looking at the actual contents reveals that Nr 17. is about the magazine's paywall, Nr. 19 appears to be a short summary of the publisher itself, and Nr. 20 contains only two sentences about the topic, a link to read more and a hint to download Acrobat Reader. Therefore these three news articles are actual noise and ideally should have been removed during the data cleansing. The remaining news articles appear to be valid articles about the story and do not provide any obvious reasons for why they were regarded as noise during the clustering.
@@ -177,8 +177,8 @@ Let us look closer at the data to get insights behind just the score or noise ra
                 \hline
         \end{tabular}
     }
-    \label{tab:clustering_example}
     \caption{10 correctly detected and 10 missed news articles, which all belong to the same story.}
+    \label{tab:clustering_example}
 \end{table}
 
 To find a possible explanation for the remaining new articles, we take a look at their tf-idf model. Table \ref{tab:clustering_example_features} lists the top 10 keywords per news article, based on the tf-idf model. There we see how the keywords from the detected news articles are quite similar, while the keywords from the missing news articles appear to be more varied with minimal overlap to the keywords from detected articles. This seems to explain why the articles were missing from the cluster. However it is important to note, that the tf-idf model in Table \ref{tab:clustering_example_features} was created from only those 20 articles and used the full text instead of stemming for better readability. The top keywords might differ in the model created for the whole clustering, but we assume the difference in the weights per keyword to be similar enough to the limited model. This indicates, that further work on the vector space model might lead to considerable improvements in the quality of the clustering.
@@ -215,28 +215,20 @@ To find a possible explanation for the remaining new articles, we take a look at
         \hline
         \end{tabular}
         }
-    \label{tab:clustering_example_features}
-    \caption{Top 10 keywords extracted from the tf-idf model.}
+        \caption{Top 10 keywords extracted from the tf-idf model.}
+        \label{tab:clustering_example_features}
 \end{table}
 
-Having determined the optimal settings to run HDBSCAN with, as text stemming with tf-idf, cosine as the similarity measure and six as the minimum size of clusters, we can start comparing the overall performance with \textit{k}-means. Figure \ref{fig:accuracy_kmeans_hdbscan} shows a similar behaviour for both clustering methods in value and variance of the accuracy. Although HDBSCAN is generally more accurate than \textit{k}-means, the difference gets smaller with an increase in the sample size. Additionally the increase in the number of samples results for both HDBSCAN and \textit{k}-means in a small loss regarding the accuracy as can be seen in Figure \ref{fig:accuracy_kmeans_hdbscan} and which we have already observed when analysing HDBSCAN parameters.
+So far we focused on HDBSCAN to determine the optimal settings to run it with. As a next step we can start comparing the overall performance with \textit{k}-means. We use the follwing settings: Text stemming with tf-idf, cosine as the similarity measure and six as the minimum size of clusters. Figure \ref{fig:accuracy_and_processing_time_kmeans_hdbscan} shows a similar behaviour for both clustering methods in value and variance of the accuracy. Although HDBSCAN is generally more accurate than \textit{k}-means, the difference gets smaller with an increase in the sample size. Additionally the increase in the number of samples results for both HDBSCAN and \textit{k}-means in a small loss regarding the accuracy as can be seen in Figure \ref{fig:accuracy_and_processing_time_kmeans_hdbscan} and which we have already observed when analysing HDBSCAN parameters.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.5\textwidth]{accuracy_kmeans_hdbscan}
-    \caption{Comparison of the MP-Score between \textit{k}-means and HDBSCAN}
-    \label{fig:accuracy_kmeans_hdbscan}
+    \includegraphics[width=1\textwidth]{accuracy_and_processing_time_kmeans_hdbscan}
+    \caption{Comparison of the MP-Score and processing time between \textit{k}-means and HDBSCAN}
+    \label{fig:accuracy_and_processing_time_kmeans_hdbscan}
 \end{figure}
 
-While HDBSCAN and \textit{k}-means provide a similar score, the biggest difference can be noted in the processing time in relation to the number of samples. \textit{k}-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$, which is illustrated by Figure \ref{fig:processing_time_kmeans_hdbscan}. Although running the evaluation has also shown the space complexity for HDBSCAN to be substantially higher for larger amounts of samples than with \textit{k}-means. Trying to run HDBSCAN with 100'000 news articles caused in a memory error, even with 64GB of RAM, while \textit{k}-means was able to complete the clustering. The memory issue with large data sets is known and according to the author the current implementation of HDBSCAN is not optimised for memory\cite{hdbscan_memory_issue}. This might be another area for further improvements, although it will not help to increase the score on larger data sets.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.5\textwidth]{processing_time_kmeans_hdbscan}
-    \caption{Processing time in seconds }
-    \label{fig:processing_time_kmeans_hdbscan}
-\end{figure}
-
+While HDBSCAN and \textit{k}-means provide a similar score, the biggest difference can be noted in the processing time in relation to the number of samples. \textit{k}-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$, which is illustrated by Figure \ref{fig:accuracy_and_processing_time_kmeans_hdbscan}. Although running the evaluation has also shown the space complexity for HDBSCAN to be substantially higher for larger amounts of samples than with \textit{k}-means. Trying to run HDBSCAN with 100'000 news articles caused in a memory error, even with 64GB of RAM, while \textit{k}-means was able to complete the clustering. The memory issue with large data sets is known and according to the author the current implementation of HDBSCAN is not optimised for memory\cite{hdbscan_memory_issue}. This might be another area for further improvements, although it will not help to increase the score on larger data sets.
 
 As a final evaluation, we compare HDBSCAN with six different clustering methods taken from scikit-learn. Each method is run with a variety of parameters and the best scores are shown in Figure \ref{fig:different_clusterings}. HDBSCAN provides the highest accuracy, while being still being one of the fastest algorithms. We are aware of our bias for HDBSCAN since we invested a significant amount understanding and analysing it, but it is still interesting to see how well it compares with other clustering methods out of the box.
 
@@ -249,7 +241,7 @@ As a final evaluation, we compare HDBSCAN with six different clustering methods 
 
 \subsubsection{Conclusion}
 
-The evaluation has shown HDBSCAN to be a good candidate to use for text based clustering. It provides an better accuracy than \textit{k}-means, while being significantly faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. Additionally we have shown the required preprocessing and vectorization steps with the ideal parameters to achieve the most accurate results for our data set. However there is a substantial noise ratio, which causes almost a third of the processed samples to be classified as noise. Another consideration is the space complexity  with larger data sets, where we quickly ran into issues when clustering over 50,000 samples. Overall HDBSCAN provides an acceptable accuracy, while still leaving room for further improvements.
+The evaluation has shown HDBSCAN to be a good candidate to use for text based clustering. It provides an better accuracy than \textit{k}-means, while being significantly faster to process. The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth. Additionally we have shown the required preprocessing and vectorization steps with the ideal parameters to achieve the most accurate results for our data set. However there is a substantial noise ratio, which causes almost a third of the processed samples to be classified as noise. We have also analysed individual clusters and discovered, that the vector space model can vary substantially between news articles of the same cluster. Another consideration is the space complexity  with larger data sets, where we quickly ran into issues when clustering high number of samples. Overall HDBSCAN provides an acceptable accuracy, while still leaving room for further improvements.
 
 \subsection{Online clustering}
 
@@ -368,10 +360,8 @@ The second example shown in Figure \ref{fig:online_clustering_example_neighbours
     \label{fig:online_clustering_example_neighbours}
 \end{figure}
 
-The difference in the performance of both examples, can be explained based on the news articles themselves. The first example about the "Gmail redesign" consists mostly of press releases, technology focused news sites such as \textit{Ars Technica} or \textit{PC Magazine}. Therefore the contents of the news articles are of high quality and share the same technical vocabulary. The second example with the new release of the movie "Bad Neighbours" has a wider variety of sources and types of articles. Some news articles are short summaries, while others are interviews or personal reviews. Additionally the vocabulary is more general than compared to technical articles. 
+The difference in the performance of both examples, can be explained based on the news articles themselves. The first example about the "Gmail redesign" consists mostly of press releases, technology focused news sites such as \textit{Ars Technica} or \textit{PC Magazine}. Therefore the contents of the news articles are of high quality and share the same technical vocabulary. The second example with the new release of the movie "Bad Neighbours" has a wider variety of sources and types of articles. Some news articles are short summaries, while others are interviews or personal reviews. Additionally the vocabulary is more general than compared to technical articles and varies stronger between articles. This might lead to differences in the tf-idf model, causing the articles to be not considered similar enough to belong to the same cluster, as was shown in the clustering method evaluation with Table \ref{tab:clustering_example_features}.
 
 \subsubsection{Conclusion}
 
-TODO rewrite with new findings e.g. not as bad as initially thought but still not very good.
-
-While the overall clustering results in good scores, the detection of new events and changes in existing events gives rather poor results. Possible reasons have been explored such as the $min\_cluster\_size$, the noise rate or the general difference in the number of news articles, but there exist no simple solutions for any of them. As a result we conclude that the accuracy of the clustering method used in this approach is insufficient for the detection of events in a news stream. TODO elaborate a bit more
+While the overall clustering results in good scores, the detection of new events and changes in existing events is more sensible to smaller inaccuracies and the volume of incoming data. We explored different settings for the batch size, threshold values and looked at two specific examples for different clusters. It turned out our initial similarity threshold value was set too high and lowering the value resulted in a significant improvement detecting new events. Although the overall performance was still very varied. Possible reasons have been explored such as the $min\_cluster\_size$, the noise rate, the general difference in the number of news articles or the vector space model representing news articles. As a result we conclude that the accuracy of the clustering method used in this approach is insufficient for the detection of events in a news stream, but it would be certainly interesting to see it be applied with different kinds of textual data streams. 
