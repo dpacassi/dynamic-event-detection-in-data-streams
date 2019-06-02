@@ -775,10 +775,6 @@ def plot_event_detection_overlap():
     plt.close(fig)
 
 
-# TODO Accuracy by different vectorizer with hdbscan
-# TODO Accuracy by different preprocessing and vectorizer with hdbscan
-
-
 def plot_articles_per_story_distribution():
     connection = db.get_connection()
 
@@ -799,7 +795,6 @@ def plot_articles_per_story_distribution():
     plt.xlabel("Number of articles")
     plt.ylabel("Number of stories")
     plt.title("Distribution of articles per story")
-    plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
     plt.subplot(1, 3, 2)
@@ -809,7 +804,6 @@ def plot_articles_per_story_distribution():
     plt.xlabel("Number of articles")
     plt.ylabel("Number of stories")
     plt.title("Distribution of articles per story < 100")
-    plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
     plt.subplot(1, 3, 3)
@@ -819,7 +813,6 @@ def plot_articles_per_story_distribution():
     plt.xlabel("Number of articles")
     plt.ylabel("Number of stories")
     plt.title("Distribution of articles per story < 10")
-    plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
 
@@ -1130,8 +1123,8 @@ def plot_online_clustering_example(story, keyword):
 #plot_noise_ratio_samples()
 #plot_cluster_differences()
 #plot_hdbscan_parameters()
-table_preprocessing()
-# plot_articles_per_story_distribution()
+#table_preprocessing()
+plot_articles_per_story_distribution()
 #table_expected_noise_rate()
 #table_specific_examples('d2_970npmWUODiMcylX3Bo3yrz0_M', 4368)
 
