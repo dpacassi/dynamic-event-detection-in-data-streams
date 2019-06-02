@@ -14,25 +14,3 @@ This thesis focuses on developing and evaluating a methodology based on online c
 The first part of this work is in determining a suitable data set, which will be the subject of the clustering and at the same time provide the ground truth for evaluating the results. The evaluation focuses on HDBSCAN as the clustering method and compares it with \textit{k}-means, where HDBSCAN is both faster and more accurate. Moreover, different text preprocessing methods and vector space models are evaluated, with text lemmatisation and tf-idf providing the most promising results. Once applied into an simulated online setting, inaccuracies in the overall clustering have a larger impact on event detection. This results in a significant error rate in the detection of new events, while the detection in changes of existing events shows better results. Overall the error rate in event detection is considered to be too high for real world applications and a possible continuation of this work could be improving the clustering to decrease the error rate in detecting events.
 
 
-% % Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit.
-% The first goal of this bachelor thesis is to define what an event is and how events can be recognized from static data.
-% Depending on the definition, a suitable data set has to be found and chosen in order to create a system
-% which is capable of recognizing events.
-% In the second part, the events should be recognized from a data stream and therefore support dynamic event recognition.
-
-% % Vorgehen: informiert exemplarisch über die Untersuchungsanlage.
-% This work uses news API's as data streams and tries to assign the received news articles to different events.
-% An event is defined as a list of different news articles writing about the same story.
-% A possible event could be "Brexit" or an upcoming election.
-% It's important to keep in mind that new events can and should be created over time.
-
-% % Ergebnis: beschreibt die wichtigsten Resultate, Erkenntnisse, offenen Fragen.
-% Assigning news articles to an event can be done by clustering the news articles.
-% In order to achieve best possible results, a comparison between different clustering techniques has been completed.
-% It was revealed that HDBSCAN is a promising candidate for our use case as it delivered the best results.
-
-% Unfortunately HDBSCAN was not made for data coming from data streams but this thesis will show
-% one possible solution on how to deal with this.
-% This work was able to process up to 20'000 news articles with HDBSCAN.
-% A possible continuation of this work could try to extend this number to process more data at once.
-
