@@ -1,15 +1,15 @@
 \section{Conclusion}
 
-\subsection{Lessons learned}
-% State the 3 biggest lessons learned.
-% E.g. HDBSCAN is slightly better than sklearn but way faster.
-Good data set
+\subsection{Summary}
 
-knowing your score
+We started our work by searching for a suitable data set to create our clustering evaluations with. The primary requirement was, to have data points with their corresponding cluster labels. Having a labelled data set allows us to apply external measures and evaluate a resulting clutering against the ground truth. After selecting a few data set for closer inspection, we settled on the News Aggregator Dataset, which contains 422'937 labelled news articles, where a label describes the story the news article is about. Since the same story label applies to multiple news articles, we could use this as a cluster descriptor. Unfortunately the data set only contained headlines, which did not contain enough information for our approach. Therefore we collected the full text from each news article based on the provided source url. The content retrieval process turned out to generate a significant amount of noise, due to expired urls, paywalls, parsing errors or wrong redirects. To reduce the noise, we applied different cleansing techniques and ended up with approximately XXX usable news articles.
 
+Once the data set was ready, we designed an evaluation framework to automatically run clustering methods with a variety of settings. The focus was to find a combination of text preprocessing methods, vector space model and parameters for the clustering method, which would provide the best clustering. Furthermore we developed a custom scoring function to measure the results of a clustering, since existing measures proved to be unintuitive and biased against certain results, such as the number of clusters. After having done many clustering evaluations based on our test data, we focused on analysing the collected data for our primary clustering method HDBSCAN and compared it to \textit{k}-means. The analyse gave valuable insight into the behaviour of HDBSCAN with different vector space models combined with different preprocessing methods and parameters. We noted the initial good performance and the decrease in the quality of the clustering the bigger the sample size got. However the amount of news articles proved to be substantial with up to 30\%. Possible explanations were explored, such as actual noisy data and different representations of articles belonging to the same cluster with tf-idf.
 
+Having determined the optimal settings in the HDBSCAN evaluation, we applied them in a simulated online setting for event detection. The event detection was accomplished by running the clustering in batches over time. Events are detected by comparing a batch with its predecessor. If a batch contains clusters, which do not appear in the previous batch, than those clusters are considered as new events. If a cluster did exist in the previous batch, we look at the difference in assigned news articles and can therefore detect changes in existing event. The detection of events is measured against the ground truth. We explored different batch sizes and similarity thresholds for finding pairs of clusters between batches. Since finding pairs of clusters, requires a large enough overlap in identical news articles, the batch size has to account for this factor with regards to the volume of incoming news articles through the data stream. Additonally since events are represented as clusters, the sum of events can be regarded as a subclustering of the overall clustering. Although this makes the subclustering more sensitive to inaccuracies in the overall clustering, which explains the high error rate we observed in detecting new events. In conlcusion we found the error rate in detected events to be rather high for our approach and therefore not applicable in a real world scenario in its current state. 
 
 \subsection{Future work}
+
 
 How can this work be improved further?
 
@@ -17,8 +17,21 @@ Using a center point as label for the event.
 
 Improve vector space model
 
+using different text data 
+
 \begin{itemize}
     \item Improving space complexity and noise ratio of HDBSCAN.
     \item Alternatively, use HDBSCAN as an approximation for the number of clusters and a different clustering algorithm
     for the actual creation of the clusters.
 \end{itemize}
+
+
+\subsection{Lessons learned}
+% State the 3 biggest lessons learned.
+% E.g. HDBSCAN is slightly better than sklearn but way faster.
+Good data set -> noise rate
+
+
+knowing your score
+
+
