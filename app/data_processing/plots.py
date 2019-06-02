@@ -1126,11 +1126,11 @@ def plot_online_clustering_example(story, keyword):
 
 
 # Clustering method evaluation
-plot_accuracy_and_processing_time_samples()
+#plot_accuracy_and_processing_time_samples()
 #plot_noise_ratio_samples()
 #plot_cluster_differences()
 #plot_hdbscan_parameters()
-# table_preprocessing()
+table_preprocessing()
 # plot_articles_per_story_distribution()
 #table_expected_noise_rate()
 #table_specific_examples('d2_970npmWUODiMcylX3Bo3yrz0_M', 4368)
