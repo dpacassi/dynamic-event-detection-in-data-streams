@@ -20,15 +20,13 @@ in welcher Inhalte gemäss Ähnlichkeit gruppiert wurden.
 Die umgesetzte Lösung verwendet HDBSCAN als Clustering Methode und vergleicht diese mit
 dem bekannten \textit{k}-means Verfahren.
 Dabei stellte sich heraus, dass HDBSCAN nicht nur schneller, aber auch präziser als \textit{k}-means ist.
-
 Desweiteren wurden auch verschiedene Textvorverarbeitungsmethoden evaluiert.
-Der Einsatz von Text Lemmatisierung und Tf-idf-Mass erwiesen sich hierbei als äusserst erfolgsversprechend.
+Der Einsatz von Text Lemmatisierung und des Tf-idf-Masses erwiesen sich hierbei als äusserst erfolgsversprechend.
 
 Bei der Prüfung der Lösung in einem simulierten Testlauf, führten Ungenauigkeiten im gesamten Clustering
 zu einem negativen Einfluss auf die Ereigniserkennung.
 Dies resultierte in einer signifikanten Fehlerquote bei der Erkennung neuer Ereignisse,
-während die Erkennung von Änderungen bestehender Ereignisse bessere Ergebnisse ergab.
-
+während die Erkennung von Änderungen bestehender Ereignisse bessere Ergebnisse erzielte.
 Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen,
 und eine mögliche Fortsetzung dieser Arbeit könnte die Verbesserung des Clusterings sein,
 um die Fehlerrate bei der Erkennung von Ereignissen zu minimieren.
