@@ -231,6 +231,22 @@ We can quickly see that the first two sentences share a few terms while they do 
 At the same time we see that the term bank has been used twice in the third sentence.
 
 \subsubsection{tf-idf}
+Relying on the Term Frequency alone is a good start but can surely be improved.
+Consider following scenario:
+We have a document \textit{d1} with 100 terms, 10 of them (10 \%) belong to one specific term \textit{t1}.
+In a second document \textit{d2} with 1,000 terms, 10 of them (1 \%) belong to the term \textit{t1}.
+When using Term Frequency as a Vectoriser, both documents will receive for the term \textit{t1} a value of 10.
+However, in the first document \textit{d1} the term should have received a higher value
+than in document \textit{d2} as it covered a bigger percentage of the document.
+
+This is what tf-idf tries to fix.
+
+\begin{equation}
+    w_{x,y} = tf_{x,y} \cdot log(\frac{N}{df_x})
+    \label{equ:tfidf}
+\end{equation}
+
+TODO
 
 \begin{table}[h]
     \centering
