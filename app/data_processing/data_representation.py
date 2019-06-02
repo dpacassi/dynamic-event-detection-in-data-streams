@@ -10,7 +10,9 @@ corpus = [
 ]
 
 # Tfidf.
-vectorizer = TfidfVectorizer(stop_words="english")
+#vectorizer = TfidfVectorizer(stop_words="english")
+
+vectorizer = TfidfVectorizer(norm=None, smooth_idf=False)
 X = vectorizer.fit_transform(corpus)
 f_names = vectorizer.get_feature_names()
 table = []
@@ -20,7 +22,7 @@ for i, row in enumerate(X):
     table.append(dense_row)
 
 latex = tabulate(table, headers=f_names, tablefmt="latex", floatfmt=".3f")
-# print(latex)
+print(latex)
 
 # Similarity.
 s_table = []

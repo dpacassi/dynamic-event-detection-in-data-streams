@@ -5,7 +5,9 @@
 
 % Einleitung: definiert die Problematik und begründet die Relevanz der Arbeit.
 
-While searching for events in data streams, the definition of an event might change over time and can therefore not be defined statically depending on one use case. Furthermore, the dynamic behaviour of data streams themselves might change the definition of an event over time.
+While searching for events in a data stream, the definition of an event is not always clear. Providing static definitions, as most approaches do,
+does not function well for dynamic data streams, which change over time.
+
 
 % Solution
 This thesis focuses on developing and evaluating a methodology based on online clustering, where events can be considered either as changes in clusters over time or as the creation of new clusters. The methodology will be applied in the domain of text mining, with data streams consisting of incoming news articles. This allows news articles to be clustered based on their similarity, as similar news articles are considered to be about the same news story. In addition, the evaluation of the clustering quality is measured with a custom scoring function.
