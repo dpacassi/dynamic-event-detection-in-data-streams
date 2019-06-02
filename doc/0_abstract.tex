@@ -4,30 +4,13 @@
 \section*{Abstract}
 
 % Einleitung: definiert die Problematik und begründet die Relevanz der Arbeit.
-How can events be recognized in a data stream?
-And what is the definition of an event?
-Current event recognition procedures define possible events (or event types) statically when the system starts.
-However, in data streams, the definition should develop dynamically over time as the data and their focus changes over time.
 
-% Methodische Einordnung der Arbeit: Art, Datenbasis und Ziel der Arbeit.
-The first goal of this bachelor thesis is to define what an event is and how events can be recognized from static data.
-Depending on the definition, a suitable data set has to be found and chosen in order to create a system
-which is capable of recognizing events.
-In the second part, the events should be recognized from a data stream and therefore support dynamic event recognition.
+While searching for events in data streams, the definition of an event might change over time and can therefore not be defined statically depending on one use case. Furthermore, the dynamic behaviour of data streams themselves might change the definition of an event over time.
 
-% Vorgehen: informiert exemplarisch über die Untersuchungsanlage.
-This work uses news API's as data streams and tries to assign the received news articles to different events.
-An event is defined as a list of different news articles writing about the same story.
-A possible event could be "Brexit" or an upcoming election.
-It's important to keep in mind that new events can and should be created over time.
+% Solution
+This thesis focuses on developing and evaluating a methodology based on online clustering, where events can be considered either as changes in clusters over time or as the creation of new clusters. The methodology will be applied in the domain of text mining, with data streams consisting of incoming news articles. This allows news articles to be clustered based on their similarity, as similar news articles are considered to be about the same news story. In addition, the evaluation of the clustering quality is measured with a custom scoring function.
 
-% Ergebnis: beschreibt die wichtigsten Resultate, Erkenntnisse, offenen Fragen.
-Assigning news articles to an event can be done by clustering the news articles.
-In order to achieve best possible results, a comparison between different clustering techniques has been completed.
-It was revealed that HDBSCAN is a promising candidate for our use case as it delivered the best results.
+% Summary of results
+The first part of this work is in determining a suitable data set, which will be the subject of the clustering and at the same time provide the ground truth for evaluating the results. The evaluation focuses on HDBSCAN as the clustering method and compares it with \textit{k}-means, where HDBSCAN is both faster and more accurate. Moreover, different text preprocessing methods and vector space models are evaluated, with text lemmatisation and tf-idf providing the most promising results. Once applied into an simulated online setting, inaccuracies in the overall clustering have a larger impact on event detection. This results in a significant error rate in the detection of new events, while the detection in changes of existing events shows better results. Overall the error rate in event detection is considered to be too high for real world applications and a possible continuation of this work could be improving the clustering to decrease the error rate in detecting events.
 
-Unfortunately HDBSCAN was not made for data coming from data streams but this thesis will show
-one possible solution on how to deal with this.
-This work was able to process up to 20'000 news articles with HDBSCAN.
-A possible continuation of this work could try to extend this number to process more data at once.
 
