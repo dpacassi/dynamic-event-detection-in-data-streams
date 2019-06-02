@@ -1,5 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from tabulate import tabulate
+from scipy import spatial
 import numpy as np
 
 corpus = [
@@ -19,7 +20,20 @@ for i, row in enumerate(X):
     table.append(dense_row)
 
 latex = tabulate(table, headers=f_names, tablefmt="latex", floatfmt=".3f")
-print(latex)
+# print(latex)
+
+# Similarity.
+s_table = []
+for i, row in enumerate(X):
+    dense_row = np.squeeze(np.asarray(row.todense()))
+    s = dense_row.tolist()
+    s_table.append(s)
+
+result = 1 - spatial.distance.cosine(s_table[0], s_table[1])
+print(result)
+
+result = 1 - spatial.distance.cosine(s_table[1], s_table[2])
+print(result)
 
 # Count.
 vectorizer = CountVectorizer(stop_words="english")
@@ -32,4 +46,4 @@ for i, row in enumerate(X):
     table.append(dense_row)
 
 latex = tabulate(table, headers=f_names, tablefmt="latex", floatfmt=".3f")
-print(latex)
+# print(latex)
