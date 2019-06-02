@@ -1,24 +1,35 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-corpus = [
-    'This is the first document.',
-    'This document is the second document.',
-    'And this is the third one.',
-    'Is this the first document?',
-]
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from tabulate import tabulate
+import numpy as np
 
 corpus = [
-    'Hello',
-    'Hello',
-    'Hello',
-    'World',
-    'Held',
-    'Hello World'
+    'Rosetta space probe scopes out landing zone',
+    'Landing site search for Rosetta narrows',
+    'Major Bank Shake-up At Bank of England'
 ]
 
-vectorizer = TfidfVectorizer()
+# Tfidf.
+vectorizer = TfidfVectorizer(stop_words="english")
 X = vectorizer.fit_transform(corpus)
+f_names = vectorizer.get_feature_names()
+table = []
 
-# print(vectorizer.get_feature_names())
-# print(X.shape)
+for i, row in enumerate(X):
+    dense_row = np.squeeze(np.asarray(row.todense()))
+    table.append(dense_row)
 
-print(X)
+latex = tabulate(table, headers=f_names, tablefmt="latex", floatfmt=".3f")
+print(latex)
+
+# Count.
+vectorizer = CountVectorizer(stop_words="english")
+X = vectorizer.fit_transform(corpus)
+f_names = vectorizer.get_feature_names()
+table = []
+
+for i, row in enumerate(X):
+    dense_row = np.squeeze(np.asarray(row.todense()))
+    table.append(dense_row)
+
+latex = tabulate(table, headers=f_names, tablefmt="latex", floatfmt=".3f")
+print(latex)
