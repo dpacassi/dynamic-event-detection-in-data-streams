@@ -7,7 +7,7 @@ In this chapter we will explain how the most important techniques used in our th
 \label{sec:text_preprocessing}
 
 When working with text data, many algorithms and processes will need to distinguish words from another.
-In most cases this is done by creating a dictionary of all known words and/or by \textit{vectorizing} text data
+In most cases this is done by creating a dictionary of all known words and/or by \textit{vectorising} text data
 in order to make them comparable.
 While this works in theory, in reality we deal with a tremendous amount of data.
 This results in huge directories or many vectors and does not only take up more disk space
@@ -183,34 +183,72 @@ See following table for a comparison:
 % TODO: Talk about time.
 
 \subsection{Vector Space Model}
-Todo.
+Comparing text documents with each other is not a straightforward task to do.
+This is the reason why the \gls{vsm} was developed.
 
-\subsubsection{Word Frequency}
-\scalebox{0.75}{
-    \begin{tabular}{rrrrrrrrrrrrr}
-    \hline
-       bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
-    \hline
-      0.000 &     0.000 &     1.000 &   0.000 &     0.000 &   1.000 &     1.000 &    1.000 &    0.000 &   0.000 &  0.000 &   1.000 &  1.000 \\
-      0.000 &     0.000 &     1.000 &   0.000 &     1.000 &   0.000 &     1.000 &    0.000 &    1.000 &   0.000 &  1.000 &   0.000 &  0.000 \\
-      2.000 &     1.000 &     0.000 &   1.000 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   1.000 &  0.000 &   0.000 &  0.000 \\
-    \hline
-    \end{tabular}
-}
+When working with a \gls{vsm}, text documents get vectorised.
+This is succeeded by assigning each unique term over all documents to one dimension.
+
+When we now want to compare two documents with each other,
+we simply compare their vectors with each other.
+
+But how do we vectorise each term of each document to a numerical value?
+Let us have a look at the two most used text vectorisers.
+
+\subsubsection{Term Frequency}
+The easiest vectoriser is the Term Frequency Vectoriser.
+After creating the dictionary of all used terms, it simply sums up the occurrences for each term.
+Consider following three sentences:
+
+\begin{itemize}
+    \item Rosetta space probe scopes out landing zone.
+    \item Landing site search for Rosetta narrows.
+    \item Major Bank Shake-up At Bank of England.
+\end{itemize}
+
+After removing \Glspl{stop_word}, we receive 13 unique terms over all documents.
+As the Term Frequency Vectoriser simply sums the occurences of each term up,
+the \Gls{vsm} looks as in Table \ref{tab:tf_vsm}.
+
+\begin{table}[h]
+    \centering
+    \scalebox{0.85}{
+        \begin{tabular}{rrrrrrrrrrrrr}
+        \hline
+           bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
+        \hline
+          0.000 &     0.000 &     1.000 &   0.000 &     0.000 &   1.000 &     1.000 &    1.000 &    0.000 &   0.000 &  0.000 &   1.000 &  1.000 \\
+          0.000 &     0.000 &     1.000 &   0.000 &     1.000 &   0.000 &     1.000 &    0.000 &    1.000 &   0.000 &  1.000 &   0.000 &  0.000 \\
+          2.000 &     1.000 &     0.000 &   1.000 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   1.000 &  0.000 &   0.000 &  0.000 \\
+        \hline
+        \end{tabular}
+    }
+    \caption{Term Frequency \Gls{vsm}.}
+    \label{tab:tf_vsm}
+\end{table}
+
+We can quickly see that the first two sentences share a few terms while they do not share any terms with the third sentence.
+At the same time we see that the term bank has been used twice in the third sentence.
 
 \subsubsection{tf-idf}
 
-\scalebox{0.75}{
-    \begin{tabular}{rrrrrrrrrrrrr}
-    \hline
-       bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
-    \hline
-      0.000 &     0.000 &     0.335 &   0.000 &     0.000 &   0.440 &     0.335 &    0.440 &    0.000 &   0.000 &  0.000 &   0.440 &  0.440 \\
-      0.000 &     0.000 &     0.373 &   0.000 &     0.490 &   0.000 &     0.373 &    0.000 &    0.490 &   0.000 &  0.490 &   0.000 &  0.000 \\
-      0.756 &     0.378 &     0.000 &   0.378 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   0.378 &  0.000 &   0.000 &  0.000 \\
-    \hline
-    \end{tabular}
-}
+\begin{table}[h]
+    \centering
+    \scalebox{0.85}{
+        \begin{tabular}{rrrrrrrrrrrrr}
+        \hline
+           bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
+        \hline
+          0.000 &     0.000 &     0.335 &   0.000 &     0.000 &   0.440 &     0.335 &    0.440 &    0.000 &   0.000 &  0.000 &   0.440 &  0.440 \\
+          0.000 &     0.000 &     0.373 &   0.000 &     0.490 &   0.000 &     0.373 &    0.000 &    0.490 &   0.000 &  0.490 &   0.000 &  0.000 \\
+          0.756 &     0.378 &     0.000 &   0.378 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   0.378 &  0.000 &   0.000 &  0.000 \\
+        \hline
+        \end{tabular}
+    }
+    \caption{tf-idf \Gls{vsm}.}
+    \label{tab:tfidf_vsm}
+\end{table}
+
 
 \subsection{Clustering}
 Clustering finds similarities in different news articles based on their content and groups them together,
