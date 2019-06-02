@@ -1,0 +1,11 @@
+% Der Umfang des Abstracts sollte nicht mehr als eine A4-Seite sein
+% (nach DIN / ISO / ANSI beschränkt sich ein Abstract auf ca. 250 Wörter, also eine halbe A4-Seite).
+
+\section*{Abstract}
+
+Bei der Suche nach Ereignissen in Datenströmen kann sich die Definition eines Ereignisses im Laufe der Zeit ändern und kann daher nicht abhängig von einem Anwendungsfall statisch definiert werden. Darüber hinaus kann sich durch dynamische Verhalten von Datenströmen selbst die Definition eines Ereignisses im Laufe der Zeit verändern.
+
+Diese Arbeit konzentriert sich auf die Entwicklung und Bewertung einer Methodik, die auf Online-Clustering basiert, wobei Ereignisse entweder als Veränderungen in Clustern im Laufe der Zeit oder als die Erstellung neuer Cluster betrachtet werden. Die Methodik wird im Bereich des Text-Mining angewendet, wobei die Datenströme aus eingehenden News-Artikeln bestehen. Dies ermöglicht es, News-Artikel aufgrund ihrer Ähnlichkeit zu gruppieren, da ähnliche News-Artikel die selben Ereignisse beschreiben. Die Bewertung der Clustering-Qualität mit einer selbst-entwickelten Bewertungsfunktion gemessen.
+
+Der erste Teil dieser Arbeit ist die Wahl eines geeigneten Datensatzes, der Gegenstand des Clusterings sein wird und gleichzeitig die Grundwahrheit für die Auswertung der Ergebnisse liefert. Die Bewertung konzentriert sich auf HDBSCAN als Clustering-Methode und vergleicht sie mit \textit{k}-means, wobei HDBSCAN sowohl schneller als auch genauer ist. Darüber hinaus werden verschiedene Textvorverarbeitungsmethoden und Vektorraummodelle evaluiert, wobei die Lemmatisierung und tf-idf die vielversprechendsten Ergebnisse liefern. Bei der Anwendung in einer simulierten Online-Umgebung, haben Ungenauigkeiten im gesamten Clustering einen grösseren Einfluss auf die Ereigniserkennung. Dies führt zu einer signifikanten Fehlerquote bei der Erkennung neuer Ereignisse, während die Erkennung von Änderungen bestehender Ereignisse bessere Ergebnisse zeigt. Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen, und eine mögliche Fortsetzung dieser Arbeit könnte die Verbesserung des Clusterings sein, um die Fehlerrate bei der Erkennung von Ereignissen zu verringern.
+
