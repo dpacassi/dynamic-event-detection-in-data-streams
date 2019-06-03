@@ -4,29 +4,38 @@
 \section*{Abstract}
 
 Die Erkennung von Ereignissen in Datenströmen kann sich als schwierig erweisen, vorallem dann,
-wenn sich die Definition eines Ereignisses im Laufe der Zeit verändern kann.
+wenn sich die Definition, Inhalte oder Eigenschaften eines Ereignisses im Laufe der Zeit verändern kann.
 
-Diese Arbeit fokussiert sich auf die Entwicklung und Evaluation einer Online-Clustering Lösung,
-in welcher Ereignisse entweder als Cluster-Veränderungen oder aber als Bildung neuer Cluster
-verstanden werden.
+Diese Bachelorarbeit fokussiert sich auf die Entwicklung und Evaluation einer Online-Clustering Lösung,
+in welcher Ereignisse entweder als Veränderungen bestehender Cluster oder aber als Bildung neuer Cluster
+definiert sind.
 Die Lösung ist eine Text-Mining Software, welche über einen Datenstrom neue Newsartikel erhält
 und diese verarbeitet.
 Dabei werden Artikel aufgrund ihrer Ähnlichkeit zu anderen Artikeln verschiedenen Clustern zugewiesen.
 Die Annahme ist, dass sehr änhliche Artikel über dasselbe Thema schreiben.
-Ausserdem wurde für die Qualitätsprüfung des Clusterings eine eigene Bewertungsfunktion entwickelt.
+Zusätzlich wurde für die Evaluation der Clusteringalgorithmen eine eigene Bewertungsfunktion entwickelt.
 
 Im ersten Teil dieser Arbeit wurde nach einem geeigneten Datensatz gesucht,
 in welcher Inhalte gemäss Ähnlichkeit gruppiert wurden.
-Die umgesetzte Lösung verwendet HDBSCAN als Clustering Methode und vergleicht diese mit
-dem bekannten \textit{k}-means Verfahren.
-Dabei stellte sich heraus, dass HDBSCAN nicht nur schneller, aber auch präziser als \textit{k}-means ist.
-Desweiteren wurden auch verschiedene Textvorverarbeitungsmethoden evaluiert.
-Der Einsatz von Text Lemmatisierung und des Tf-idf-Masses erwiesen sich hierbei als äusserst erfolgsversprechend.
+Die umgesetzte Lösung verwendet HDBSCAN als Clustering Methode und vergleicht diese
+mit dem State-of-the Art Verfahren \textit{k}-means.
 
-Bei der Prüfung der Lösung in einem simulierten Testlauf, führten Ungenauigkeiten im gesamten Clustering
-zu einem negativen Einfluss auf die Ereigniserkennung.
+Dabei stellte sich heraus, dass die Verwendung von HDSCAN Vorteile bei der Performanz,
+wie aber auch bei der Präzision gegenüber \textit{k}-means aufweist.
+
+Des Weiteren wurden auch verschiedene Textvorverarbeitungsmethoden evaluiert.
+Der Einsatz von Text Lemmatisierung und des Tf-idf-Masses verbesserten
+die verwendeten Verfahren in Hinsicht auf Präzision.
+
+Bei der abschliessenden Evaluation stellte man fest,
+dass Ungenauigkeiten in den Daten und dem Clusteringverfahren
+zu einem negativen Einfluss auf die Ereigniserkennung führten.
+
+% TODO: à Signifikant? Wie beweisen Sie das (https://de.wikipedia.org/wiki/Statistische_Signifikanz)?
+% TODO: Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen
+%       à Warum? Woher wissen Sie was eine reale Anwendung leisten muss/sollte?
 Dies resultierte in einer signifikanten Fehlerquote bei der Erkennung neuer Ereignisse,
 während die Erkennung von Änderungen bestehender Ereignisse bessere Ergebnisse erzielte.
 Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen,
-und eine mögliche Fortsetzung dieser Arbeit könnte die Verbesserung des Clusterings sein,
+und eine Fortsetzung dieser Arbeit sollte die Verbesserung des Clusterings sein,
 um die Fehlerrate bei der Erkennung von Ereignissen zu minimieren.
