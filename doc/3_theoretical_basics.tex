@@ -257,12 +257,22 @@ the tf-idf implementation\cite{scikit_tfidf} of the library is slightly differen
 see equation \ref{equ:scikit_tfidf}.
 
 \begin{equation}
-    w_{x,y} = tf_{x,y} \cdot log(\frac{1+N}{1+df_x}) + 1
+    w_{x,y} = tf_{x,y} \cdot (log(\frac{1+N}{1+df_x}) + 1)
     \label{equ:scikit_tfidf}
 \end{equation}
 
-If we now calculate the tf-idf value for the term \textit{bank} inside the third sentence (document),
-we receive following value:
+where $tf_{x,y}$ is defined as the equal number of times that term ${_x}$ occurs in document ${_y}$.
+
+If we now calculate the tf-idf value for the term \textit{bank} inside the third document (sentence),
+we receive following value: $3.386$.
+What scikit-learn now does is to normalize this value using the Euclidean norm:
+
+\begin{equation}
+    v_{norm} = \frac{v}{||v||_2} = \frac{v}{\sqrt{v_1{^2}+v_2{^2}+...+v_n{^2}}}
+    \label{equ:euclidean}
+\end{equation}
+
+This results in following values in our \Gls{vsm}:
 
 \begin{table}[h]
     \centering
@@ -281,6 +291,14 @@ we receive following value:
     \label{tab:tfidf_vsm}
 \end{table}
 
+As we can see in Table \ref{tab:tfidf_vsm}, the term \textbf{bank} has in document \textit{d3}
+a rather high value.
+This is because the term is not present in documents \textit{d1} or \textit{d2} but appears
+twice in document \textit{d3}.
+We can also observe that the term \textbf{rosetta} has slightly different values for the
+documents \textit{d1} and \textit{d2}.
+The reason for this is that document \textit{d2} has one term less than document \textit{d1},
+therefor the significance of one term is weighted heavier in document \textit{d2}.
 
 \subsection{Clustering}
 Clustering finds similarities in different news articles based on their content and groups them together,
