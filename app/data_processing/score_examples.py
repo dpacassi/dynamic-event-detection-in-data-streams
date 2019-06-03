@@ -18,6 +18,7 @@ import clusim.sim as sim
 def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels):
     mp_score = score.calculate_mp_score(true_clusters, predicted_clusters)
     nmi = normalized_mutual_info_score(true_labels, predicted_labels, average_method='arithmetic')
+    anmi = adjusted_mutual_info_score(true_labels, predicted_labels)
     completeness = completeness_score(true_labels, predicted_labels)
     v_measure = v_measure_score(true_labels, predicted_labels)
     rand = adjusted_rand_score(true_labels, predicted_labels)
@@ -32,12 +33,15 @@ def compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, 
     nmi2 = sim.nmi(T, C)
     fmeasure = sim.fmeasure(T, C)
     element_sim = sim.element_sim(T, C)
+    ri = sim.rand_index(T, C)
 
     print("------------------")
     print("Example ", nexperiment)
     print("Weigthed Similarity: ", round(mp_score,3))
     print("NMI: ", round(nmi,3))
+    print("AMI: ", round(anmi,3))
     print("NMI2: ", round(nmi2,3))
+    print("RI: ", round(ri,3))
     print("Completeness: ", round(completeness,3))
     print("V-Measure: ", round(v_measure,3))
     print("Adjusted Rand: ", round(rand,3))
@@ -147,7 +151,8 @@ predicted_labels = [1,1,1,1,1,1,1,1,1]
 
 nexperiment += 1
 compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, predicted_labels)
-
+matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
+pprint.pprint(matrix)
 
 # Example 8: same shape/number of clusters but different content
 predicted_clusters = [
@@ -289,3 +294,7 @@ compare_scores(nexperiment, true_clusters, true_labels, predicted_clusters, pred
 # matrix = score.create_similarity_matrix(true_clusters, predicted_clusters)
 # pprint.pprint(matrix)
 # print()
+
+print("----")
+print(normalized_mutual_info_score([1,1,1,2],[1,1,1,1], average_method='arithmetic'))
+print(adjusted_rand_score([1,1,2,2],[1,1,1,2]))
