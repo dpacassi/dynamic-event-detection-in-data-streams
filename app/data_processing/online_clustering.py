@@ -371,7 +371,7 @@ if __name__ == "__main__":
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
-                    persit_clusters_in_db=True)
+                    persit_clusters_in_db=False)
                 
                 db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, hours=hours)
                 previous_clusters = current_clusters
@@ -399,7 +399,7 @@ if __name__ == "__main__":
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
-                    persit_clusters_in_db=True)
+                    persit_clusters_in_db=False)
                 
                 db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, fraction=fraction)
                 previous_clusters = current_clusters
