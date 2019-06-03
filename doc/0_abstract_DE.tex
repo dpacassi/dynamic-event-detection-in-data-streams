@@ -3,9 +3,39 @@
 
 \section*{Abstract}
 
-Bei der Suche nach Ereignissen in Datenströmen kann sich die Definition eines Ereignisses im Laufe der Zeit ändern und kann daher nicht abhängig von einem Anwendungsfall statisch definiert werden. Darüber hinaus kann sich durch dynamische Verhalten von Datenströmen selbst die Definition eines Ereignisses im Laufe der Zeit verändern.
+Die Erkennung von Ereignissen in Datenströmen kann sich als schwierig erweisen, vorallem dann,
+wenn sich die Definition, Inhalte oder Eigenschaften eines Ereignisses im Laufe der Zeit verändern kann.
 
-Diese Arbeit konzentriert sich auf die Entwicklung und Bewertung einer Methodik, die auf Online-Clustering basiert, wobei Ereignisse entweder als Veränderungen in Clustern im Laufe der Zeit oder als die Erstellung neuer Cluster betrachtet werden. Die Methodik wird im Bereich des Text-Mining angewendet, wobei die Datenströme aus eingehenden News-Artikeln bestehen. Dies ermöglicht es, News-Artikel aufgrund ihrer Ähnlichkeit zu gruppieren, da ähnliche News-Artikel die selben Ereignisse beschreiben. Die Bewertung der Clustering-Qualität mit einer selbst-entwickelten Bewertungsfunktion gemessen.
+Diese Bachelorarbeit fokussiert sich auf die Entwicklung und Evaluation einer Online-Clustering Lösung,
+in welcher Ereignisse entweder als Veränderungen bestehender Cluster oder aber als Bildung neuer Cluster
+definiert sind.
+Die Lösung ist eine Text-Mining Software, welche über einen Datenstrom neue Newsartikel erhält
+und diese verarbeitet.
+Dabei werden Artikel aufgrund ihrer Ähnlichkeit zu anderen Artikeln verschiedenen Clustern zugewiesen.
+Die Annahme ist, dass sehr änhliche Artikel über dasselbe Thema schreiben.
+Zusätzlich wurde für die Evaluation der Clusteringalgorithmen eine eigene Bewertungsfunktion entwickelt.
 
-Der erste Teil dieser Arbeit ist die Wahl eines geeigneten Datensatzes, der Gegenstand des Clusterings sein wird und gleichzeitig die Grundwahrheit für die Auswertung der Ergebnisse liefert. Die Bewertung konzentriert sich auf HDBSCAN als Clustering-Methode und vergleicht sie mit \textit{k}-means, wobei HDBSCAN sowohl schneller als auch genauer ist. Darüber hinaus werden verschiedene Textvorverarbeitungsmethoden und Vektorraummodelle evaluiert, wobei die Lemmatisierung und tf-idf die vielversprechendsten Ergebnisse liefern. Bei der Anwendung in einer simulierten Online-Umgebung, haben Ungenauigkeiten im gesamten Clustering einen grösseren Einfluss auf die Ereigniserkennung. Dies führt zu einer signifikanten Fehlerquote bei der Erkennung neuer Ereignisse, während die Erkennung von Änderungen bestehender Ereignisse bessere Ergebnisse zeigt. Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen, und eine mögliche Fortsetzung dieser Arbeit könnte die Verbesserung des Clusterings sein, um die Fehlerrate bei der Erkennung von Ereignissen zu verringern.
+Im ersten Teil dieser Arbeit wurde nach einem geeigneten Datensatz gesucht,
+in welcher Inhalte gemäss Ähnlichkeit gruppiert wurden.
+Die umgesetzte Lösung verwendet HDBSCAN als Clustering Methode und vergleicht diese
+mit dem State-of-the Art Verfahren \textit{k}-means.
 
+Dabei stellte sich heraus, dass die Verwendung von HDSCAN Vorteile bei der Performanz,
+wie aber auch bei der Präzision gegenüber \textit{k}-means aufweist.
+
+Des Weiteren wurden auch verschiedene Textvorverarbeitungsmethoden evaluiert.
+Der Einsatz von Text Lemmatisierung und des Tf-idf-Masses verbesserten
+die verwendeten Verfahren in Hinsicht auf Präzision.
+
+Bei der abschliessenden Evaluation stellte man fest,
+dass Ungenauigkeiten in den Daten und dem Clusteringverfahren
+zu einem negativen Einfluss auf die Ereigniserkennung führten.
+
+% TODO: à Signifikant? Wie beweisen Sie das (https://de.wikipedia.org/wiki/Statistische_Signifikanz)?
+% TODO: Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen
+%       à Warum? Woher wissen Sie was eine reale Anwendung leisten muss/sollte?
+Dies resultierte in einer signifikanten Fehlerquote bei der Erkennung neuer Ereignisse,
+während die Erkennung von Änderungen bestehender Ereignisse bessere Ergebnisse erzielte.
+Insgesamt wird die Fehlerrate bei der Ereigniserkennung als zu hoch für reale Anwendungen angesehen,
+und eine Fortsetzung dieser Arbeit sollte die Verbesserung des Clusterings sein,
+um die Fehlerrate bei der Erkennung von Ereignissen zu minimieren.
