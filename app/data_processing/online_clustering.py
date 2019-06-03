@@ -39,7 +39,7 @@ def cluster_news_by_relative_rows(factor, previous_date, new_date):
     # Lower limit
     nrows = max(nrows, MIN_ROWS)
 
-    return cluster_news_by_rows(nrows, date=new_date)
+    return cluster_news_by_rows(int(nrows), date=new_date)
 
 
 def cluster_news_by_hours(hours, new_date):

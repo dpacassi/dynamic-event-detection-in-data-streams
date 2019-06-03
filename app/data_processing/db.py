@@ -31,7 +31,7 @@ def get_last_script_execution(name):
 
 
 def add_script_execution(
-    name, last_processed_date, processing_time, result, new_rows,  mp_score, threshold, nrows=None, hours=None, fraction=None
+    name, last_processed_date, processing_time, result, new_rows,  mp_score, threshold, nrows=None, hours=None, factor=None
 ):
     connection = get_connection()
 
@@ -44,7 +44,7 @@ def add_script_execution(
     with connection.cursor() as cursor:
         cursor.execute(
             insert_sql,
-            args=[name, last_processed_date, processing_time, result, new_rows, mp_score, threshold, nrows, hours, fraction],
+            args=[name, last_processed_date, processing_time, result, new_rows, mp_score, threshold, nrows, hours, factor],
         )
 
     connection.commit()
