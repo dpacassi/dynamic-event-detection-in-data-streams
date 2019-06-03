@@ -31,20 +31,20 @@ def get_last_script_execution(name):
 
 
 def add_script_execution(
-    name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score, threshold
+    name, last_processed_date, processing_time, result, new_rows,  mp_score, threshold, nrows=None, hours=None, fraction=None
 ):
     connection = get_connection()
 
     insert_sql = (
         "INSERT INTO script_execution"
-        " (script, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score, threshold)"
-        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        " (script, last_processed_date, processing_time, result, new_rows, mp_score, threshold, nrows, hours, fraction)"
+        " VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s )"
     )
 
     with connection.cursor() as cursor:
         cursor.execute(
             insert_sql,
-            args=[name, last_processed_date, failed, log_message, processing_time, result, new_rows, is_full_cluster, nrows, mp_score, threshold],
+            args=[name, last_processed_date, processing_time, result, new_rows, mp_score, threshold, nrows, hours, fraction],
         )
 
     connection.commit()
@@ -155,8 +155,38 @@ def get_news_articles_from_date(date, nrows=1000, skip_rows=0):
 
     return data
 
+def count_incoming_news_articles(startdate, enddate):
+    connection = get_connection()
 
-def get_news_articles_from_startdate_to_enddate(startdate, enddate, nrows=1000, skip_rows=0):
+    get_sql = (
+        "SELECT Count(id) as narticles"
+        " FROM news_article"
+        " WHERE newspaper_processed = 1"
+        "     AND preprocessed = 1"
+        "     AND title_keywords_intersection = 1"
+        "     AND hostname != 'newsledge.com'"
+        "     AND hostname != 'www.newsledge.com'"
+        "     AND newspaper_text IS NOT NULL"
+        "     AND TRIM(COALESCE(newspaper_text, '')) != ''"
+        "     AND newspaper_text NOT LIKE '%%GDPR%%'"
+        "     AND newspaper_text NOT LIKE '%%javascript%%'"
+        "     AND newspaper_text NOT LIKE '%%404%%'"
+        "     AND newspaper_text NOT LIKE '%%cookie%%'"
+        "     AND computed_publish_date is not NULL"
+        "     AND computed_publish_date is not NULL"
+        "     AND computed_publish_date > %s"
+        "     AND computed_publish_date <= %s"
+    )
+
+    data = pandas.read_sql(
+        sql=get_sql, con=connection, params=[startdate, enddate]
+    )
+    connection.close()
+
+    return data["narticles"].values[0]
+
+
+def get_news_articles_from_startdate_to_enddate(startdate, enddate, max, skip_rows=0):
     connection = get_connection()
 
     get_sql = (
@@ -181,7 +211,7 @@ def get_news_articles_from_startdate_to_enddate(startdate, enddate, nrows=1000, 
     )
 
     data = pandas.read_sql(
-        sql=get_sql, con=connection, index_col="id", params=[startdate, enddate, skip_rows, nrows]
+        sql=get_sql, con=connection, index_col="id", params=[startdate, enddate, skip_rows, max]
     )
     connection.close()
 

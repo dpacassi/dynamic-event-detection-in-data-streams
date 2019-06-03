@@ -72,6 +72,8 @@ CREATE TABLE `data_database`.`script_execution` (
   `result` LONGTEXT NULL,
   `new_rows` INT NULL,
   `nrows` INT NULL,
+  `hours` INT NULL,
+  `fraction` FLOAT NULL,
   `mp_score` FLOAT NOT NULL,
   `threshold` FLOAT NULL,
   `is_full_cluster` TINYINT NULL,

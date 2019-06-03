@@ -126,6 +126,22 @@ docker-compose run -d cluster_evaluation python online_clustering.py --date "201
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --rows 3000 --threshold 0.1,0.25,0.5,0.75 --verbose
 
 
+
+docker-compose run cluster_evaluation python online_clustering.py --date "2014-05-12 00:00:00" --run_n_days 2 --fractions 0.1 --threshold 0.1 --verbose
+docker-compose run cluster_evaluation python online_clustering.py --date "2014-05-12 00:00:00" --run_n_days 2 --hours 12 --threshold 0.1 --verbose
+
+
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.01 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.1 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.2 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.3 --threshold 0.1 --verbose
+
+
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 12 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 24 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 48 --threshold 0.1 --verbose
+
+
 -------- Test
 
 docker-compose run cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 30 --runs 1 --tokenizers newspaper_text,text_lemmatized_without_stopwords --vectorizers TfidfVectorizer

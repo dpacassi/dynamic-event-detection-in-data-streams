@@ -19,6 +19,8 @@ from datetime import timedelta
 script_name = os.path.basename(__file__)
 
 MIN_CLUSTER_SIZE = 6
+MAX_ROWS = 30000
+MIN_ROWS = 3000
 
 class Event:
     TOPIC_ADDED = 1
@@ -26,20 +28,28 @@ class Event:
     TOPIC_DELETED = 3
 
 
-def cluster_news_by_date(nrows, date=None):
-    if date is None:
-        last_script_execution = db.get_last_script_execution(script_name)
-        date = (
-            last_script_execution["last_processed_date"].values[0]
-            if last_script_execution is not None
-            else None
-        )
-    news_articles = db.get_news_articles_from_date(date, nrows)
+def cluster_news_by_relative_rows(relative_fraction, previous_date, new_date):
+    # Count incoming news articles
+    number_of_new_articles = db.count_incoming_news_articles(previous_date, new_date)
+
+    nrows = number_of_new_articles * relative_fraction
+    
+    # Upper limit 
+    nrows = min(nrows, MAX_ROWS)
+    # Lower limit
+    nrows = max(nrows, MIN_ROWS)
+
+    return cluster_news_by_rows(nrows, date=new_date)
+
+
+def cluster_news_by_hours(hours, new_date):
+    start_date = new_date - timedelta(hours=hours)
+    news_articles = db.get_news_articles_from_startdate_to_enddate(start_date, new_date, MAX_ROWS)
     return cluster_news(news_articles)
 
 
-def cluster_news_by_nrows(nrows):
-    news_articles = db.get_news_articles(nrows)
+def cluster_news_by_rows(nrows, date):
+    news_articles = db.get_news_articles_from_date(date, nrows)
     return cluster_news(news_articles)
 
 
@@ -59,7 +69,7 @@ def cluster_news(news_articles):
             labels, list(news_articles.index.values)
         )
     clusters = [set(map(int,identifier.split(","))) for identifier in cluster_identifiers]
-    return clusters, news_articles["computed_publish_date"].values[0],
+    return clusters
     
 
 def find_changes_in_clusters(existing_clusters, new_clusters, threshold):
@@ -194,45 +204,8 @@ def persist_cluster_and_events(new_clusters, changed_clusters):
             changes["deletions"] = cluster["deletions"]
             db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
 
-    # Ignore update of existing clusters for now
-    #
-    # # Process changed clusters
-    # for cluster in changed_clusters:
-    #     cluster_id = cluster["cluster_id"]
-    #     changes = {}
 
-    #     if full_cluster:
-    #         identifier = cluster["new_news"]
-    #         changes["additions"] = cluster["additions"]
-    #         changes["deletions"] = cluster["deletions"]
-    #     else:
-    #         # In partial clusters deletions will be ignored, since the deleted articles are most likely not part of
-    #         # the sample subset. We could check in the future if deleted articles are part of the current subset.
-    #         changes["additions"] = cluster["additions"]
-    #         identifier = cluster["old_news"]
-    #         identifier = list(identifier.union(cluster["additions"]))
-    #         identifier.sort()
-            
-    #     identifier = ",".join(map(str,identifier))
-
-    #     if "additions" in changes and len(changes["additions"]) > 0:
-    #         db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
-
-    #     if "deletions" in changes and len(changes["deletions"]) > 0:
-    #         # We ignore deletions for now, since single batches might miss older articles, 
-    #         # which we don't want to count as events. 
-    #         pass
-
-
-def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, threshold=0.75, persit_clusters_in_db=False):
-    # The online method works by regularly fetching articles from a certain date
-    # and cluster them. Once in a while the whole (limited by nrows) dataset will be clustered again.
-    # After each clustering step, the result is compared with the previous one
-    # to recognise new clusters or changes in existing clusters.
-
-    load_dotenv()
-
-    clusters = []
+def run_event_detection(current_clusters=[], existing_clusters=[], verbose=False, threshold=0.75, persit_clusters_in_db=False):
 
     log_message = ""
     failed = False
@@ -240,15 +213,9 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, t
     start = time.time()
 
     try:
-        clusters, last_processed_date = cluster_news_by_date(rows, date)
-
-        if existing_clusters is None:
-            existing_clusters_dataframe = db.get_clusters()
-            existing_clusters = [set(map(int,identifier.split(","))) for identifier in existing_clusters_dataframe["identifier"]]
-
 
         changed_clusters, unchanged_clusters, new_clusters = find_changes_in_clusters(
-            existing_clusters, clusters, threshold
+            existing_clusters, current_clusters, threshold
         )
 
         if persit_clusters_in_db:
@@ -256,7 +223,7 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, t
             persist_cluster_and_events(new_clusters, changed_clusters)
 
         # Get true events based on labelled test data
-        new_news_ids = list(chain.from_iterable(clusters))
+        new_news_ids = list(chain.from_iterable(current_clusters))
         existing_news_ids = list(chain.from_iterable(existing_clusters))
 
         new_rows = len(set(new_news_ids) - set(existing_news_ids))
@@ -264,7 +231,7 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, t
             new_news_ids, existing_news_ids
         )
 
-        mp_score = score.calculate_mp_score(true_clusters, clusters)
+        mp_score = score.calculate_mp_score(true_clusters, current_clusters)
 
         if verbose:
             print("----------------------")
@@ -298,11 +265,9 @@ def run(date, rows, full_cluster=False, verbose=False, existing_clusters=None, t
 
     end = time.time()
     processing_time = end - start
-    db.add_script_execution(
-        script_name, str(date), failed, log_message, processing_time, str(result), new_rows, full_cluster, rows, mp_score, threshold
-    )
 
-    return clusters
+
+    return result, new_rows, mp_score, processing_time
 
 
 # Test run:
@@ -329,10 +294,10 @@ if __name__ == "__main__":
     load_dotenv()
 
     ap = argparse.ArgumentParser(description="Run the batchwise clustering over a simulated stream of news articles.", formatter_class=RawTextHelpFormatter)
-    ap.add_argument("--full-cluster", dest="full_cluster", action="store_true", help="run a full clustering once a day\ndefault: False")
     ap.add_argument("--verbose", dest="verbose", action="store_true", help="\ndefault: False")
-    ap.add_argument("--rows", required=False, type=str, default=1000, help="number of samples to process per batch\ndefault: 1000")
-    ap.add_argument("--full_rows", required=False, type=int, default=10000, help="number of samples to process for the full clustering" )
+    ap.add_argument("--rows", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
+    ap.add_argument("--hours", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
+    ap.add_argument("--fractions", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
     ap.add_argument("--date", required=True, type=str, default=None, help="start date")
     ap.add_argument("--run_n_days", required=False, type=int, default=1, help="number of days to run the batchwise clustering\ndefault: 1")
     ap.add_argument("--threshold", required=False, type=str, default=None, help="similarity threshold for cluster matching\ndefault: 0.75")
@@ -340,36 +305,104 @@ if __name__ == "__main__":
     ap.set_defaults(verbose=False)
     args = vars(ap.parse_args())
 
-    full_cluster = args["full_cluster"]
-    rows = list(map(int, args["rows"].split(",")))
     thresholds = list(map(float, args["threshold"].split(","))) if args["threshold"] is not None else [0.75]
+
+    hours = list(map(float, args["hours"].split(","))) if args["hours"] is not None else list()
+    rows = list(map(float, args["rows"].split(","))) if args["rows"] is not None else list()
+    fractions = list(map(float, args["fractions"].split(","))) if args["fractions"] is not None else list()
+
     date = args["date"]
     verbose = args["verbose"]
     run_n_days = args["run_n_days"]
-    full_rows = args["full_rows"]
 
     # run the simulation:
     # db.reset_online_evaluation()
 
-    for nrows in rows:
-        for threshold in thresholds:
-            print("Start simulation")
+    for threshold in thresholds:
+        print("Start simulation")
+        print("Threshold:", threshold)
+
+        # Method 1: Fixed batch
+        for nrows in rows:
             print("Batch size:", nrows)
-            print("Threshold:", threshold)
+
             current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
             end_date = current_date + timedelta(days=run_n_days)
-            clustering = []
+            previous_clusters = []
+
             while current_date < end_date:
 
                 if verbose:
                     print()
                     print("Date: ", current_date)
-                    
-                if full_cluster and (current_date.hour == 0 or current_date.hour == 24):
-                    clustering = run(current_date, full_rows, True, verbose, clustering, threshold=threshold)
-                else:
-                    clustering = run(current_date, nrows, False, verbose, clustering, threshold=threshold, persit_clusters_in_db=True)
-                    
+
+                current_clusters = cluster_news_by_row(rows, current_date)
+                result, new_rows, mp_score, processing_time = run_event_detection(
+                    current_clusters=current_clusters, 
+                    existing_clusters=previous_clusters, 
+                    verbose=verbose, threshold=threshold, 
+                    persit_clusters_in_db=True)
+                
+                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, rows, mp_score, threshold)
+                previous_clusters = current_clusters
+
                 current_date += timedelta(hours=1)
-            print("End simulation")
-            print("--------------------\n")
+
+        
+        # Method 2: By hours
+        for nhours in hours:
+            print("Hours:", nhours)
+
+            current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+            end_date = current_date + timedelta(days=run_n_days)
+            previous_clusters = []
+
+            while current_date < end_date:
+
+                if verbose:
+                    print()
+                    print("Date: ", current_date)
+
+                current_clusters = cluster_news_by_hours(nhours, current_date)
+                result, new_rows, mp_score, processing_time = run_event_detection(
+                    current_clusters=current_clusters, 
+                    existing_clusters=previous_clusters, 
+                    verbose=verbose, threshold=threshold, 
+                    persit_clusters_in_db=True)
+                
+                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, hours=hours)
+                previous_clusters = current_clusters
+   
+                current_date += timedelta(hours=1)
+
+
+        # Method 3: By relative fraction
+        for fraction in fractions:
+            print("Fraction:", fraction)
+
+            current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+            end_date = current_date + timedelta(days=run_n_days)
+            previous_clusters = []
+            previous_date = current_date
+
+            while current_date < end_date:
+
+                if verbose:
+                    print()
+                    print("Date: ", current_date)
+
+                current_clusters = cluster_news_by_relative_rows(fraction, previous_date, current_date)
+                result, new_rows, mp_score, processing_time = run_event_detection(
+                    current_clusters=current_clusters, 
+                    existing_clusters=previous_clusters, 
+                    verbose=verbose, threshold=threshold, 
+                    persit_clusters_in_db=True)
+                
+                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, fraction=fraction)
+                previous_clusters = current_clusters
+                previous_date = current_date
+
+                current_date += timedelta(hours=1)
+
+        print("End simulation")
+        print("--------------------\n")
