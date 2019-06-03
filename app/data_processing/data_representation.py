@@ -4,8 +4,8 @@ from scipy import spatial
 import numpy as np
 
 corpus = [
-    'Rosetta space probe scopes out landing zone',
-    'Landing site search for Rosetta narrows',
+    'Rosetta space probe scopes out landing zone',  # Removed: out, length: 6
+    'Landing site search for Rosetta narrows',      # Removed: for, length: 5
     'Major Bank Shake-up At Bank of England'
 ]
 
