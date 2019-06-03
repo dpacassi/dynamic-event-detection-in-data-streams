@@ -54,6 +54,9 @@ def cluster_news_by_rows(nrows, date):
 
 
 def cluster_news(news_articles):
+    if len(news_articles) == 0:
+        return list()
+
     vectorizer = TfidfVectorizer(
         min_df=3, max_df=0.9, lowercase=True, analyzer="word", stop_words="english"
     )
