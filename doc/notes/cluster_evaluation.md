@@ -140,6 +140,7 @@ docker-compose run -d cluster_evaluation python online_clustering.py --date "201
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 12 --threshold 0.1 --verbose
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 24 --threshold 0.1 --verbose
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 48 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 72 --threshold 0.1 --verbose
 
 
 -------- Test
