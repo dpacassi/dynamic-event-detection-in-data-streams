@@ -2,16 +2,16 @@
 
 \subsubsection{Design}
 
-Detecting events in a stream of news articles will be achieved by using an online clustering approach. An event is described by the occurrence of multiple news articles to the same subject. The events of interest for this application are the discovery of new stories and the extension of existing stories. Thus we define our two types events as follows:
+Detecting events in a stream of news articles will be achieved by using an online clustering approach. An event is described by the occurrence of multiple news articles about the same story. The events of interest for this application are the discovery of new stories and the extension of existing stories. Thus we define our two types events as follows:
 
 \begin{itemize}
     \item New event: A new cluster of news articles appears in the data stream, which describe the same story.
     \item Event extended: An existing story is extended by additional news articles.
 \end{itemize}
 
-HDBSCAN will be applied as the clustering method, using the optimal settings as discovered in the previous evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustering.
+HDBSCAN will be applied as the clustering method, using the optimal settings  discovered in the clustering method evaluation. Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustering.
 
-Since HDBSCAN only supports static data sets, the clustering will be done in batches using a time based sliding window approach. Events are detected by comparing the resulting clusters with the previous ones.
+The clustering will be done batchwise over time, since HDBSCAN only supports static data sets. Events are detected by comparing clusters from successive batches. Figure \ref{fig:timeline} illustrates this with three batches, where the resulting clusters from batch $t$ will be compared the previous result from batch $t - 1$, while batch $t - 1$ was previously compared with batch $t - 2$. In this example each batch only contains samples from a limited time period, where $\triangle t$ stands for the time period between batches. Since a batch does not contain the full set of samples, we have to consider the overlap between batches. The size of the overlap is essential to find similar clusters different batches. If a similar cluster already exists in the previous batch the differences between these clusters are detected as a change in an existing event. If no pair exists for a cluster from a current batch, this cluster will be regarded as a new event. The similarity between clusters is based on the same assumptions as for the scoring function described in Section \ref{sec:scoring_function}.
 
 \begin{figure}[h]
     \centering
@@ -21,17 +21,17 @@ Since HDBSCAN only supports static data sets, the clustering will be done in bat
         \draw[lightgray, line width=4pt] (0,.5) -- (4,.5);
         \draw[lightgray, dashed] (0,.5) -- (0,0);
         \draw[lightgray, dashed] (4,.5) -- (4,0);
-        \node[align=right] at (-1,.5) {batch $n$};
+        \node[align=right] at (-1,.5) {batch $t - 2$};
 
         \draw[gray, line width=4pt] (1,1) -- (5,1);
         \draw[gray, dashed] (1,1) -- (1,0);
         \draw[gray, dashed] (5,1) -- (5,0);
-        \node[align=right] at (-.2,1) {batch $n + 1$};
+        \node[align=right] at (-.2,1) {batch $t - 1$};
 
         \draw[darkgray, line width=4pt] (2,1.5) -- (6,1.5);
         \draw[darkgray, dashed] (2,1.5) -- (2,0);
         \draw[darkgray, dashed] (6,1.5) -- (6,0);
-        \node[align=right] at (0.8,1.5) {batch $n + 2$};
+        \node[align=right] at (0.8,1.5) {batch $t$};
 
         \node[align=center] at (5.5,-0.85) {$\triangle t$};
         \node[align=center] at (10,-0.5) {t};
@@ -47,13 +47,15 @@ Since HDBSCAN only supports static data sets, the clustering will be done in bat
     \label{fig:timeline}
 \end{figure}
 
-\paragraph{Finding pairs clusters}
-Thus we define our two events as follows:
-To be able to compare clusters of different batches with each other, we have to find pairs of clusters between batches, which describe the same story. This is done by applying the same assumptions as for the scoring function used in the evaluation. Therefore clusters are paired based on their similarity calculated with the Jaccard index as shown in equation \ref{equ:similarity}. If the similarity is above a certain threshold, both clusters are seen as describing the same story.
+The overlap between batches depends on the batch size and the number of new samples in $\triangle t$. A high volume of incoming samples combined with a small batch sizes would result in an overlap too small to find pairs of clusters will. All clusters from the current batch will be detected as new in this case. To decrease the negative impact on the event detection by peaks in the data stream, we need a batch size which grows accordingly. The ideal batch size therefore provides enough overlap between batches to find pairs of clusters and small enough to allow for efficient processing. We explore three different methods for determining the ideal batch size:
 
-\paragraph{Sliding window}
+\begin{enumerate}
+    \item \textbf{Fixed size}: The first method uses a fixed batch size, where each batch processes the most recent \textit{n} samples. This makes the clustering unstable against sudden peaks in the volume of incoming data, but we consider this method as useful benchmark for dynamic methods.
+    \item \textbf{Size by hours}: This method uses a dynamic batch size by loading the samples from the last \textit{n} hours. This enables the batch size to increase and decrease with the volume of the data stream. The number of samples will be limited by an upper bound, to keep the space and time consumption of the clustering method reasonable. 
+    \item \textbf{Size by incoming data}: This method defines the batch size relative to the incoming data. We count the number of new samples since the last batch and multiply it by a predefined factor. For example we want the new samples to be 1 \% of the overall clustering and therefore define the factor as 100. The batch size will be limited by a lower and an upper bound. The lower bound prevents the overlap between batches from getting too small. The upper bound is based on the same reasoning as mentioned in the previous method.
+\end{enumerate}
 
-An important consideration for determining existing or new clusters is the overlap of samples between batches. If the overlap is too small, similar clusters will no longer be detected as such, which would result in an increasingly high error rate. Finding optimal values for the step size between batches and the number of samples for each batch is therefore essential for our online clustering approach.
+The evaluation will use the MP-Score to measure the precision of the event detection, since our model represents an event as a cluster. True events can be extracted directly from the ground truth based on news articles from two successive batches.
 
 \subsubsection{Implementation}
 \label{sec:online_clustering_implementation}

@@ -447,7 +447,7 @@ def plot_event_detection_differences():
 
     sql = (
         "select last_processed_date, result, new_rows, is_full_cluster, nrows, mp_score from script_execution"
-        " where failed = 0 and execution_date < '2019-05-28 14:00:00'"
+        " where failed = 0 and execution_date < '2019-05-28 14:00:00' and nrows is not null"
         " order by last_processed_date"
     )
 
@@ -456,8 +456,61 @@ def plot_event_detection_differences():
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-    nrows = data["nrows"].unique()
-    for nrow in [1000,3000,5000]:
+    _plot_event_differences("nrows", data, plt, ax1, ax2)
+    
+    ax1.set_title("Difference in true vs detected events with batch_size=fixed")
+    ax2.set_title("Difference in true vs detected changes with batch_size=fixed")
+    plt.savefig("../../doc/images/event_detection_differences.png")
+    plt.close(fig)
+
+
+def plot_event_detection_differences_by_hours():
+    connection = db.get_connection()
+
+    sql = (
+        "select last_processed_date, result, new_rows, mp_score, hours from script_execution"
+        " where hours is not null"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
+
+    _plot_event_differences("hours", data, plt, ax1, ax2)
+
+    ax1.set_title("Difference in true vs detected events with batch_size=hours")
+    ax2.set_title("Difference in true vs detected changes with batch_size=hours")
+    plt.savefig("../../doc/images/event_detection_differences_hours.png")
+    plt.close(fig)
+
+
+def plot_event_detection_differences_by_relative():
+    connection = db.get_connection()
+
+    sql = (
+        "select last_processed_date, result, new_rows, mp_score, fraction from script_execution"
+        " where fraction is not null"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
+
+    _plot_event_differences("fraction", data, plt, ax1, ax2)
+
+    ax1.set_title("Difference in true vs detected events with batch_size=relative")
+    ax2.set_title("Difference in true vs detected changes with batch_size=relative")
+    plt.savefig("../../doc/images/event_detection_differences_relative.png")
+    plt.close(fig)
+
+
+def _plot_event_differences(key, data, plt, ax1, ax2):
+    nrows = data[key].unique()
+    for nrow in nrows:
 
         X = []
         Y_add = collections.defaultdict(list)
@@ -465,7 +518,7 @@ def plot_event_detection_differences():
 
         for index, row in data.iterrows():
             result = json.loads(row["result"].replace("'", '"'))
-            if row["nrows"] == nrow:
+            if row[key] == nrow:
                 
                 day = row["last_processed_date"].strftime("%Y-%m-%d") 
                 Y_add[day].append(abs(result["topic_added"]["detected"] - result["topic_added"]["true"]))
@@ -508,14 +561,13 @@ def plot_event_detection_differences():
     plt.ylim(top=100)
     ax1.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
     ax1.legend()
-    ax1.set_title("Difference in new topic detections vs ground truth")
+
     ax1.set_ylabel("Number of events")
+    ax2.set_ylabel("Number of events")
+
     ax2.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
     ax2.legend()
-    ax2.set_title("Difference in topic extension detections vs ground truth")
-    ax2.set_ylabel("Number of events")
-    plt.savefig("../../doc/images/event_detection_differences.png")
-    plt.close(fig)
+
 
 def plot_event_detection_differences_with_threshold():
     connection = db.get_connection()
@@ -732,47 +784,6 @@ def replace_x_ticks_with_date(plt, X):
     plt.xticks(loc, X.values())
     for label in plt.gca().xaxis.get_ticklabels()[::2]:
         label.set_visible(False)
-
-
-def plot_event_detection_overlap():
-    connection = db.get_connection()
-
-    sql = (
-        "select (nrows - new_rows) / nrows as overlap, result, new_rows, nrows, is_full_cluster from script_execution"
-        " where failed = 0"
-        " order by overlap"
-    )
-
-    data = pandas.read_sql(sql=sql, con=connection)
-    connection.close()
-
-    X = data["overlap"].values
-
-    Y_error_add = []
-    Y_error_change = []
-
-    for index, row in data.iterrows():
-        result = json.loads(row["result"].replace("'", '"'))
-
-        topics_added = result["topic_added"]
-        topic_changed = result["topic_changed"]
-
-        Y_error_add.append(abs(topics_added["detected"] - topics_added["true"]))
-        Y_error_change.append(abs(topic_changed["detected"] - topic_changed["true"]))
-
-    fig = plt.figure()
-
-    plt.plot(X, Y_error_add, label="Error Additions")
-    plt.plot(X, Y_error_change, label="Error Changes")
-
-    plt.xlabel("Overlap")
-    plt.ylabel("Detection Error")
-    plt.title("Errors in detected events over cluster overlap")
-    plt.legend()
-    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
-
-    plt.savefig("../../doc/images/event_detection_overlap.png")
-    plt.close(fig)
 
 
 def plot_articles_per_story_distribution():
@@ -1118,13 +1129,57 @@ def plot_online_clustering_example(story, keyword):
     plt.close(fig)
 
 
+def calculate_score_and_variance():
+    connection = db.get_connection()
+
+    sql = (
+        "select last_processed_date, result, new_rows, is_full_cluster, nrows, mp_score from script_execution"
+        " where failed = 0 and threshold < 0.2 and nrows is not null"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    nrows = data["nrows"].unique()
+    for nrow in nrows:
+        Y_mp_score = []
+        Y_change_mp_score = []
+        Y_add_mp_score = []
+
+        for index, row in data.iterrows():
+            result = json.loads(row["result"].replace("'", '"'))
+            if row["nrows"] == nrow:
+                Y_mp_score.append(row["mp_score"])
+
+                Y_change_mp_score.append(result["topic_changed"]["mp_score"])
+                Y_add_mp_score.append(result["topic_added"]["mp_score"])
+            
+        print("Rows:", nrow)
+        print("-- MP Score --")
+        print("Median:", statistics.median(Y_mp_score))
+        print("Average:", statistics.mean(Y_mp_score))
+        print("Variance:", statistics.variance(Y_mp_score))
+        print("Std:", statistics.stdev(Y_mp_score))
+        print("-- New events --")
+        print("Median:", statistics.median(Y_add_mp_score))
+        print("Average:", statistics.mean(Y_add_mp_score))
+        print("Variance:", statistics.variance(Y_add_mp_score))
+        print("Std:", statistics.stdev(Y_add_mp_score))
+        print("-- Event changes --")
+        print("Median:", statistics.median(Y_change_mp_score))
+        print("Average:", statistics.mean(Y_change_mp_score))
+        print("Variance:", statistics.variance(Y_change_mp_score))
+        print("Std:", statistics.stdev(Y_change_mp_score))
+        
+
 # Clustering method evaluation
 #plot_accuracy_and_processing_time_samples()
 #plot_noise_ratio_samples()
 #plot_cluster_differences()
 #plot_hdbscan_parameters()
 #table_preprocessing()
-plot_articles_per_story_distribution()
+#plot_articles_per_story_distribution()
 #table_expected_noise_rate()
 #table_specific_examples('d2_970npmWUODiMcylX3Bo3yrz0_M', 4368)
 
@@ -1135,6 +1190,9 @@ plot_articles_per_story_distribution()
 # plot_event_detection_differences_with_threshold()
 # plot_event_detection_differences_with_cluster_size()
 # plot_mp_scores_for_event_detection_by_date()
+plot_event_detection_differences_by_relative()
+plot_event_detection_differences_by_hours()
+# calculate_score_and_variance()
 # plot_event_detection_overlap()
 #plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
 #plot_online_clustering_example(story = 'dMz8NzNxiPqTctM7zwUCIuAs__DyM', keyword="hillshire")

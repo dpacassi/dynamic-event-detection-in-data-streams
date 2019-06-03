@@ -127,14 +127,14 @@ docker-compose run -d cluster_evaluation python online_clustering.py --date "201
 
 
 
-docker-compose run cluster_evaluation python online_clustering.py --date "2014-05-12 00:00:00" --run_n_days 2 --fractions 0.1 --threshold 0.1 --verbose
+docker-compose run cluster_evaluation python online_clustering.py --date "2014-05-12 00:00:00" --run_n_days 2 --factors 0.1 --threshold 0.1 --verbose
 docker-compose run cluster_evaluation python online_clustering.py --date "2014-05-12 00:00:00" --run_n_days 2 --hours 12 --threshold 0.1 --verbose
 
 
-docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.01 --threshold 0.1 --verbose
-docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.1 --threshold 0.1 --verbose
-docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.2 --threshold 0.1 --verbose
-docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --fractions 0.3 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --factors 150 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --factors 100 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --factors 50 --threshold 0.1 --verbose
+docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --factors 10 --threshold 0.1 --verbose
 
 
 docker-compose run -d cluster_evaluation python online_clustering.py --date "2014-05-08 00:00:00" --run_n_days 30 --hours 12 --threshold 0.1 --verbose

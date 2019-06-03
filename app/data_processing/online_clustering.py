@@ -28,11 +28,11 @@ class Event:
     TOPIC_DELETED = 3
 
 
-def cluster_news_by_relative_rows(relative_fraction, previous_date, new_date):
+def cluster_news_by_relative_rows(factor, previous_date, new_date):
     # Count incoming news articles
     number_of_new_articles = db.count_incoming_news_articles(previous_date, new_date)
 
-    nrows = number_of_new_articles * relative_fraction
+    nrows = number_of_new_articles * factor
     
     # Upper limit 
     nrows = min(nrows, MAX_ROWS)
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     ap.add_argument("--verbose", dest="verbose", action="store_true", help="\ndefault: False")
     ap.add_argument("--rows", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
     ap.add_argument("--hours", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
-    ap.add_argument("--fractions", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
+    ap.add_argument("--factors", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
     ap.add_argument("--date", required=True, type=str, default=None, help="start date")
     ap.add_argument("--run_n_days", required=False, type=int, default=1, help="number of days to run the batchwise clustering\ndefault: 1")
     ap.add_argument("--threshold", required=False, type=str, default=None, help="similarity threshold for cluster matching\ndefault: 0.75")
@@ -312,7 +312,7 @@ if __name__ == "__main__":
 
     hours = list(map(float, args["hours"].split(","))) if args["hours"] is not None else list()
     rows = list(map(float, args["rows"].split(","))) if args["rows"] is not None else list()
-    fractions = list(map(float, args["fractions"].split(","))) if args["fractions"] is not None else list()
+    factors = list(map(float, args["factors"].split(","))) if args["factors"] is not None else list()
 
     date = args["date"]
     verbose = args["verbose"]
@@ -379,9 +379,9 @@ if __name__ == "__main__":
                 current_date += timedelta(hours=1)
 
 
-        # Method 3: By relative fraction
-        for fraction in fractions:
-            print("Fraction:", fraction)
+        # Method 3: By relative factor
+        for factor in factors:
+            print("factor:", factor)
 
             current_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
             end_date = current_date + timedelta(days=run_n_days)
@@ -394,14 +394,14 @@ if __name__ == "__main__":
                     print()
                     print("Date: ", current_date)
 
-                current_clusters = cluster_news_by_relative_rows(fraction, previous_date, current_date)
+                current_clusters = cluster_news_by_relative_rows(factor, previous_date, current_date)
                 result, new_rows, mp_score, processing_time = run_event_detection(
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
                     persit_clusters_in_db=False)
                 
-                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, fraction=fraction)
+                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, factor=factor)
                 previous_clusters = current_clusters
                 previous_date = current_date
 
