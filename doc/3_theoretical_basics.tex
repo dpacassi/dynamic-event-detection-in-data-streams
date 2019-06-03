@@ -234,19 +234,35 @@ At the same time we see that the term bank has been used twice in the third sent
 Relying on the Term Frequency alone is a good start but can surely be improved.
 Consider following scenario:
 We have a document \textit{d1} with 100 terms, 10 of them (10 \%) belong to one specific term \textit{t1}.
-In a second document \textit{d2} with 1,000 terms, 10 of them (1 \%) belong to the term \textit{t1}.
+In a second document \textit{d2} with 1,000 terms, 10 of them (1 \%) belong to the same term \textit{t1}.
 When using Term Frequency as a Vectoriser, both documents will receive for the term \textit{t1} a value of 10.
 However, in the first document \textit{d1} the term should have received a higher value
 than in document \textit{d2} as it covered a bigger percentage of the document.
 
 This is what tf-idf tries to fix.
+Tf-idf was first introduced in 1975 by G. Salton, A. Wong and C. S. Yang \cite{salton1975}
+and defines the equation as displayed in equation \ref{equ:tfidf}.
 
 \begin{equation}
     w_{x,y} = tf_{x,y} \cdot log(\frac{N}{df_x})
     \label{equ:tfidf}
 \end{equation}
 
-TODO
+where $tf_{x,y}$ is the Term Frequency of $x$ in $y$, $N$ the total number of documents
+and $df_x$ the documents containing $x$.
+
+However, it is important to note that nowadays there are different tf-idf implementations.
+As we are using the scikit-learn\cite{scikit-learn} library,
+the tf-idf implementation\cite{scikit_tfidf} of the library is slightly different,
+see equation \ref{equ:scikit_tfidf}.
+
+\begin{equation}
+    w_{x,y} = tf_{x,y} \cdot log(\frac{1+N}{1+df_x}) + 1
+    \label{equ:scikit_tfidf}
+\end{equation}
+
+If we now calculate the tf-idf value for the term \textit{bank} inside the third sentence (document),
+we receive following value:
 
 \begin{table}[h]
     \centering
