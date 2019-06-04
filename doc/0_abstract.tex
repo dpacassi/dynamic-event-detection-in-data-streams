@@ -11,10 +11,10 @@ The assumption is that very similar articles write about the same news story.
 In addition, the evaluation of the clustering quality is measured with a custom scoring function.
 
 The first part of this work consists of determining a suitable data set,
-which will be the subject of the clustering and provide the ground truth for evaluating the results.
+which will be the subject of the clustering and provides the ground truth for evaluating the results.
 The implemented solution uses HDBSCAN as the clustering method
 and compares it with the state-of-the-art method \textit{k}-means.
-It turned out that the use of HDSCAN has advantages over k-means in terms of both performance and precision.
+It turned out that the use of HDSCAN has advantages over \textit{k}-means in terms of both performance and precision.
 Furthermore, various text preprocessing methods and vector space models are evaluated,
 with text lemmatization and tf-idf providing the most promising results.
 Once applied in a simulated online setting,

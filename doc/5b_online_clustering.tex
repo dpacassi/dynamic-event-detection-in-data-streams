@@ -7,7 +7,7 @@
 The online clustering is done on a simulated stream of news articles based on the same data set as used in the clustering evaluation. This allows for direct comparison between the detected events and the ground truth. The settings to run the clustering are as follows:
 
 \begin{itemize}
-    \item Preprocessing: Text lemmatisation
+    \item Preprocessing: Text lemmatization
     \item Vector space model: tf-idf
     \item Clustering method: HDBSCAN
     \item Minimum cluster size: 6
@@ -81,7 +81,7 @@ The raw data in Figure \ref{fig:event_detection_by_date_3000} also shows a direc
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_differences_threshold}
-    \caption{Differences in detected over true events with different thresholds}
+    \caption{Differences in detected over true events with different thresholds and a batch size of 3000}
     \label{fig:event_detection_differences_threshold}
 \end{figure}
 
@@ -94,9 +94,9 @@ Figure \ref{fig:event_detection_differences_threshold} shows the effect of the t
     \label{fig:event_detection_mp_score_3000_0_1}
 \end{figure}
 
-After having analysed the impact of different batch sizes and the similarity threshold, we want to explore the result of using a dynamic batch size. The first dynamic method loads the number of samples over $n$ hours. The second dynamic method calculates the batch size based on the incoming samples and a predefined factor. 
+After having analysed the impact of different batch sizes in detail and the similarity threshold, we want to explore the result of using a dynamic batch size. The first dynamic method loads the number of samples over $n$ hours. The second dynamic method calculates the batch size based on the incoming samples and a predefined factor. The dynamic methods will run with a similarity of 0.1 and an upper limit of 30,000 samples, which is approximately 1000 stories. The number of the upper limit is based on observations from the clustering method evaluation. Higher number of samples resulted in frequent memory errors and while giving lower scores. 
 
-Figure \ref{fig:event_detection_differences_hours} shows the difference in detected events compared with the true number of events using the first dynamic method.  
+Figure \ref{fig:event_detection_differences_hours} shows the difference in detected events compared with the true number of events using the first dynamic method. The variance is still quite high, especially during the peaks, where a lot of news articles are present in the data stream. The best performance is achieved by setting the time window to 24 hours. The average score for the overall clustering is 0.717 with a standard deviation of 0.119. The detection of new events results in an average score of 0.618 with a standard deviation of 0.426 and the detection of changes results in an average score of 0.694 with a standard deviation of 0.16. The resulting scores are better than with using a fixed batch size of 3000, but not by much. The biggest difference is in the average score of the detection of new events, where this method is better by 0.076. Increasing the time window to 48 or 72 hours results in slightly lower scores.
 
 \begin{figure}[h]
     \centering
@@ -105,7 +105,7 @@ Figure \ref{fig:event_detection_differences_hours} shows the difference in detec
     \label{fig:event_detection_differences_hours}
 \end{figure}
 
-Figure \ref{fig:event_detection_differences_hours} shows the difference in detected events compared with the true number of events using the second dynamic  method. Similar 
+Since the first dynamic method only showed a marginal improvement over the static method, we move on to the second dynamic method. In addition to an upper bound, this method uses a lower bound as well, to prevent the overlap between batches from becoming too small. The lower bound  is set to 3000, since the evaluation of a fixed batch sizes proved 3000 to provide the best results. Our initial assumption was, that having a good lower bound would give a good baseline and the relative factor allows the batch size to grow with the increase in the volume of samples. The overall performance should therefore be superior to using only the fixed batch size. The data proved our assumption to be incorrect as can be seen in Figure \ref{fig:event_detection_differences_hours}. The best scores are achieved by using a factor of 25. The overall score is 0.692 with a standard deviation of 0.091. The detection of new events results in a score of 0.589 with a standard deviation of 0.429. The score of detecting changes is 0.682 with a standard deviation of 0.136.
 
 \begin{figure}[h]
    \centering
@@ -114,8 +114,7 @@ Figure \ref{fig:event_detection_differences_hours} shows the difference in detec
    \label{fig:event_detection_differences_relative}
 \end{figure}
 
-bla bla bla.
-
+In addition, the data shows an interesting observation, where using a factor of 50 results in some extreme outliers. The reason can be explained based on our previous clustering evaluation, where we showed the decrease in precision with larger number of samples. Figure \ref{fig:nrows_by_new_rows} shows the maximum number of samples processed in a single batch. The factor 50 reaches the upper limit during most peaks in the data stream. Clustering with 30,000 resulted in an lower average score of roughly 0.24 compared to the best result. Therefore an increasing amount of news articles is classified as noise and stories are further fragmented into multiple clusters. This leads to even bigger decreases in the event detection as this data shows.
 
 
 \begin{figure}[h]
@@ -124,6 +123,8 @@ bla bla bla.
     \caption{Maximum number of processed samples in a single batch per day and factor.}
     \label{fig:nrows_by_new_rows}
  \end{figure}
+
+ To conclude the evaluation of different methods for setting the batch size Table \ref{tab:batch_size_methods} shows the best approach per method. The highest scores are highlighted as bold. Based on this data, the time based method seems to provide the best results, although the differences between the methods are small. The high standard deviation for the detection of new events shows that the detection is quite unstable in its current form. Improving the precision and the stability for the event detection is therefore dependent on improving the overall clustering precision, since the dynamic methods for determining the batch size only show limited impact.  
 
 \begin{table}[h]
     \centering
@@ -134,9 +135,9 @@ bla bla bla.
         \hline
          & Mean & Standard deviation & Mean & Standard deviation & Mean & Standard deviation \\
         \hline
-        Fixed with n=3000 & 0.701 & 0.085 & 0.542 & 0.435 & 0.683 & 0.144\\ \hline
-        Time based with hours=24 & 0.717 & 0.119 & 0.618 & 0.426 & 0.694 & 0.16 \\ \hline
-        Relative with factor=25 & 0.688 & 0.091 & 0.589 & 0.427 & 0.677 & 0.135 \\ \hline
+        Fixed with n=3000 & 0.701 & \textbf{0.085} & 0.542 & 0.435 & 0.683 & 0.144\\ \hline
+        Time based with hours=24 & \textbf{0.717} & 0.119 & \textbf{0.618} & \textbf{0.426} & \textbf{0.694} & 0.16 \\ \hline
+        Relative with factor=25 & 0.692 & 0.091 & 0.589 & 0.429 & 0.682 & \textbf{0.136} \\ \hline
     \end{tabular}
     }
     \caption{Final scores obtained by each method for setting the batch size.}
@@ -144,12 +145,11 @@ bla bla bla.
 \end{table}
 
 %% Refactor:
-Additional reasons for the general low performance in the quality of events might be due to the noise rate and the difference in the number of news articles. As described in the section about the cluster method evaluation, the noise rate for sample sizes between 1000 and 5000 ranges from 20\% to 30\%. This means a significant amount gets discarded as noise and thus potential new events might not even be detected, because too many of their news articles are discarded. Once an event is detected, detection in changes are more reliable than for new events, but as the variance in the MP-Score shows, there is still a fairly large error rate.
+% Additional reasons for the general low performance in the quality of events might be due to the noise rate and the difference in the number of news articles. As described in the section about the cluster method evaluation, the noise rate for sample sizes between 1000 and 5000 ranges from 20\% to 30\%. This means a significant amount gets discarded as noise and thus potential new events might not even be detected, because too many of their news articles are discarded. Once an event is detected, detection in changes are more reliable than for new events, but as the variance in the MP-Score shows, there is still a fairly large error rate.
 
-% TODO how large?
+To get some deeper insight into the behaviour of events, let us look at two specific examples. One where the detection was mostly accurate and a second where the detection failed. The first example is based on the story regarding the "Gmail redesign".
 
-%% Refactor:
-% As a final note let us look at two specific examples. One where the detection was mostly accurate and a second where the detection failed. Figure \ref{fig:online_clustering_example_gmail} shows the result for the story regarding the "Gmail redesign". Each dot represents one or more news articles, which appear at a certain time in the data stream. All news articles belong to the same story. As we can see after five news articles appearing in the stream, a new event is detected marked as green. Following the new event, additional news articles are clustered and detected as part of the existing event marked as blue. The last cluster does not contain all news articles any more, since the first few articles were not part of the last batch. However there is still enough overlap with the cluster from the previous batch, to match this cluster to the existing event about the "Gmail redesign". This example shows a good example of how the online clustering works in the optimal case.
+Each dot represents one or more news articles, which appear at a certain time in the data stream. All news articles belong to the same story. As we can see after five news articles appearing in the stream, a new event is detected marked as green. Following the new event, additional news articles are clustered and detected as part of the existing event marked as blue. The last cluster does not contain all news articles any more, since the first few articles were not part of the last batch. However there is still enough overlap with the cluster from the previous batch, to match this cluster to the existing event about the "Gmail redesign". This example shows a good example of how the online clustering works in the optimal case.
 
 % \begin{figure}[h]
 %     \centering
