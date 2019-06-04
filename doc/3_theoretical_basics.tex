@@ -6,7 +6,7 @@ it is important to ensure a few basics in the area of \Gls{nlp}.
 In this chapter we will explain how the most important techniques used in our thesis work.
 
 \subsection{Text Preprocessing}
-\label{sec:text_preprocessing}
+\label{subsec:text_preprocessing}
 
 When working with text data, many algorithms and methods will need to distinguish words from another.
 In most cases this is done by creating a dictionary of all known words and by \textit{vectorizing} the text data
@@ -28,7 +28,8 @@ Consider the following words:
 Anyone of us will be able to extract the same meaning out of these three words: The country \textit{Switzerland}.
 However, for machines the terms are different to another because they are written differently.
 That is why in most cases it makes sense to lowercase all text before processing them.
-That way we can ensure that the above words also share the same meaning for a machine and thus reduce the dictionary size.
+That way we can ensure that the above words also share the same meaning
+for a machine and thus reduce the dictionary size.
 
 \paragraph{Exceptions}
 There are a few use cases where lowercasing a text is not desired.
@@ -50,10 +51,11 @@ If we are not dealing with books but with articles or papers,
 there are also other alternatives to Keyphrase Extraction and Named Entity Recognition.
 Using \textit{Text Stemming} or \textit{Text Lemmatisation}, we can simplify terms and group them together to reduce
 the dictionary size.
-We will cover both practices in the subsections~\ref{sec:keyphrase_extraction} and \ref{sec:named_entity_recognition}.
+We will cover both practices in the subsections~\ref{subsec:keyphrase_extraction} and \ref{subsec:named_entity_recognition}.
 
 \subsubsection{Keyphrase Extraction}
-\label{sec:keyphrase_extraction}
+\label{subsec:keyphrase_extraction}
+
 When describing any kind of data, a popular thing to do is tagging.
 One of the most well-known tagging procedures are the usage hash tags and user names in social media.
 Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
@@ -82,7 +84,8 @@ than with the whole text.
 Since the dictionary size would be smaller, the data processing time could be improved.
 
 \subsubsection{Named Entity Recognition}
-\label{sec:named_entity_recognition}
+\label{subsec:named_entity_recognition}
+
 Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out from a given text.
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
@@ -123,6 +126,8 @@ Not only was it able to correctly keep the subject's name, \textit{Murray Gell-M
 % TODO: Talk about time.
 
 \subsubsection{Text Stemming}
+\label{subsec:text_stemming}
+
 Text Stemming is a form of Text Normalization which aims to simplify words
 by reducing the inflectional forms of each word into their word stems.
 For example, the words \textit{connected}, \textit{connecting}, \textit{connection} share a similar meaning and could
@@ -140,14 +145,17 @@ In his paper, M.F. Porter was able to process his suffix stripping algorithm in 
 reducing the vocabulary size by \textbf{one third}.
 The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
 
-M.F. Porter improved his stemming algorithm even further by publishing the Porter2 stemming algorithm\cite{SnowballStemmerAlgorithm} in 2002
+M.F. Porter improved his stemming algorithm even further
+by publishing the Porter2 stemming algorithm\cite{SnowballStemmerAlgorithm} in 2002
 which is widely known as the \textit{Snowball stemming algorithm}.
 
 There are even more stemming algoriths, very well known are the Lancester stemming algorithm\cite{LancesterStemmer}
 and the WordNet stemming algorithm\cite{WordNetStemmer}.
 Since M.F. Porter's snowball stemming algorithm is the most widely used one, we decided to go with his algorithm.
 
-\subsubsection{Text Lemmatisation}
+\subsubsection{Text Lemmatization}
+\label{subsec:text_lemmatization}
+
 Similar to \textit{Text Stemming}, Text Lemmatisation has the same goal to group together the inflected forms of a word
 but follows a different approach to do so.
 Instead of processing terms with fixed steps and defined rules,
@@ -184,6 +192,8 @@ See following table for a comparison:
 % TODO: Talk about time.
 
 \subsection{Vector Space Model}
+\label{subsec:vector_space_model}
+
 Comparing text documents with each other is not a straightforward task to do.
 This is the reason why the \gls{vsm} was developed.
 
@@ -194,10 +204,12 @@ When we now want to compare two documents with each other,
 we simply compare their vectors with each other.
 
 But how do we vectorise each term of each document to a numerical value?
-Let us have a look at the two most used text vectorisers.
+Let us have a look at the two most used text vectorizers.
 
 \subsubsection{Term Frequency}
-The easiest vectoriser is the Term Frequency Vectoriser.
+\label{subsec:term_frequency}
+
+The easiest vectoriser is the Term Frequency Vectorizer.
 After creating the dictionary of all used terms, it simply sums up the occurrences for each term.
 Consider following three sentences:
 
@@ -209,7 +221,7 @@ Consider following three sentences:
 
 After removing \Glspl{stop_word}, we receive 13 unique terms over all documents.
 As the Term Frequency Vectoriser simply sums the occurences of each term up,
-the \Gls{vsm} looks as in Table~\ref{tab:tf_vsm}.
+the \Gls{vsm} looks as in \tabref{tab:tf_vsm}.
 
 \begin{table}[h]
     \centering
@@ -228,10 +240,13 @@ the \Gls{vsm} looks as in Table~\ref{tab:tf_vsm}.
     \label{tab:tf_vsm}
 \end{table}
 
-We can quickly see that the first two sentences share a few terms while they do not share any terms with the third sentence.
+We can quickly see that the first two sentences share a few terms
+while they do not share any terms with the third sentence.
 At the same time we see that the term bank has been used twice in the third sentence.
 
 \subsubsection{tf-idf}
+\label{subsec:tf_idf}
+
 Relying on the Term Frequency alone is a good start but can surely be improved.
 Consider following scenario:
 We have a document \textit{d1} with 100 terms, 10 of them (10 \%) belong to one specific term \textit{t1}.
@@ -302,6 +317,8 @@ The reason for this is that document \textit{d2} has one term less than document
 therefor the significance of one term is weighted heavier in document \textit{d2}.
 
 \subsection{Clustering}
+\label{subsec:clustering}
+
 Clustering finds similarities in different news articles based on their content and groups them together,
 while unrelated news are regarded as noise.
 The challenge now arises to find an appropriate clustering method,
@@ -310,6 +327,8 @@ which is able to work with data of varying densities and of high dimensionality.
 % TODO why hdbscan
 
 \subsubsection{\textit{k}-means clustering}
+\label{subsec:kmeans_clustering}
+
 \textit{k}-means clustering is an iterative clustering method which assigns all data points in a given data set
 into k clusters, where k is a predefined number of clusters in the data set.
 
@@ -336,6 +355,8 @@ It then repeats following instructions until reaching convergence:
 \end{itemize}
 
 \subsubsection{DBSCAN}
+\label{subsec:dbscan}
+
 DBSCAN stands for \textit{Density-Based Spatial Clustering of Applications with Noise}
 and is a density based clustering algorithm.
 
@@ -373,6 +394,7 @@ if the distance from the point to the clusters do not differ.
 \end{itemize}
 
 \subsubsection{HDBSCAN}
+\label{subsec:hdbscan}
 
 HDBSCAN is a hierarchical density-based clustering algorithm \cite{McInnes2017},
 based on DBSCAN and improves its sensitivity for clusters of varying densities.
@@ -380,10 +402,11 @@ Therefore defining an epsilon parameter, which acts as a threshold for finding c
 This makes the algorithm more stable and flexible for different applications.
 
 \paragraph{How HDBSCAN works}
-
-Since HDBSCAN is the focus for this thesis, we want to give a more detailed explanation of its inner workings, than for \textit{k}-means or DBSCAN.
+Since HDBSCAN is the focus for this thesis, we want to give a more detailed explanation of its inner workings,
+than for \textit{k}-means or DBSCAN.
 
 HDBSCAN only requires one parameter to be set beforehand:
+
 \begin{enumerate}
     \item minPoints - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
 \end{enumerate}
@@ -391,12 +414,13 @@ HDBSCAN only requires one parameter to be set beforehand:
 The algorithm consist of five steps, which are as follows: 
 
 \subparagraph{1. Transforming the space}
-
 At its core HDBSCAN is a single linkage clustering, which are typically rather sensitive to noise.
 A single noise point between clusters could act a bridge, which would result in both clusters to be seen as one.
 To reduce this issue, the first step is to increase the distances of lower density points.
-This is achieved by to comparing the core distances between two points with the original distance to get the the mutual reachability distance.
-The core distance $core_k(x)$ is defined as the radius of a circle around point $x$, so that $k$ neighbours are contained within this circle.
+This is achieved by to comparing the core distances between two points with the original distance
+to get the the mutual reachability distance.
+The core distance $core_k(x)$ is defined as the radius of a circle around point $x$,
+so that $k$ neighbours are contained within this circle.
 TODO describe example in Figure \ref{fig:hdbscan_1}.
 
 \begin{figure}[h]
@@ -418,16 +442,15 @@ the core distance will be greater than the original distance and thus the two po
 when considering the mutual reachability distance.
 
 \subparagraph{2. Build the minimum spanning tree}
-
 Based on the mutual reachability distances, the next step is to find points close  to each other.
 This is done by creating a minimum spanning tree,
 where edges are weighted according to the mutual reachability distance and a point is represented by a vertex.
-The minimum spanning tree is created one edge at a time, always choosing the lowest distance to a vertex not yet in the tree.
+The minimum spanning tree is created one edge at a time,
+always choosing the lowest distance to a vertex not yet in the tree.
 This is done until each vertex is connected, which results in the minimal set of edges,
 such that dropping any edge will cause the disconnect of one or more vertices from the tree.
 
 \subparagraph{3. Build the cluster hierarchy}
-
 Once the minimum spanning tree is complete, it is converted into a hierarchy of connected clusters,
 by sorting edges of the tree by distance and iterate through, creating a new merged cluster for each edge.
 The dendogram in Figure \ref{fig:hdbscan_2} shows a possible cluster hierarchy. %TODO rewrite this paragraph.
@@ -439,14 +462,14 @@ The dendogram in Figure \ref{fig:hdbscan_2} shows a possible cluster hierarchy. 
     \label{fig:hdbscan_2}
 \end{figure}
 
-At this stage we have to flatten the hierarchy to get the final clusters, which provide the best representation of the current data set.
+At this stage we have to flatten the hierarchy to get the final clusters,
+which provide the best representation of the current data set.
 DBSCAN simply cuts through the hierarchy using a fixed parameter, usually called epsilon, to get the final clusters.
 This approach does not work well with clusters of varying densities and the epsilon parameter itself is unintuitive,
 requiring further exploration to find optimal values.
 This is were HDBSCAN improves upon DBSCAN, by taking additional steps for finding relevant clusters.
 
 \subparagraph{4. Condense the cluster tree}
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{hdbscan_3}
@@ -456,13 +479,14 @@ This is were HDBSCAN improves upon DBSCAN, by taking additional steps for findin
 
 The fourth step consists of condensing the previously built cluster hierarchy into a smaller tree.
 The process starts at the top where all vertices still belong to the same cluster.
-Iterating through the hierarchy, for each split the two resulting clusters are compared against a predefined minimum cluster size.
-If the size of a cluster is below the minimum, its points will be discarded, while the other cluster remains in the parent cluster.
+Iterating through the hierarchy,
+for each split the two resulting clusters are compared against a predefined minimum cluster size.
+If the size of a cluster is below the minimum,
+its points will be discarded, while the other cluster remains in the parent cluster.
 If both cluster sizes are above or equal the minimum, the clusters are considered as true clusters.
 This is repeated until no more splits can be made.
 
 \subparagraph{5. Extract the clusters}
-
 The extraction of the final clusters from the condensed tree is based on the stability per cluster
 and once it is selected, none of its subclusters can be chosen.
 The stability is based on the persistence of a cluster,
@@ -472,7 +496,8 @@ which is measured by $\lambda = \frac{1}{distance}$. The stability for a cluster
 \sum_{p \in \text{C}}^{|C|} ({\lambda}_{p} - {\lambda}_{birth})
 \end{equation}
 
-where ${\lambda}_{p}$ describes when point $p$ fell out of the cluster and $ {\lambda}_{birth}$ describes when the cluster was created.
+where ${\lambda}_{p}$ describes when point $p$ fell out of the cluster and $ {\lambda}_{birth}$
+describes when the cluster was created.
 Now calculating the stability for each cluster starts at the leaf nodes and ends when the root is reached.
 A cluster is selected if its stability is larger the sum of stabilities of its children.
 If the sum child stabilities is larger than that of its parent,
