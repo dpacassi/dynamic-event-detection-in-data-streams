@@ -8,7 +8,7 @@ The precision is be measured with the MP-Score.
 \subsubsection{Setup}
 \label{subsubsec:5a_setup}
 
-\paragraph{Text Preprocessing}
+\paragraph{Text preprocessing}
 The first step in working with text is to apply preprocessing techniques for improving the quality of the data before clustering it.
 We look the five different preprocessing methods as described in Section \ref{subsec:3_text_preprocessing} and evaluate each.
 The methods are:
@@ -21,7 +21,7 @@ The methods are:
     \item Text Stemming
 \end{itemize}
 
-\paragraph{Text Vectorization}
+\paragraph{Text vectorization}
 Before the text can be clustered, it has to be transformed into a vector space model.
 We look at two different models:
 
@@ -43,7 +43,7 @@ The primary parameter for \textit{k}-means is the number of clusters.
 Since \textit{k}-means is used as a benchmark to evaluate HDBSCAN, we provide the true number of clusters for each run.
 Therefore \textit{k}-means runs with an optimal starting point.
 
-\paragraph{Running evaulations}
+\paragraph{Running evaluations}
 The evaluation is done with different sets of news articles per run.
 If we define a run to use 30 stories and set it to repeat five times,
 each repeat will load 30 different stories from the data set.

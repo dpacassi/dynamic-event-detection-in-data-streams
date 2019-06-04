@@ -89,7 +89,7 @@ since our model represents an event as a cluster.
 True events can be extracted directly from the ground truth based on news articles from two successive batches.
 
 \subsubsection{Implementation}
-\label{subsubsec:4c_online_clustering_implementation}
+\label{subsubsec:4c_implementation}
 
 The online clustering implemented for this thesis does not operate in a true online setting,
 but rather it takes our existing test data and simulates a data stream over time.
@@ -111,7 +111,7 @@ The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2
 
 % TODO explain LSH?
 
-\paragraph{Detecting Events}
+\paragraph{Detecting events}
 Once we have found pairs of clusters, which represent the same story, detecting events becomes trivial.
 For each pair we look for news articles, which are only present in the new cluster.
 These articles are then summarized in as an extension of an existing event.
