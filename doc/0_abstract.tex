@@ -1,33 +1,26 @@
-% Der Umfang des Abstracts sollte nicht mehr als eine A4-Seite sein
-% (nach DIN / ISO / ANSI beschränkt sich ein Abstract auf ca. 250 Wörter, also eine halbe A4-Seite).
-
 \section*{Abstract}
 
-% Einleitung: definiert die Problematik und begründet die Relevanz der Arbeit.
+Detecting events in data streams can be difficult,
+especially if the definition, content, or properties of an event change over time.
 
-% While searching for events in a data stream, the definition of an event is not always clear. Providing static definitions, as most approaches do,
-% does not function well for dynamic data streams, which may change the definition of an event over time.
-
-Event detection in dynamic data streams can be challenging, 
-especially if the definition or the properties of an event change over time.
-
-% Solution
-This thesis focuses on developing and evaluating a methodology based on online clustering, where events can be considered either as changes in clusters over time or as the creation of new clusters. 
-The methodology will be applied in the domain of text mining, 
-with data streams consisting of incoming news articles. 
-This allows news articles to be clustered based on their similarity, 
-as similar news articles are considered to be about the same news story. 
+This bachelor thesis focuses on the development and evaluation of an online clustering solution
+in which events are defined either as changes in existing clusters or as the formation of new clusters.
+The solution is a text mining software, which receives new news articles over a data stream and processes them.
+Articles are assigned to different clusters due to their similarity to other articles.
+The assumption is that very similar articles write about the same news story.
 In addition, the evaluation of the clustering quality is measured with a custom scoring function.
 
-% Summary of results
-The first part of this work is in determining a suitable data set, 
-which will be the subject of the clustering and provide the ground truth for evaluating the results. 
-The evaluation focuses on HDBSCAN as the clustering method and compares it with the state-of-the-art \textit{k}-means, 
-where HDBSCAN is both faster and more precise. 
-Moreover, different text preprocessing methods and vector space models are evaluated, with text lemmatisation and tf-idf providing the most promising results. 
-Once applied in a simulated online setting we found the noise rate in the overall clustering to reduce the precision in the event detection.
+The first part of this work consists of determining a suitable data set,
+which will be the subject of the clustering and provide the ground truth for evaluating the results.
+The implemented solution uses HDBSCAN as the clustering method
+and compares it with the state-of-the-art method \textit{k}-means.
+It turned out that the use of HDSCAN has advantages over k-means in terms of both performance and precision.
+Furthermore, various text preprocessing methods and vector space models are evaluated,
+with text lemmatisation and tf-idf providing the most promising results.
+Once applied in a simulated online setting,
+the final evaluation found that the noise rate in the overall clustering reduces the precision in the event detection.
 
-The resulting precision of the clustering is 72 \% with a standard deviation of 12 \%. 
-The precision for detecting new events results in 62 \% with a standard deviation of 43 \%, 
-while the detection of changes in existing events results in a precision of 69 \% with a standard deviation of 16 \%. 
+The resulting precision of the clustering is 73\% with a standard deviation of 8\%.
+The precision for detecting new events results in 63\% with a standard deviation of 43\%.
+Detecting changes in existing events results in a precision 69\% with a standard deviation of 14\%.
 A continuation of this work should focus on improving the overall clustering to increase the precision of the event detection.
