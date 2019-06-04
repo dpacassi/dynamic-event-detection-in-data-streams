@@ -2,21 +2,80 @@
 
 \subsection{Summary}
 
-We started our work by searching for a suitable data set to create our clustering evaluations with. The primary requirement was, to have data points with their corresponding cluster labels. Having a labelled data set allows us to apply external measures and evaluate a resulting clutering against the ground truth. After selecting a few data set for closer inspection, we settled on the News Aggregator Dataset, which contains 422'937 labelled news articles, where a label describes the story the news article is about. Since the same story label applies to multiple news articles, we could use this as a cluster descriptor. Unfortunately the data set only contained headlines, which did not contain enough information for our approach. Therefore we collected the full text from each news article based on the provided source url. The content retrieval process turned out to generate a significant amount of noise, due to expired urls, paywalls, parsing errors or wrong redirects. To reduce the noise, we applied different cleansing techniques and ended up with approximately XXX usable news articles.
+We started our work by searching for a suitable data set to create our clustering evaluations with.
+The primary requirement was, to have data points with their corresponding cluster labels.
+Having a labelled data set allows us to apply external measures and evaluate a resulting clutering against the ground truth.
+After selecting a few data set for closer inspection, we settled on the News Aggregator Dataset,
+which contains 422,937 labelled news articles, where a label describes the story the news article is about.
+Since the same story label applies to multiple news articles, we could use this as a cluster descriptor.
+Unfortunately the data set only contained headlines, which did not contain enough information for our approach.
+Therefore we collected the full text from each news article based on the provided source url.
+The content retrieval process turned out to generate a significant amount of noise,
+due to expired urls, paywalls, parsing errors or wrong redirects.
+To reduce the noise, we applied different cleansing techniques and ended up with approximately TODO usable news articles.
 
-Once the data set was ready, we designed an evaluation framework to automatically run clustering methods with a variety of settings. The focus was to find a combination of text preprocessing methods, vector space model and parameters for the clustering method, which would provide the best clustering. Furthermore we developed a custom scoring function to measure the results of a clustering, since existing measures proved to be unintuitive and biased against certain results, such as the number of clusters. After having done many clustering evaluations based on our test data, we focused on analysing the collected data for our primary clustering method HDBSCAN and compared it to \textit{k}-means. The analyse gave valuable insight into the behaviour of HDBSCAN with different vector space models combined with different preprocessing methods and parameters. We noted the initial good performance and the decrease in the quality of the clustering the bigger the sample size got. However the amount of news articles proved to be substantial with up to 30\%. Possible explanations were explored, such as actual noisy data and different representations of articles belonging to the same cluster with tf-idf.
+Once the data set was ready, we designed an evaluation framework to automatically run clustering methods with a variety of settings.
+The focus was to find a combination of text preprocessing methods,
+vector space model and parameters for the clustering method, which would provide the best clustering.
+Furthermore we developed a custom scoring function to measure the results of a clustering,
+since existing measures proved to be unintuitive and biased against certain results,
+such as the number of clusters.
+After having done many clustering evaluations based on our test data,
+we focused on analysing the collected data for our primary clustering method HDBSCAN and compared it to \textit{k}-means.
+The analysis gave valuable insight into the behaviour of HDBSCAN with different vector space models
+combined with different preprocessing methods and parameters.
+We noted the initial good performance and the decrease in the quality of the clustering the bigger the sample size got.
+However the amount of news articles proved to be substantial with up to 30\%.
+Possible explanations were explored,
+such as actual noisy data and different representations of articles belonging to the same cluster with tf-idf.
 
-Having determined the optimal settings in the HDBSCAN evaluation, we applied them in a simulated online setting for event detection. The event detection was accomplished by running the clustering in batches over time. Events are detected by comparing a batch with its predecessor. If a batch contains clusters, which do not appear in the previous batch, than those clusters are considered as new events. If a cluster did exist in the previous batch, we look at the difference in assigned news articles and can therefore detect changes in existing event. The detection of events is measured against the ground truth. We explored different batch sizes and similarity thresholds for finding pairs of clusters between batches. Since finding pairs of clusters, requires a large enough overlap in identical news articles, the batch size has to account for this factor with regards to the volume of incoming news articles through the data stream. Additionally since events are represented as clusters, the sum of events can be regarded as a subclustering of the overall clustering. Although this makes the subclustering more sensitive to inaccuracies in the overall clustering, which explains the high error rate we observed in detecting new events. In conclusion we found the error rate in detected events to be rather high for our approach and therefore not applicable in a real world scenario in its current state. 
+Having determined the optimal settings in the HDBSCAN evaluation,
+we applied them in a simulated online setting for event detection.
+The event detection was accomplished by running the clustering in batches over time.
+Events are detected by comparing a batch with its predecessor.
+If a batch contains clusters, which do not appear in the previous batch,
+than those clusters are considered as new events.
+If a cluster did exist in the previous batch,
+we look at the difference in assigned news articles and can therefore detect changes in existing event.
+The detection of events is measured against the ground truth.
+We explored different batch sizes and similarity thresholds for finding pairs of clusters between batches.
+Since finding pairs of clusters, requires a large enough overlap in identical news articles,
+the batch size has to account for this factor with regards to the volume of incoming news articles through the data stream.
+Additionally since events are represented as clusters,
+the sum of events can be regarded as a subclustering of the overall clustering.
+Although this makes the subclustering more sensitive to inaccuracies in the overall clustering,
+which explains the high error rate we observed in detecting new events.
+In conclusion we found the error rate in detected events to be rather high for our approach
+and therefore not applicable in a real world scenario in its current state.
 
 \subsection{Future work}
 
-The approach in its current state still leaves different areas up for improvement. Further work on named entity recognition, might help in drastically reducing the dimensionality of the vector space model and condense a news article into only a few key entities. Using a pretrained model did not result in accurate results, but training a model specifically on a new corpus might improve the named entity recognition significantly. Another preprocessing technique, which we did not look at, would be word embeddings. Word embeddings allow for the detection of similar words and therefore reduce the dimensionality of the vector space model substantially more than even text lemmatisation. Thus leading to a potential improved clustering and reducing the noise rate.
+The approach in its current state still leaves different areas up for improvement.
+Further work on named entity recognition, might help in drastically reducing the dimensionality of the vector space model
+and condense a news article into only a few key entities.
+Using a pretrained model did not result in accurate results,
+but training a model specifically on a new corpus might improve the named entity recognition significantly.
+Another preprocessing technique, which we did not look at, would be word embeddings.
+Word embeddings allow for the detection of similar words and therefore reduce the dimensionality
+of the vector space model substantially more than even text lemmatisation.
+Thus leading to a potential improved clustering and reducing the noise rate.
 
-As we have shown, the current implementation of HDBSCAN still leaves room for improvement in regards to space complexity. Finding potential optimizations in memory consumption would not necessarily improve our approach, since the quality of clusters decreases with larger sample sets, but might be a valuable contribution to the community and enable future work with larger data sets.
+As we have shown, the current implementation of HDBSCAN still leaves room for improvement in regards to space complexity.
+Finding potential optimizations in memory consumption would not necessarily improve our approach,
+since the quality of clusters decreases with larger sample sets,
+but might be a valuable contribution to the community and enable future work with larger data sets.
 
-We focused mainly on HDBSCAN in our analysis, but the evaluation framework allows for many different clustering methods. Finding different methods suitable for text clustering or even a combination of different algorithms might lead to better results. Although we did try out some different variations such as HDBSCAN with LDA, but without any notable results. 
+We focused mainly on HDBSCAN in our analysis, but the evaluation framework allows for many different clustering methods.
+Finding different methods suitable for text clustering
+or even a combination of different algorithms might lead to better results.
+Although we did try out some different variations such as HDBSCAN with LDA,
+but without any notable results.
 
-Furthermore it would be interesting to see how HDBSCAN would perform using a data set based on a different kind of textual data. A possible alternative data set could be based on computer logs, which would also provide a source for data streams. Improvements in the overall performance of HDBSCAN will also significantly improve the event detection in data streams.
+Furthermore it would be interesting to see how HDBSCAN would perform
+using a data set based on a different kind of textual data.
+A possible alternative data set could be based on computer logs,
+which would also provide a source for data streams.
+Improvements in the overall performance of HDBSCAN will also significantly improve the event detection in data streams.
 
 \subsection{Lessons learned}
 % State the 3 biggest lessons learned.
@@ -31,5 +90,3 @@ knowing your score
 
 
 Good data set -> noise rate
-
-
