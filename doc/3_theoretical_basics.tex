@@ -1,17 +1,20 @@
-\section{Theoretical basics}
+\section{Theoretical Basics}
+\label{sec:Theoretical_basics}
+
 In order to fully understand our work,
-it is important to ensure a few basics in the area of natural language processing (NLP).
+it is important to ensure a few basics in the area of \Gls{nlp}.
 In this chapter we will explain how the most important techniques used in our thesis work.
 
-\subsection{Text preprocessing}
+\subsection{Text Preprocessing}
 \label{sec:text_preprocessing}
 
-When working with text data, many algorithms and processes will need to distinguish words from another.
-In most cases this is done by creating a dictionary of all known words and/or by \textit{vectorising} text data
-in order to make them comparable.
-While this works in theory, in reality we deal with a tremendous amount of data.
-This results in huge directories or many vectors and does not only take up more disk space
-but also text processing (computation and comparison) will take more time to process.
+When working with text data, many algorithms and methods will need to distinguish words from another.
+In most cases this is done by creating a dictionary of all known words and by \textit{vectorizing} the text data
+according to the dictionary.
+
+While this works well in theory, we deal with a tremendous amount of data in real world applications.
+This results in huge directories with many vector dimensions and does not only take up more disk space
+but also text processing (computation and comparison) takes more time to process.
 
 What does that mean?
 Consider the following words:
@@ -23,36 +26,36 @@ Consider the following words:
 \end{itemize}
 
 Anyone of us will be able to extract the same meaning out of these three words: The country \textit{Switzerland}.
-However, for machines the terms are different because they are written differently.
+However, for machines the terms are different to another because they are written differently.
 That is why in most cases it makes sense to lowercase all text before processing them.
 That way we can ensure that the above words also share the same meaning for a machine and thus reduce the dictionary size.
-
-% TODO: \paragraph{extraction}
-
-Lowercasing text can just be the beginning though.
-Depending on the size of a document, it might make sense to not use all text inside a document.
-A good example for this would be books.
-Vectorising books would take too much computational power and time to process.
-In such cases, the text size would have to be reduced.
-This could be accomplished by processing a summary of the book instead of the book itself
-or by extracting the most relevant words from the whole book.
-Later could be done with \textit{Keyphrase extraction} or with \textit{Entity extraction}.
-
-% TODO: \paragraph{lemma stemma}
-If we are not dealing with books but with articles or papers,
-there are also other alternatives to Keyphrase and Entity extraction.
-Using \textit{Text Stemming} or \textit{Text Lemmatisation} we can simplify terms and group them together to reduce
-the dictionary size.
-More about this in the sub sections below.
 
 \paragraph{Exceptions}
 There are a few use cases where lowercasing a text is not desired.
 For example when trying to detect the writer's sentiment.
 Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who does not.
 
-\subsubsection{Keyphrase extraction}
-When describing data, a popular thing to do is tagging.
-The most well-known tagging procedures are probably hash tags and user names in social media.
+\paragraph{Reducing the dictionary size}
+Lowercasing text can just be the beginning though.
+Depending on the size of a document, it might make sense to not use all text data inside a document.
+A good example for this would be books.
+Vectorizing books would take too much computational power and time to process.
+In such cases, the dictionary size needs to be reduced.
+This could be accomplished by processing a summary of the book instead of the book itself
+or by extracting the most relevant words from the whole book.
+Later could be done with \textit{Keyphrase extraction} or with \textit{Entity extraction}.
+
+\paragraph{Normalizing text}
+If we are not dealing with books but with articles or papers,
+there are also other alternatives to Keyphrase Extraction and Named Entity Recognition.
+Using \textit{Text Stemming} or \textit{Text Lemmatisation}, we can simplify terms and group them together to reduce
+the dictionary size.
+We will cover both practices in the subsections \ref{sec:keyphrase_extraction} and \ref{sec:named_entity_recognition}.
+
+\subsubsection{Keyphrase Extraction}
+\label{sec:keyphrase_extraction}
+When describing any kind of data, a popular thing to do is tagging.
+One of the most well-known tagging procedures are the usage hash tags and user names in social media.
 Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
 \begin{quotation}
@@ -76,10 +79,10 @@ Keyphrase extraction algorithms.
 Our goal is to check if working with Keyphrases alone is more, less or equal accurate
 than with the whole text.
 
-Since the dictionary size would be extremely smaller,
-the data processing time could be drastically improved.
+Since the dictionary size would be smaller, the data processing time could be improved.
 
 \subsubsection{Named Entity Recognition}
+\label{sec:named_entity_recognition}
 Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out from a given text.
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
@@ -111,13 +114,11 @@ For comparison, the same sentence would extract following \textit{Keyphrases}:
     \item CERN
 \end{itemize}
 
-Comparing the the numbers of the extracted terms solely, Keyphrase extraction seems to have delivered a better job.
-However, when evaluating the results, we can see that \gls{ner} \textit{understood} the terms and their
+Comparing the numbers of the extracted terms solely, Keyphrase extraction seems to have delivered a better job.
+However, when evaluating the results, we can see that \Gls{ner} \textit{understood} the terms and their
 relations better.
 
-Not only was it able to correctly keep the subject's name, Murray Gell-Mann, but also the type of Nobel prize.
-It extracts more accurate information compared to Keyphrase extraction but does this also result
-in improved clustering results?
+Not only was it able to correctly keep the subject's name, \textit{Murray Gell-Mann}, but also the type of Nobel prize.
 
 % TODO: Talk about time.
 
