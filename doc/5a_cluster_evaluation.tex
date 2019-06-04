@@ -17,8 +17,8 @@ The methods are:
     \item Full text with stop word removal
     \item Key terms
     \item Named entities
-    \item Text lemmatisation
-    \item Text stemming
+    \item Text Lemmatization
+    \item Text Stemming
 \end{itemize}
 
 \paragraph{Text Vectorization}
@@ -75,7 +75,7 @@ The distribution also explains the drop in the scores after a min cluster size o
         \hline
         \textbf{Clustering} & \multicolumn{5}{ |c| }{\textbf{Word Frequency}} & \multicolumn{5}{ |c| }{\textbf{tf-idf}} \\
         \hline
-        \textbf{HDBSCAN} & Full Text &  Key terms & Entities & Lemmatised & Stemmed & Full Text & Key terms & Entities & Lemmatised & Stemmed \\
+        \textbf{HDBSCAN} & Full Text &  Key terms & Entities & Lemmatized & Stemmed & Full Text & Key terms & Entities & Lemmatized & Stemmed \\
         \hline
         min\_size: 2, metric: cosine    & 0.446 & 0.456 & 0.409 & 0.452 & 0.451 & 0.477 & 0.450 & 0.398 & \textbf{0.499} & 0.479     \\
         min\_size: 2, metric: euclidean & 0.071 & 0.068 & 0.090 & 0.075 & 0.073 & 0.459 & 0.255 & 0.444 & \textbf{0.482} & 0.481     \\
@@ -287,7 +287,7 @@ There we see how the keywords from the detected news articles are quite similar,
 while the keywords from the missing news articles appear to be more varied with minimal overlap to the keywords from detected articles.
 This seems to give an indication as to why the articles were missing from the cluster.
 However it is important to note, that the tf-idf model in Table \ref{tab:clustering_example_features} was created from only those 20 articles
-and used the full text instead of lemmatisation for better readability.
+and used the full text instead of lemmatization for better readability.
 The top keywords might differ in the model created for the whole clustering.
 Especially words such as \textit{ap1000}, which is a name of a nuclear power plant, will be weighted higher in the full model.
 Based on this insight we expect further work on text preprocessing to lead to considerable improvements in the quality of the clustering.
@@ -330,7 +330,7 @@ Based on this insight we expect further work on text preprocessing to lead to co
 
 So far we focused on HDBSCAN to determine the optimal settings to run it with.
 As a next step we can start comparing the overall performance with \textit{k}-means.
-We use the follwing settings: Text lemmatisation with tf-idf,
+We use the follwing settings: Text Lemmatization with tf-idf,
 cosine as the similarity measure and six as the minimum size of clusters.
 Figure \ref{fig:precision_and_processing_time_kmeans_hdbscan} shows a similar behaviour
 for both clustering methods in value and variance of the precision.

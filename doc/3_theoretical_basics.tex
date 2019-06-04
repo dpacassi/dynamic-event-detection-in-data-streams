@@ -49,7 +49,7 @@ Later could be done with \textit{Keyphrase extraction} or with \textit{Entity ex
 \paragraph{Normalizing text}
 If we are not dealing with books but with articles or papers,
 there are also other alternatives to Keyphrase Extraction and Named Entity Recognition.
-Using \textit{Text Stemming} or \textit{Text Lemmatisation}, we can simplify terms and group them together to reduce
+Using \textit{Text Stemming} or \textit{Text Lemmatization}, we can simplify terms and group them together to reduce
 the dictionary size.
 We will cover both practices in the subsections~\ref{subsubsec:3_keyphrase_extraction} and \ref{subsubsec:3_named_entity_recognition}.
 
@@ -156,10 +156,10 @@ Since M.F. Porter's snowball stemming algorithm is the most widely used one, we 
 \subsubsection{Text Lemmatization}
 \label{subsubsec:3_text_lemmatization}
 
-Similar to \textit{Text Stemming}, Text Lemmatisation has the same goal to group together the inflected forms of a word
+Similar to \textit{Text Stemming}, Text Lemmatization has the same goal to group together the inflected forms of a word
 but follows a different approach to do so.
 Instead of processing terms with fixed steps and defined rules,
-Text Lemmatisation normally includes a dictionary lookup for the words
+Text Lemmatization normally includes a dictionary lookup for the words
 and also takes in consideration to which part of a sentence a term belongs to.
 This results in more accurate root terms but also asks for more computational power than Text Stemming.
 See following table for a comparison:
@@ -168,7 +168,7 @@ See following table for a comparison:
     \centering
     \begin{tabular}{|l|l|r|r|}
     \hline
-    \textbf{\#} & \textbf{Original word} & \textbf{Stemmed} & \textbf{Lemmatised} \\ \hline
+    \textbf{\#} & \textbf{Original word} & \textbf{Stemmed} & \textbf{Lemmatized} \\ \hline
     1 & written & written & write \\ \hline
     2 & greatest & greatest & great \\ \hline
     3 & best & best & best \\ \hline
@@ -185,8 +185,8 @@ See following table for a comparison:
     14 & universe & univers & universe \\ \hline
     15 & universal & univers & universal \\ \hline
     \end{tabular}
-    \caption{Comparison of Text Stemming and Text Lemmatisation.}
-    \label{tab:comparison_stemming_lemmatisation}
+    \caption{Comparison of Text Stemming and Text Lemmatization.}
+    \label{tab:comparison_stemming_lemmatization}
 \end{table}
 
 % TODO: Talk about time.
@@ -197,19 +197,19 @@ See following table for a comparison:
 Comparing text documents with each other is not a straightforward task to do.
 This is the reason why the \gls{vsm} was developed.
 
-When working with a \gls{vsm}, text documents get vectorised.
+When working with a \gls{vsm}, text documents get vectorized.
 This is succeeded by assigning each unique term over all documents to one dimension.
 
 When we now want to compare two documents with each other,
 we simply compare their vectors with each other.
 
-But how do we vectorise each term of each document to a numerical value?
+But how do we vectorize each term of each document to a numerical value?
 Let us have a look at the two most used text vectorizers.
 
 \subsubsection{Term Frequency}
 \label{subsubsec:3_term_frequency}
 
-The easiest vectoriser is the Term Frequency Vectorizer.
+The easiest vectorizer is the Term Frequency Vectorizer.
 After creating the dictionary of all used terms, it simply sums up the occurrences for each term.
 Consider following three sentences:
 
@@ -220,7 +220,7 @@ Consider following three sentences:
 \end{itemize}
 
 After removing \Glspl{stop_word}, we receive 13 unique terms over all documents.
-As the Term Frequency Vectoriser simply sums the occurences of each term up,
+As the Term Frequency Vectorizer simply sums the occurences of each term up,
 the \Gls{vsm} looks as in \tabref{tab:tf_vsm}.
 
 \begin{table}[h]
@@ -251,7 +251,7 @@ Relying on the Term Frequency alone is a good start but can surely be improved.
 Consider following scenario:
 We have a document \textit{d1} with 100 terms, 10 of them (10 \%) belong to one specific term \textit{t1}.
 In a second document \textit{d2} with 1,000 terms, 10 of them (1 \%) belong to the same term \textit{t1}.
-When using Term Frequency as a Vectoriser, both documents will receive for the term \textit{t1} a value of 10.
+When using Term Frequency as a Vectorizer, both documents will receive for the term \textit{t1} a value of 10.
 However, in the first document \textit{d1} the term should have received a higher value
 than in document \textit{d2} as it covered a bigger percentage of the document.
 
