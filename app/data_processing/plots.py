@@ -7,6 +7,7 @@ import json
 import db
 import collections
 import statistics
+import online_clustering
 
 from matplotlib.collections import PatchCollection
 from datetime import datetime
@@ -456,10 +457,10 @@ def plot_event_detection_differences():
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-    _plot_event_differences("nrows", data, plt, ax1, ax2)
+    _plot_event_differences("nrows", data, plt, ax1, ax2, [1000,3000,5000])
     
-    ax1.set_title("Difference in true vs detected events with batch_size=fixed")
-    ax2.set_title("Difference in true vs detected changes with batch_size=fixed")
+    ax1.set_title("Difference in true vs detected events with batch_size n=fixed")
+    ax2.set_title("Difference in true vs detected changes with batch_size n=fixed")
     plt.savefig("../../doc/images/event_detection_differences.png")
     plt.close(fig)
 
@@ -478,10 +479,10 @@ def plot_event_detection_differences_by_hours():
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-    _plot_event_differences("hours", data, plt, ax1, ax2)
+    _plot_event_differences("hours", data, plt, ax1, ax2, [24,48,72])
 
-    ax1.set_title("Difference in true vs detected events with batch_size=hours")
-    ax2.set_title("Difference in true vs detected changes with batch_size=hours")
+    ax1.set_title("Difference in true vs detected events with batch_size n=hours")
+    ax2.set_title("Difference in true vs detected changes with batch_size n=hours")
     plt.savefig("../../doc/images/event_detection_differences_hours.png")
     plt.close(fig)
 
@@ -500,16 +501,72 @@ def plot_event_detection_differences_by_relative():
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-    _plot_event_differences("fraction", data, plt, ax1, ax2)
+    _plot_event_differences("fraction", data, plt, ax1, ax2, [10,25,50])
 
-    ax1.set_title("Difference in true vs detected events with batch_size=relative")
-    ax2.set_title("Difference in true vs detected changes with batch_size=relative")
+    ax1.set_title("Difference in true vs detected events with batch_size n=factor")
+    ax2.set_title("Difference in true vs detected changes with batch_size n=factor")
     plt.savefig("../../doc/images/event_detection_differences_relative.png")
     plt.close(fig)
 
 
-def _plot_event_differences(key, data, plt, ax1, ax2):
-    nrows = data[key].unique()
+def plot_nrows_by_new_rows():
+    connection = db.get_connection()
+
+    sql = (
+        "select last_processed_date, result, new_rows, mp_score, fraction from script_execution"
+        " where fraction is not null"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    connection.close()
+
+    fig = plt.figure(figsize=(15, 5))
+
+    nrows = data["fraction"].unique()
+    for i, nrow in enumerate(nrows):
+
+        Y_rows = collections.defaultdict(list)
+
+        for index, row in data.iterrows():
+            result = json.loads(row["result"].replace("'", '"'))
+            if row["fraction"] == nrow:
+                
+                day = row["last_processed_date"].strftime("%Y-%m-%d") 
+                processed_rows = row["new_rows"] * row["fraction"]
+                processed_rows = max(processed_rows, online_clustering.MIN_ROWS)
+                processed_rows = min(processed_rows, online_clustering.MAX_ROWS)
+                Y_rows[day].append(processed_rows)
+
+        Y_max = []
+        X = []
+        x = 1
+        dates = []
+        width = 0.25
+        for date, values in Y_rows.items():
+            dates.append(datetime.strptime(date, "%Y-%m-%d"))
+            X.append(x - width * i)
+            x += 1
+            Y_max.append(max(values))
+
+        plt.bar(X, Y_max, label="n={}".format(nrow), width = width)
+
+    plt.ylabel("Number of samples")
+
+    #plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
+    #plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+    #plt.gcf().autofmt_xdate()
+
+    plt.xlabel("Time")
+    plt.legend()
+    plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
+
+    plt.title("Max number of samples process by a single batch")
+    plt.savefig("../../doc/images/nrows_by_new_rows.png")
+    plt.close(fig)
+
+
+def _plot_event_differences(key, data, plt, ax1, ax2, nrows):
     for nrow in nrows:
 
         X = []
@@ -1196,6 +1253,7 @@ plot_event_detection_differences_by_hours()
 # plot_event_detection_overlap()
 #plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
 #plot_online_clustering_example(story = 'dMz8NzNxiPqTctM7zwUCIuAs__DyM', keyword="hillshire")
+plot_nrows_by_new_rows()
 
 # connection = db.get_connection()
 
