@@ -8,6 +8,7 @@ import db
 import collections
 import statistics
 import online_clustering
+from itertools import cycle
 
 from matplotlib.collections import PatchCollection
 from datetime import datetime
@@ -1072,81 +1073,56 @@ def plot_news_article_distribution_per_day():
 def plot_online_clustering_example(story, keyword):
     connection = db.get_connection()
 
-    sql = (
-        "select id, computed_publish_date, title, story from news_article"
-        " where story = %s and preprocessed = 1 order by computed_publish_date asc"
-    )
+    # sql = (
+    #     "select id, computed_publish_date, title, story from news_article"
+    #     " where story = %s and preprocessed = 1 order by computed_publish_date asc"
+    # )
 
-    data = pandas.read_sql(sql=sql, con=connection, params=[story])
+    # data = pandas.read_sql(sql=sql, con=connection, params=[story])
 
     
     cluster_sql = (
-        "select cluster.id as cluster_id, count(cluster_news_article.news_article_id) as news_count from event"
-        " join cluster_news_article on cluster_news_article.cluster_id = event.cluster_id"
-        " where cluster.insert_date > '2019-05-30 09:00:00'"
-        " group by cluster.id"
-        " order by cluster.insert_date asc"
+        "select cluster.id as cluster_id, count(cluster_news_article.news_article_id) as news_count, simulated_date from cluster"
+        " join cluster_news_article on cluster_news_article.cluster_id = cluster.id"
+        " join news_article on cluster_news_article.news_article_id = news_article.id"
+        " where cluster.simulated_date is not null and news_article.story = %s"
+        " group by cluster.id, simulated_date"
+        " order by cluster.simulated_date asc"
     )
 
-    data = pandas.read_sql(sql=event_sql, con=connection, params=[story])
+    data = pandas.read_sql(sql=cluster_sql, con=connection, params=[story])
+    X = data["simulated_date"].unique()
 
-    events = collections.defaultdict(list)
+    clusters = collections.defaultdict(list)
     colors = dict()
-    for index, row in event_data.iterrows():
-        events[row["event_id"]].append(row["news_id"])
 
-        if row["event_type"] == 1:
-            colors[row["event_id"]] = "tab:green"
-        else:
-            colors[row["event_id"]] = "tab:blue"
 
-    height = 0.0005
-    decrement = 0.0008
 
-    y_pos = 1 + (len(events)-1) / 2 * (decrement)
+    for index, row in data.iterrows():
+        clusters[row["simulated_date"]].append(row["news_count"])
 
-    draw = True
-    for key, values in events.items():
-        values.sort(key=lambda x: article_position_by_id[x])
-        # we are only interested in complete events
-        if values[0] in article_position_by_id:
-            start_x = article_position_by_id[values[0]]
-            length = article_position_by_id[values[-1]] - start_x + 1
+    fig = plt.figure()
+    plt.gca().set_prop_cycle(None)
 
-            for value in values:
-                index = article_position_by_id[value]
-                blue_points[index] = S[index]
+    for index, values in enumerate(clusters.values()):
+        # plt.gca().set_prop_cycle(None)
+        bottom = 0
+        values.sort()
+        for value in values:
+            plt.bar(index, value, bottom=bottom)
+            bottom = value
 
-            #if start_x > 0 or draw:
-            rect = mpatches.Rectangle([start_x - 0.5, y_pos], length, height)
-            patches.append(rect)
+    # plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m %H:00"))
+    # plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
+    # plt.gcf().autofmt_xdate()
 
-            y_pos -= decrement
-        # height += increment
-
-    fig = plt.figure(figsize=(15, 8))
-
-    #plt.ylim(bottom=0.985, top=1.035)
-    plt.yticks([])
-
-    collection = PatchCollection(patches, color=list(colors.values()), alpha=0.3)
-    ax = plt.gca()
-    ax.add_collection(collection)
-
-    plt.scatter(X, Y, s=S, c="black")
-    plt.scatter(X, Y, s=blue_points)
-
-    plt.gcf().autofmt_xdate()
-
-    for label in plt.gca().xaxis.get_ticklabels()[::2]:
-        label.set_visible(False)
+    plt.xlabel("Batch")
+    plt.ylabel("Number of news articles")
 
     plt.title("News articles and clusters of a single story")
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    if len(patches) > 0:
-        plt.savefig("../../doc/images/online_clustering_example_{}.png".format(story
-        ))
+    plt.savefig("../../doc/images/online_clustering_example_{}.png".format(keyword))
     plt.close(fig)
 
 
@@ -1234,13 +1210,13 @@ def print_statistics(key, data):
 # plot_event_detection_differences_with_threshold()
 # plot_event_detection_differences_with_cluster_size()
 # plot_mp_scores_for_event_detection_by_date()
-plot_event_detection_differences_by_relative()
-plot_event_detection_differences_by_hours()
-calculate_score_and_variance()
+#plot_event_detection_differences_by_relative()
+#plot_event_detection_differences_by_hours()
+#calculate_score_and_variance()
 # plot_event_detection_overlap()
-# plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
-#plot_online_clustering_example(story = 'dMz8NzNxiPqTctM7zwUCIuAs__DyM', keyword="hillshire")
-plot_nrows_by_new_rows()
+plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
+plot_online_clustering_example(story = 'ddtICujI13VGbjMjhDtFZ3o1B8qcM', keyword="bad_neighbours")
+#plot_nrows_by_new_rows()
 
 # connection = db.get_connection()
 

@@ -347,7 +347,8 @@ if __name__ == "__main__":
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
-                    persit_clusters_in_db=persist_in_db)
+                    persit_clusters_in_db=persist_in_db,
+                    date=current_date)
                 
                 db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, nrows, mp_score, threshold)
                 previous_clusters = current_clusters
