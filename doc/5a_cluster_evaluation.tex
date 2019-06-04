@@ -1,16 +1,16 @@
 \subsection{Clustering Evaluation}
-\label{sec:clustering_evaluation}
+\label{subsec:5a_clustering_evaluation}
 
 The goal of this evaluation is to measure the precision of HDBSCAN, with different parameters and preprocessing methods.
 The most suitable settings will then be used for the online clustering approach to detect events in a news stream.
 The precision is be measured with the MP-Score.
 
 \subsubsection{Setup}
+\label{subsubsec:5a_setup}
 
 \paragraph{Text Preprocessing}
-
 The first step in working with text is to apply preprocessing techniques for improving the quality of the data before clustering it.
-We look the five different preprocessing methods as described in Section \ref{subsec:text_preprocessing} and evaluate each.
+We look the five different preprocessing methods as described in Section \ref{subsec:3_text_preprocessing} and evaluate each.
 The methods are:
 
 \begin{itemize}
@@ -21,7 +21,8 @@ The methods are:
     \item Text stemming
 \end{itemize}
 
-\paragraph{Text Vectorization} Before the text can be clustered, it has to be transformed into a vector space model.
+\paragraph{Text Vectorization}
+Before the text can be clustered, it has to be transformed into a vector space model.
 We look at two different models:
 
 \begin{itemize}
@@ -29,7 +30,8 @@ We look at two different models:
     \item tf-idf
 \end{itemize}
 
-\paragraph{Parameters} HDBSCAN has a range of parameters, which can be tuned to fit our data set.
+\paragraph{Parameters}
+HDBSCAN has a range of parameters, which can be tuned to fit our data set.
 We focus on the two primary ones:
 
 \begin{itemize}
@@ -50,6 +52,7 @@ Each run will be repeated at least five times.
 Lower numbers of stories allow for more repetitions due to lower processing times.
 
 \subsubsection{Evaluation}
+\label{subsubsec:5a_evaluation}
 
 The first run is done with 60 stories, which results in approximately 2000 news articles, over 20 repetitions.
 Table \ref{tab:cluster_parameters} shows the resulting MP-Score for each parameter in combination with each preprocessing method and vector space model.
@@ -370,6 +373,7 @@ but it is still interesting to see how well it compares with other clustering me
 \end{figure}
 
 \subsubsection{Conclusion}
+\label{subsubsec:5a_conclusion}
 
 The evaluation has shown HDBSCAN to be a good candidate to use for text based clustering.
 It provides an better precision than \textit{k}-means, while being significantly faster to process.

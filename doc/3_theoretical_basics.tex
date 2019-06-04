@@ -1,12 +1,12 @@
 \section{Theoretical Basics}
-\label{sec:Theoretical_basics}
+\label{sec:3_theoretical_basics}
 
 In order to fully understand our work,
 it is important to ensure a few basics in the area of \Gls{nlp}.
 In this chapter we will explain how the most important techniques used in our thesis work.
 
 \subsection{Text Preprocessing}
-\label{subsec:text_preprocessing}
+\label{subsec:3_text_preprocessing}
 
 When working with text data, many algorithms and methods will need to distinguish words from another.
 In most cases this is done by creating a dictionary of all known words and by \textit{vectorizing} the text data
@@ -51,10 +51,10 @@ If we are not dealing with books but with articles or papers,
 there are also other alternatives to Keyphrase Extraction and Named Entity Recognition.
 Using \textit{Text Stemming} or \textit{Text Lemmatisation}, we can simplify terms and group them together to reduce
 the dictionary size.
-We will cover both practices in the subsections~\ref{subsec:keyphrase_extraction} and \ref{subsec:named_entity_recognition}.
+We will cover both practices in the subsections~\ref{subsubsec:3_keyphrase_extraction} and \ref{subsubsec:3_named_entity_recognition}.
 
 \subsubsection{Keyphrase Extraction}
-\label{subsec:keyphrase_extraction}
+\label{subsubsec:3_keyphrase_extraction}
 
 When describing any kind of data, a popular thing to do is tagging.
 One of the most well-known tagging procedures are the usage hash tags and user names in social media.
@@ -84,7 +84,7 @@ than with the whole text.
 Since the dictionary size would be smaller, the data processing time could be improved.
 
 \subsubsection{Named Entity Recognition}
-\label{subsec:named_entity_recognition}
+\label{subsubsec:3_named_entity_recognition}
 
 Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out from a given text.
 However, it does not only extract terms but also states what kind of term it is.
@@ -126,7 +126,7 @@ Not only was it able to correctly keep the subject's name, \textit{Murray Gell-M
 % TODO: Talk about time.
 
 \subsubsection{Text Stemming}
-\label{subsec:text_stemming}
+\label{subsubsec:3_text_stemming}
 
 Text Stemming is a form of Text Normalization which aims to simplify words
 by reducing the inflectional forms of each word into their word stems.
@@ -154,7 +154,7 @@ and the WordNet stemming algorithm\cite{WordNetStemmer}.
 Since M.F. Porter's snowball stemming algorithm is the most widely used one, we decided to go with his algorithm.
 
 \subsubsection{Text Lemmatization}
-\label{subsec:text_lemmatization}
+\label{subsubsec:3_text_lemmatization}
 
 Similar to \textit{Text Stemming}, Text Lemmatisation has the same goal to group together the inflected forms of a word
 but follows a different approach to do so.
@@ -192,7 +192,7 @@ See following table for a comparison:
 % TODO: Talk about time.
 
 \subsection{Vector Space Model}
-\label{subsec:vector_space_model}
+\label{subsec:3_vector_space_model}
 
 Comparing text documents with each other is not a straightforward task to do.
 This is the reason why the \gls{vsm} was developed.
@@ -207,7 +207,7 @@ But how do we vectorise each term of each document to a numerical value?
 Let us have a look at the two most used text vectorizers.
 
 \subsubsection{Term Frequency}
-\label{subsec:term_frequency}
+\label{subsubsec:3_term_frequency}
 
 The easiest vectoriser is the Term Frequency Vectorizer.
 After creating the dictionary of all used terms, it simply sums up the occurrences for each term.
@@ -245,7 +245,7 @@ while they do not share any terms with the third sentence.
 At the same time we see that the term bank has been used twice in the third sentence.
 
 \subsubsection{tf-idf}
-\label{subsec:tf_idf}
+\label{subsubsec:3_tf_idf}
 
 Relying on the Term Frequency alone is a good start but can surely be improved.
 Consider following scenario:
@@ -317,7 +317,7 @@ The reason for this is that document \textit{d2} has one term less than document
 therefor the significance of one term is weighted heavier in document \textit{d2}.
 
 \subsection{Clustering}
-\label{subsec:clustering}
+\label{3_subsec:clustering}
 
 Clustering finds similarities in different news articles based on their content and groups them together,
 while unrelated news are regarded as noise.
@@ -327,7 +327,7 @@ which is able to work with data of varying densities and of high dimensionality.
 % TODO why hdbscan
 
 \subsubsection{\textit{k}-means clustering}
-\label{subsec:kmeans_clustering}
+\label{subsubsec:3_kmeans_clustering}
 
 \textit{k}-means clustering is an iterative clustering method which assigns all data points in a given data set
 into k clusters, where k is a predefined number of clusters in the data set.
@@ -355,7 +355,7 @@ It then repeats following instructions until reaching convergence:
 \end{itemize}
 
 \subsubsection{DBSCAN}
-\label{subsec:dbscan}
+\label{subsubsec:3_dbscan}
 
 DBSCAN stands for \textit{Density-Based Spatial Clustering of Applications with Noise}
 and is a density based clustering algorithm.
@@ -394,7 +394,7 @@ if the distance from the point to the clusters do not differ.
 \end{itemize}
 
 \subsubsection{HDBSCAN}
-\label{subsec:hdbscan}
+\label{subsubsec:3_hdbscan}
 
 HDBSCAN is a hierarchical density-based clustering algorithm \cite{McInnes2017},
 based on DBSCAN and improves its sensitivity for clusters of varying densities.

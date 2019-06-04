@@ -1,7 +1,8 @@
 \subsection{Online clustering}
-\label{sec:online_clustering}
+\label{subsec:5b_online_clustering}
 
 \subsubsection{Setup}
+\label{subsubsec:5b_setup}
 
 The online clustering is done on a simulated stream of news articles
 based on the same data set as used in the clustering evaluation.
@@ -28,6 +29,7 @@ The time delta, which is the amount of time between two batches, is set to one h
 \end{figure}
 
 \subsubsection{Evaluation}
+\label{subsubsec:5b_evaluation}
 
 The goal of the online clustering is to detect new events in an incoming stream
 of news articles and changes in existing events.
@@ -138,7 +140,7 @@ If a cluster in the current batch could not be matched to a cluster from the pre
 the cluster from the current batch will be seen as a new event.
 Therefore the accuracy in finding pairs of clusters in crucial to a better performance.
 The online clustering makes use of Locality Sensitive Hashing
-as explained in section \ref{sec:online_clustering_implementation}.
+as explained in section \ref{subsubsec:4c_online_clustering_implementation}.
 The current threshold value for determining the similarity is set to 0.75.
 To see the impact on the similarity threshold,
 we run the online clustering again with a batch size of n=3000 and different threshold values.
@@ -302,6 +304,7 @@ This might lead to increased differences in the tf-idf model for entertainment a
 which we have already explored as part of clustering evaluation.
 
 \subsubsection{Conclusion}
+\label{subsubsec:5b_conclusion}
 
 We explored different methods for determining the batch size, with one static and two dynamic approaches.
 The best results were achieved by using the dynamic method,

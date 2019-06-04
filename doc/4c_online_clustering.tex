@@ -1,6 +1,8 @@
 \subsection{Online Clustering}
+\label{subsec:4c_online_clustering}
 
 \subsubsection{Design}
+\label{subsubsec:4c_design}
 
 Detecting events in a stream of news articles will be achieved by using an online clustering approach.
 An event is described by the occurrence of multiple news articles about the same story.
@@ -12,8 +14,10 @@ Thus we define our two types events as follows:
     \item Event extended: An existing story is extended by additional news articles.
 \end{itemize}
 
-HDBSCAN will be applied as the clustering method, using the optimal settings discovered in the clustering method evaluation.
-Additional preprocessing of news articles before clustering is going to be explored as part of evaluation as well and will be implemented accordingly for the online clustering.
+HDBSCAN will be applied as the clustering method,
+using the optimal settings discovered in the clustering method evaluation.
+Additional preprocessing of news articles before clustering is going to be explored
+as part of evaluation as well and will be implemented accordingly for the online clustering.
 
 The clustering will be done batchwise over time, since HDBSCAN only supports static data sets.
 Events are detected by comparing clusters from successive batches.
@@ -24,9 +28,11 @@ In this example each batch only contains samples from a limited time period,
 where $\triangle t$ stands for the time period between batches.
 Since a batch does not contain the full set of samples, we have to consider the overlap between batches.
 The size of the overlap is essential to find similar clusters different batches.
-If a similar cluster already exists in the previous batch the differences between these clusters are detected as a change in an existing event.
+If a similar cluster already exists in the previous batch
+the differences between these clusters are detected as a change in an existing event.
 If no pair exists for a cluster from a current batch, this cluster will be regarded as a new event.
-The similarity between clusters is based on the same assumptions as for the scoring function described in Section \ref{sec:scoring_function}.
+The similarity between clusters is based on the same assumptions
+as for the scoring function described in Section \ref{subsubsec:4b_scoring_function}.
 
 \begin{figure}[h]
     \centering
@@ -63,7 +69,8 @@ The similarity between clusters is based on the same assumptions as for the scor
 \end{figure}
 
 The overlap between batches depends on the batch size and the number of new samples in $\triangle t$.
-A high volume of incoming samples combined with a small batch sizes would result in an overlap too small to find pairs of clusters will.
+A high volume of incoming samples combined with a small batch sizes
+would result in an overlap too small to find pairs of clusters will.
 All clusters from the current batch will be detected as new in this case.
 To decrease the negative impact on the event detection by peaks in the data stream,
 we need a batch size which grows accordingly.
@@ -82,11 +89,12 @@ since our model represents an event as a cluster.
 True events can be extracted directly from the ground truth based on news articles from two successive batches.
 
 \subsubsection{Implementation}
-\label{sec:online_clustering_implementation}
+\label{subsubsec:4c_online_clustering_implementation}
 
 The online clustering implemented for this thesis does not operate in a true online setting,
 but rather it takes our existing test data and simulates a data stream over time.
-The simulated approach allows us to directly compare the resulting events with the ground truth and thus evaluate different settings.
+The simulated approach allows us to directly compare the resulting events
+with the ground truth and thus evaluate different settings.
 The implementation is done with Python and runs in a similar dockerized environment as the evaluation framework.
 
 \paragraph{Comparing clusters}
@@ -111,9 +119,12 @@ Clusters from the new batch without a matching cluster from the previous batch
 are seen as new events.
 
 \paragraph{Measuring the quality of events} 
-Since events are themselves clusters of news articles, we apply the MP-Score to measure detected events against events taken from the ground truth.
-This gives an indication if the detected events contain the same news articles as true events and thus the rate of false positives and false negatives.
-Calculating the score is $O(n^2)$, but since the application runs on a simulated timeline, time complexity is only a minor concern.
+Since events are themselves clusters of news articles,
+we apply the MP-Score to measure detected events against events taken from the ground truth.
+This gives an indication if the detected events contain the same news articles
+as true events and thus the rate of false positives and false negatives.
+Calculating the score is $O(n^2)$, but since the application runs on a simulated timeline,
+time complexity is only a minor concern.
 
 \paragraph{CLI}
 The application provides a command line interface to run the simulation with different parameters

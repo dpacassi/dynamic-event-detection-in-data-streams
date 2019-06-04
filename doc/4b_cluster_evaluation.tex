@@ -1,6 +1,8 @@
 \subsection{Clustering Evaluation}
+\label{subsec:4b_clustering_evaluation}
 
 \subsubsection{Design}
+\label{subsubsec:4b_design}
 
 The goal of the clustering evaluation is to find the optimal parameters and preprocessing methods for applying HDBSCAN in an online setting.
 Therefore the clustering evaluation is designed to run HDBSCAN on our test data,
@@ -21,7 +23,7 @@ If we make any changes in the implementation or the scoring function,
 we want to be able to compare the new results with the previous ones in a deterministic manner.
 
 \subsubsection{Scoring Function}
-\label{sec:scoring_function}
+\label{subsubsec:4b_scoring_function}
 
 The scoring function is essential for measuring the result of a clustering method.
 The score should reflect the quality of the individual clusters and of the clustering as a whole.
@@ -54,9 +56,7 @@ and the Jaccard Index, which we call MP-Score.
     \label{tab:nmi_kmeans_example}
 \end{table}
 
-
 \paragraph{Calculating the score}
-
 The scoring function first calculates the similarity between pairs of clusters,
 where each cluster belongs to a different clustering.
 We use the Jaccard Index to measure the similarity, which is defined as
@@ -190,7 +190,6 @@ The final score for the evaluation of the predicted cluster $C$ with the true cl
 The complete implementation of the scoring function can be found in the appendix as Listing \ref{lst:select_max_values}.
 
 \paragraph{Comparison against other measures}
-
 The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and ARI.
 The second scenario results in a ARI score of 0.308, while the NMI with 0.564 and the MP-Score with 0.637 are both higher.
 Intuitively we would assume the higher score to better represent the predicted clustering,
@@ -242,8 +241,9 @@ This reflects what we would expect based on the big difference in the amount of 
     \label{tab:avg_predict_kmeans_example}
 \end{table}
 
-
 \subsubsection{Implementation}
+\label{subsubsec:4b_implementation}
+
 The evaluation process is done with our own evaluation framework.
 The framework allows for automated and repeatable evaluation runs.
 Results are stored in a database for later analysis.

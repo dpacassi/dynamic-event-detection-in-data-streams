@@ -1,9 +1,12 @@
-\subsection{Data set}
+\subsection{Data Set}
+\label{subsec:4a_data_set}
 
 Before any clustering method can be implemented or evaluated,
 it is important to rely on the right data set for training and evaluation.
 
-\subsubsection{Data set candidates}
+\subsubsection{Data Set Candidates}
+\label{subsubsec:4a_data_set_candidates}
+
 As our goal is to detect events in data streams, we've evaluated different data sets and
 their possibilities to extract events from their data themselves.
 
@@ -69,7 +72,9 @@ We went for the \textbf{The News Aggregator Dataset} since it not only provided 
 but our work built on the news articles use case could later be continued with real live data.
 The \textbf{GDELT 2.0} data set for example, provides around 1'000 to 2'000 new news articles every 15 minutes.
 
-\subsubsection{Data retrieval}
+\subsubsection{Data Retrieval}
+\label{subsubsec:4a_data_retrieval}
+
 Unfortunately the data set did not contain the news articles themselves but rather only the URL's to the news articles.
 This was done so due to copyright restrictions on the content.
 Fortunately there are web scraping tools designed to retrieve the content from news articles specifically.
@@ -92,7 +97,9 @@ All we had to do now is to run this code for all news articles.
 To speed this process up, we've loaded the data set into a database and run 8 concurrent processes which
 retrieved the news articles content from the web in different batches.
 
-\subsubsection{Data cleansing}
+\subsubsection{Data Cleansing}
+\label{subsubsec:4a_data_cleansing}
+
 The data set contains news articles collected from March 10th to August 10th of 2014.
 Five years later, many resources are not online anymore or are not accessible from Europe due to GDPR.
 We've used following SQL query to filter out news articles that were most likely corrupt:
