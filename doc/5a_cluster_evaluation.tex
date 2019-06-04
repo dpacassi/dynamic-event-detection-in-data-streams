@@ -15,8 +15,8 @@ The methods are:
 
 \begin{itemize}
     \item Full text with stop word removal
-    \item Key terms
-    \item Named entities
+    \item Keyphrase Extraction
+    \item \Gls{ner}
     \item Text Lemmatization
     \item Text Stemming
 \end{itemize}
@@ -75,7 +75,7 @@ The distribution also explains the drop in the scores after a min cluster size o
         \hline
         \textbf{Clustering} & \multicolumn{5}{ |c| }{\textbf{Word Frequency}} & \multicolumn{5}{ |c| }{\textbf{tf-idf}} \\
         \hline
-        \textbf{HDBSCAN} & Full Text &  Key terms & Entities & Lemmatized & Stemmed & Full Text & Key terms & Entities & Lemmatized & Stemmed \\
+        \textbf{HDBSCAN} & Full Text & Keyphrases & \Gls{ner} & Lemmatized & Stemmed & Full Text & Keyphrases & \Gls{ner} & Lemmatized & Stemmed \\
         \hline
         min\_size: 2, metric: cosine    & 0.446 & 0.456 & 0.409 & 0.452 & 0.451 & 0.477 & 0.450 & 0.398 & \textbf{0.499} & 0.479     \\
         min\_size: 2, metric: euclidean & 0.071 & 0.068 & 0.090 & 0.075 & 0.073 & 0.459 & 0.255 & 0.444 & \textbf{0.482} & 0.481     \\
@@ -134,11 +134,11 @@ As for the optimal preprocessing, text lemmatization provides the highest overal
 although closely followed by text stemming.
 This is to be expected, since both lemmatization and stemming reduce the dimensions by grouping words into their base form,
 while still retaining most of the text.
-In contrast to key term and entity extraction, which both result in a drastic reduction of the dimensions, and therefore less detail.
+In contrast to Keyphrase Extraction and \Gls{ner}, which both result in a drastic reduction of the dimensions, and therefore less detail.
 It is also interesting to see how close the score from using the full text is compared to the best score per row.
 The difference between the overall best score of 0.738 achieved by lemmatization and the score provided by the full text of 0.731 is only 0.007.
 This means text preprocessing has a lesser impact than initially expected.
-However it is important to note, that we used pretrained models for key term and entity extraction.
+However it is important to note, that we used pretrained models for Keyphrase Extraction and \Gls{ner}.
 Specifically training on a news corpus might improve the performance of both methods, but it was decided as to be out of scope for this thesis.
 
 After determining the optimal settings for text preprocessing and vectorization,

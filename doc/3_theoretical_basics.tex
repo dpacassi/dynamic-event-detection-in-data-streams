@@ -44,11 +44,11 @@ Vectorizing books would take too much computational power and time to process.
 In such cases, the dictionary size needs to be reduced.
 This could be accomplished by processing a summary of the book instead of the book itself
 or by extracting the most relevant words from the whole book.
-Later could be done with \textit{Keyphrase extraction} or with \textit{Entity extraction}.
+Later could be done with Keyphrase Extraction or with \Gls{ner}.
 
 \paragraph{Normalizing text}
 If we are not dealing with books but with articles or papers,
-there are also other alternatives to Keyphrase Extraction and Named Entity Recognition.
+there are also other alternatives to Keyphrase Extraction and \Gls{ner}.
 Using \textit{Text Stemming} or \textit{Text Lemmatization}, we can simplify terms and group them together to reduce
 the dictionary size.
 We will cover both practices in the subsections~\ref{subsubsec:3_keyphrase_extraction} and \ref{subsubsec:3_named_entity_recognition}.
@@ -77,7 +77,7 @@ But in our data set (and most data sources), there are no Keyphrases.
 Luckily there are different approaches on how to retrieve Keyphrases from text data.
 
 We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used
-Keyphrase extraction algorithms.
+Keyphrase Extraction algorithms.
 Our goal is to check if working with Keyphrases alone is more, less or equal accurate
 than with the whole text.
 
@@ -86,7 +86,7 @@ Since the dictionary size would be smaller, the data processing time could be im
 \subsubsection{Named Entity Recognition}
 \label{subsubsec:3_named_entity_recognition}
 
-Similar to \textit{Keyphrase extraction}, \gls{ner} extracts relevant terms out from a given text.
+Similar to \textit{Keyphrase Extraction}, \Gls{ner} extracts relevant terms out from a given text.
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
 
@@ -117,7 +117,7 @@ For comparison, the same sentence would extract following \textit{Keyphrases}:
     \item CERN
 \end{itemize}
 
-Comparing the numbers of the extracted terms solely, Keyphrase extraction seems to have delivered a better job.
+Comparing the numbers of the extracted terms solely, Keyphrase Extraction seems to have delivered a better job.
 However, when evaluating the results, we can see that \Gls{ner} \textit{understood} the terms and their
 relations better.
 
