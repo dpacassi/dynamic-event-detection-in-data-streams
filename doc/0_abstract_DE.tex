@@ -19,16 +19,13 @@ Im ersten Teil dieser Arbeit wurde nach einem geeigneten Datensatz gesucht,
 in welchem Inhalte gemäss Ähnlichkeit gruppiert werden.
 Die umgesetzte Lösung verwendet HDBSCAN als Clustering Methode und vergleicht diese
 mit dem State-of-the Art Verfahren \textit{k}-means.
-
 Dabei stellte sich heraus, dass die Verwendung von HDSCAN Vorteile bei der Performanz,
 wie aber auch bei der Präzision gegenüber \textit{k}-means aufweist.
-
 Des Weiteren wurden auch verschiedene Textvorverarbeitungsmethoden evaluiert.
 Der Einsatz von Text Lemmatisierung und des Tf-idf-Masses verbesserten
 das Clustering in Hinsicht auf Präzision.
-
 Bei der abschliessenden Evaluation stellte man fest,
-dass nicht zugewiesene Newsartikel die Präzision des Clusteringverfahrens redizieren.
+dass nicht zugewiesene Newsartikel die Präzision des Clusteringverfahrens reduzieren.
 
 Die resultierende Präzision des Clusteringverfahrens beträgt 73\% bei einer Standardabweichung von 8\%.
 Die Präzision zur Erkennung neuer Ereignisse beträgt 63\% bei einer Standardabweichung von 43\%.
