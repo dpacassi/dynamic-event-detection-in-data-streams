@@ -35,7 +35,7 @@ Since the ground truth is known in our test data, we are going to apply an exter
 Initially we used Normalized Mutual Information (NMI) as our primary scoring function.
 The NMI is an entropy-based measure and tries to quantify the amount shared information between the clusterings.
 The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found.
-An example is given in table \ref{tab:nmi_kmeans_example}, where \textit{k}-means achieved a rather high score,
+An example is given in \tabref{tab:nmi_kmeans_example}, where \textit{k}-means achieved a rather high score,
 regardless of the large difference between the true amount of clusters and the approximation using $\sqrt{n}$.
 We were not able to explain this behaviour,
 although there are multiple papers about the selection bias of NMI for higher numbers of clusters\cite{LEI201758}\cite{clustering_anmi}.
@@ -187,10 +187,10 @@ the calculation for the final average would be done as follows:
 \end{align*}
 
 The final score for the evaluation of the predicted cluster $C$ with the true cluster is 0.674.
-The complete implementation of the scoring function can be found in the appendix as Listing \ref{lst:select_max_values}.
+The complete implementation of the scoring function can be found in the appendix as \lstref{lst:select_max_values}.
 
 \paragraph{Comparison against other measures}
-The test scenarios in table \ref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and ARI.
+The test scenarios in \tabref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and ARI.
 The second scenario results in a ARI score of 0.308, while the NMI with 0.564 and the MP-Score with 0.637 are both higher.
 Intuitively we would assume the higher score to better represent the predicted clustering,
 since the number of clusters is correct and only two out of nine elements are assigned to the wrong cluster.
@@ -225,8 +225,8 @@ while an adjusted measure such as the ARI would be 0 in such a case.
     \label{tab:score_scenarios}
 \end{table}
 
-As a final note, repeating the evaluation shown in table \ref{tab:nmi_kmeans_example} a second time using the MP-Score,
-the score (Table \ref{tab:avg_predict_kmeans_example}) for \textit{k}-means is much lower than HDBSCAN.
+As a final note, repeating the evaluation shown in \tabref{tab:nmi_kmeans_example} a second time using the MP-Score,
+the score (\tabref{tab:avg_predict_kmeans_example}) for \textit{k}-means is much lower than HDBSCAN.
 This reflects what we would expect based on the big difference in the amount of predicted clusters.
 
 \begin{table}[h]
@@ -269,7 +269,7 @@ This principle was useful for developing and testing the framework in a local en
 without worrying about setting up and installing all dependencies again.
 
 \paragraph{Defining cluster parameters}
-The parameters for each available clustering method are defined beforehand in a dictionary as can be seen in Listing \ref{lst:cluster_method_parameters}.
+The parameters for each available clustering method are defined beforehand in a dictionary as can be seen in \lstref{lst:cluster_method_parameters}.
 Parameters are defined as a list of possible variations.
 For example if we want to run HDBSCAN with two different metrics \textit{cosine} and \textit{euclidean},
 we define the metric parameter as \lstinline{"metric": ["cosine", "euclidean"]}.
@@ -307,7 +307,7 @@ parameters_by_method = {
 
 \paragraph{CLI}
 The evaluation framework provides a command line interface to start evaluation runs and specify a number of settings.
-Listing \ref{lst:cluster_evaluation_framework} shows the full interface.
+\lstref{lst:cluster_evaluation_framework} shows the full interface.
 
 \begin{lstlisting}[caption=Command line interface for the evaluation framework, label={lst:cluster_evaluation_framework}]
 usage: cluster_evaluation_framework.py [-h] [--rows ROWS] [--stories STORIES]

@@ -49,9 +49,10 @@ Later could be done with Keyphrase Extraction or with \Gls{ner}.
 \paragraph{Normalizing text}
 If we are not dealing with books but with articles or papers,
 there are also other alternatives to Keyphrase Extraction and \Gls{ner}.
-Using \textit{Text Stemming} or \textit{Text Lemmatization}, we can simplify terms and group them together to reduce
+Using \textbf{Text Stemming} (\subsubsecref{subsubsec:3_text_stemming})
+or \textbf{Text Lemmatization} (\subsubsecref{subsubsec:3_text_lemmatization}),
+we can simplify terms and group them together to reduce
 the dictionary size.
-We will cover both practices in the subsections~\ref{subsubsec:3_keyphrase_extraction} and \ref{subsubsec:3_named_entity_recognition}.
 
 \subsubsection{Keyphrase Extraction}
 \label{subsubsec:3_keyphrase_extraction}
@@ -257,7 +258,7 @@ than in document \textit{d2} as it covered a bigger percentage of the document.
 
 This is what tf-idf tries to fix.
 Tf-idf was first introduced in 1975 by G. Salton, A. Wong and C. S. Yang \cite{salton1975}
-and defines the equation as displayed in equation~\ref{equ:tfidf}.
+and defines the equation as displayed in \equref{equ:tfidf}.
 
 \begin{equation}
     w_{x,y} = tf_{x,y} \cdot log(\frac{N}{df_x})
@@ -270,7 +271,7 @@ and $df_x$ the documents containing $x$.
 However, it is important to note that nowadays there are different tf-idf implementations.
 As we are using the scikit-learn\cite{scikit-learn} library,
 the tf-idf implementation\cite{scikit_tfidf} of the library is slightly different,
-see equation~\ref{equ:scikit_tfidf}.
+see \equref{equ:scikit_tfidf}.
 
 \begin{equation}
     w_{x,y} = tf_{x,y} \cdot (log(\frac{1+N}{1+df_x}) + 1)
@@ -307,7 +308,7 @@ This results in following values in our \Gls{vsm}:
     \label{tab:tfidf_vsm}
 \end{table}
 
-As we can see in Table~\ref{tab:tfidf_vsm}, the term \textbf{bank} has in document \textit{d3}
+As we can see in \tabref{tab:tfidf_vsm}, the term \textbf{bank} has in document \textit{d3}
 a rather high value.
 This is because the term is not present in documents \textit{d1} or \textit{d2} but appears
 twice in document \textit{d3}.
@@ -421,7 +422,7 @@ This is achieved by to comparing the core distances between two points with the 
 to get the the mutual reachability distance.
 The core distance $core_k(x)$ is defined as the radius of a circle around point $x$,
 so that $k$ neighbours are contained within this circle.
-TODO describe example in Figure \ref{fig:hdbscan_1}.
+TODO describe example in \figref{fig:hdbscan_1}.
 
 \begin{figure}[h]
     \centering
@@ -453,7 +454,7 @@ such that dropping any edge will cause the disconnect of one or more vertices fr
 \subparagraph{3. Build the cluster hierarchy}
 Once the minimum spanning tree is complete, it is converted into a hierarchy of connected clusters,
 by sorting edges of the tree by distance and iterate through, creating a new merged cluster for each edge.
-The dendogram in Figure \ref{fig:hdbscan_2} shows a possible cluster hierarchy. %TODO rewrite this paragraph.
+The dendogram in \figref{fig:hdbscan_2} shows a possible cluster hierarchy. %TODO rewrite this paragraph.
 
 \begin{figure}[h]
     \centering

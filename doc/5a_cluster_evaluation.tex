@@ -10,7 +10,7 @@ The precision is be measured with the MP-Score.
 
 \paragraph{Text preprocessing}
 The first step in working with text is to apply preprocessing techniques for improving the quality of the data before clustering it.
-We look the five different preprocessing methods as described in Section \ref{subsec:3_text_preprocessing} and evaluate each.
+We look the five different preprocessing methods as described in \subsecref{subsec:3_text_preprocessing} and evaluate each.
 The methods are:
 
 \begin{itemize}
@@ -55,7 +55,7 @@ Lower numbers of stories allow for more repetitions due to lower processing time
 \label{subsubsec:5a_evaluation}
 
 The first run is done with 60 stories, which results in approximately 2000 news articles, over 20 repetitions.
-Table \ref{tab:cluster_parameters} shows the resulting MP-Score for each parameter in combination with each preprocessing method and vector space model.
+\tabref{tab:cluster_parameters} shows the resulting MP-Score for each parameter in combination with each preprocessing method and vector space model.
 The highest score per parameter is highlighted as bold and the best score overall is underlined.
 The first insight we get is the variety of scores for different min cluster sizes.
 The lowest min cluster size results in the lowest score,
@@ -63,7 +63,7 @@ while increasing this parameter leads to an increasingly better score.
 The highest score is reached with a min cluster size of six, while increasing it further reduces the score again.
 The large difference in scores between different min cluster sizes,
 shows the importance this parameters has on the quality of the clustering and requires some knowledge of the data beforehand.
-In our case we have a wide range of different cluster sizes as shown in Figure \ref{fig:articles_per_story_distribution},
+In our case we have a wide range of different cluster sizes as shown in \figref{fig:articles_per_story_distribution},
 with clusters containing as few as two news articles.
 Based on this distribution we expected the ideal min size cluster size to be in a range from two to nine, which is why we chose this range.
 The distribution also explains the drop in the scores after a min cluster size of 6, since an increasingly number of clusters are being ignored.
@@ -144,7 +144,7 @@ Specifically training on a news corpus might improve the performance of both met
 After determining the optimal settings for text preprocessing and vectorization,
 we increase the sample sizes for our evaluation runs,
 to get a deeper insight into the behaviour of HDBSCAN with larger data sets.
-Figure \ref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples.
+\figref{fig:hdbscan_parameters} shows the scores achieved with different parameters over an increasingly large set of samples.
 Based on this Figure we see the metric \textit{cosine} to be generally better than $euclidean$
 and significantly more stable based on the range of the score and the quality of the clustering seems to decrease with larger sample sizes.
 
@@ -183,12 +183,12 @@ One of the advantages HDBSCAN has over other clustering algorithms,
 is the ability to work with noise, since we intent on applying it in an online setting,
 where noisy data is to be expected.
 At the same time, the number of articles classified as noise should be kept to a minimum.
-However the noise ratio shown in Figure \ref{fig:noise_ratio_samples} is significantly higher,
+However the noise ratio shown in \figref{fig:noise_ratio_samples} is significantly higher,
 than we would expect it to be based on our test data.
 A variety of factors play into the high noise ratio.
 One influence is due to the $min\_cluster\_size$.
 Each news article belonging to a cluster, which has less articles than the minimum cluster size, will be counted as noise.
-Table \ref{tab:expected_noise} lists the calculated percentage of news articles,
+\tabref{tab:expected_noise} lists the calculated percentage of news articles,
 which would be ignored based on different minimum cluster sizes.
 Although the percentages show that the impact the minimum cluster size has on the overall noise ratio is very limited.
 It is reasonably to assume, that the test data still contains a fair amount noisy data,
@@ -223,7 +223,7 @@ Decreasing the noise ratio is certainly an important part in future improvements
 
 Let us look closer at the data to get insights behind just the score or noise ratio.
 The first story we focus on is about the hacking of U.S firms by chinese military hackers.
-Table \ref{tab:clustering_example} shows a number of detected and missed news articles.
+\tabref{tab:clustering_example} shows a number of detected and missed news articles.
 Based on the text length, we see that the missed articles are generally shorter compared with detected articles with one major exception.
 Nr. 18 with a length of 13980 is nearly twice as long compared with the second longest article.
 The content of Nr. 18 is a collection of different stories, only the first being about the chinese hackers.
@@ -282,11 +282,11 @@ and do not provide any obvious reasons for why they were regarded as noise durin
 \end{table}
 
 To find a possible explanation for the remaining new articles, we take a look at their tf-idf model.
-Table \ref{tab:clustering_example_features} lists the top 10 keywords per news article, based on the tf-idf model.
+\tabref{tab:clustering_example_features} lists the top 10 keywords per news article, based on the tf-idf model.
 There we see how the keywords from the detected news articles are quite similar,
 while the keywords from the missing news articles appear to be more varied with minimal overlap to the keywords from detected articles.
 This seems to give an indication as to why the articles were missing from the cluster.
-However it is important to note, that the tf-idf model in Table \ref{tab:clustering_example_features} was created from only those 20 articles
+However it is important to note, that the tf-idf model in \tabref{tab:clustering_example_features} was created from only those 20 articles
 and used the full text instead of lemmatization for better readability.
 The top keywords might differ in the model created for the whole clustering.
 Especially words such as \textit{ap1000}, which is a name of a nuclear power plant, will be weighted higher in the full model.
@@ -332,12 +332,12 @@ So far we focused on HDBSCAN to determine the optimal settings to run it with.
 As a next step we can start comparing the overall performance with \textit{k}-means.
 We use the follwing settings: Text Lemmatization with tf-idf,
 cosine as the similarity measure and six as the minimum size of clusters.
-Figure \ref{fig:precision_and_processing_time_kmeans_hdbscan} shows a similar behaviour
+\figref{fig:precision_and_processing_time_kmeans_hdbscan} shows a similar behaviour
 for both clustering methods in value and variance of the precision.
 Although HDBSCAN is generally more accurate than \textit{k}-means,
 the difference gets smaller with an increase in the sample size.
 Additionally the increase in the number of samples results for both HDBSCAN
-and \textit{k}-means in a small loss regarding the precision as can be seen in Figure \ref{fig:precision_and_processing_time_kmeans_hdbscan}
+and \textit{k}-means in a small loss regarding the precision as can be seen in \figref{fig:precision_and_processing_time_kmeans_hdbscan}
 and which we have already observed when analysing HDBSCAN parameters.
 
 \begin{figure}[h]
@@ -350,7 +350,7 @@ and which we have already observed when analysing HDBSCAN parameters.
 While HDBSCAN and \textit{k}-means provide a similar score,
 the biggest difference can be noted in the processing time in relation to the number of samples.
 \textit{k}-means has a time complexity of $O(n^2)$ in contrast to HDBSCAN with a time complexity of $O(nlog(n))$,
-which is illustrated by Figure \ref{fig:precision_and_processing_time_kmeans_hdbscan}.
+which is illustrated by \figref{fig:precision_and_processing_time_kmeans_hdbscan}.
 Although running the evaluation has also shown the space complexity for HDBSCAN
 to be substantially higher for larger amounts of samples than with \textit{k}-means.
 Trying to run HDBSCAN with 100'000 news articles caused in a memory error,
@@ -360,7 +360,7 @@ is not optimised for memory\cite{hdbscan_memory_issue}.
 This might be another area for further improvements, although it will not help to increase the score on larger data sets.
 
 As a final evaluation, we compare HDBSCAN with six different clustering methods taken from scikit-learn.
-Each method is run with a variety of parameters and the best scores are shown in Figure \ref{fig:different_clusterings}.
+Each method is run with a variety of parameters and the best scores are shown in \figref{fig:different_clusterings}.
 HDBSCAN provides the highest precision, while being still being one of the fastest algorithms.
 We are aware of our bias for HDBSCAN since we invested a significant amount understanding and analysing it,
 but it is still interesting to see how well it compares with other clustering methods out of the box.

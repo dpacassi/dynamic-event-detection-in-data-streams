@@ -21,7 +21,7 @@ as part of evaluation as well and will be implemented accordingly for the online
 
 The clustering will be done batchwise over time, since HDBSCAN only supports static data sets.
 Events are detected by comparing clusters from successive batches.
-Figure \ref{fig:timeline} illustrates this with three batches,
+\figref{fig:timeline} illustrates this with three batches,
 where the resulting clusters from batch $t$ will be compared the previous result from batch $t - 1$,
 while batch $t - 1$ was previously compared with batch $t - 2$.
 In this example each batch only contains samples from a limited time period,
@@ -32,7 +32,7 @@ If a similar cluster already exists in the previous batch
 the differences between these clusters are detected as a change in an existing event.
 If no pair exists for a cluster from a current batch, this cluster will be regarded as a new event.
 The similarity between clusters is based on the same assumptions
-as for the scoring function described in Section \ref{subsubsec:4b_scoring_function}.
+as for the scoring function described in \subsubsecref{subsubsec:4b_scoring_function}.
 
 \begin{figure}[h]
     \centering

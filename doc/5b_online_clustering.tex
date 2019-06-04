@@ -18,7 +18,7 @@ The settings to run the clustering are as follows:
 \end{itemize}
 
 The clustering is run over 30 days with a total of 42,916 news articles.
-The distribution of news articles this time period is illustrated in Figure \ref{fig:news_articles_over_time}.
+The distribution of news articles this time period is illustrated in \figref{fig:news_articles_over_time}.
 The time delta, which is the amount of time between two batches, is set to one hour.
 
 \begin{figure}[h]
@@ -36,13 +36,13 @@ of news articles and changes in existing events.
 This evaluation analyses the results of our simulated test runs with different batch sizes.
 
 We start the evaluation with using a fixed batch size.
-Figure \ref{fig:event_detection_differences} shows the differences between the number of detected events
+\figref{fig:event_detection_differences} shows the differences between the number of detected events
 and the number of true events for both new and existing topics.
 Based on this data we see the impact of different batch sizes for the accuracy in detected events.
 The difference with a batch size of 5,000 news articles is fairly lower than the batch size of 1,000.
 The difference is especially noticeable in the time period between the 21.05 and 25.05.
 The reason for this spike can be found in the distribution of incoming news articles
-as shown in Figure \ref{fig:news_articles_over_time}.
+as shown in \figref{fig:news_articles_over_time}.
 During this period we receive up to 3,000 news articles in a single day.
 This means by using a lower batch size such as 1,000,
 the overlap between batches gets too small to reliably detect changes between batches,
@@ -56,7 +56,7 @@ which causes too many new topics to be detected.
 \end{figure}
 
 Although a larger batch size does not simply equal a better difference,
-as can be seen in Figure \ref{fig:event_detection_differences}
+as can be seen in \figref{fig:event_detection_differences}
 by comparing the differences using a batch size of 3,000 with a batch size of 5,000.
 The batch size n=3000 shows a generally lower difference in the detection of new events than with n=5000.
 The differences between both batch sizes are less significant when detecting changes in existing events.
@@ -69,7 +69,7 @@ To measure the quality of events, we can look at the collection of events in a s
 where each event is represented by a cluster containing all relevant news articles.
 Since we now have two clusterings, one containing detected events and the other with events taken from the ground truth,
 we can apply our MP-Score as a metric to get an insight into the quality of the detected events over the ground truth.
-Figure \ref{fig:event_detection_mp_score_1000} shows the MP-Scores for an online clustering using a batch size of 1,000.
+\figref{fig:event_detection_mp_score_1000} shows the MP-Scores for an online clustering using a batch size of 1,000.
 Since there is quite a large variance, the score is shown as a boxplot, where a single box represents a full day.
 The large variance is already the first indication, that the quality is rather low.
 Meaning that there are still many false positives and false negatives.
@@ -81,7 +81,7 @@ Meaning that there are still many false positives and false negatives.
     \label{fig:event_detection_mp_score_1000}
 \end{figure}
 
-Looking at an increased batch size of 5000 in Figure \ref{fig:event_detection_mp_score_5000},
+Looking at an increased batch size of 5000 in \figref{fig:event_detection_mp_score_5000},
 we note that there is less variance in the overall MP-Score, which compares the full clustering with the ground truth.
 Although the variance for new and existing event detections is still fairly high.
 Additionally while the variance is high, the median for new topics is mostly around 0.1.
@@ -116,12 +116,12 @@ if the number of news articles is greater or equal to the $min\_cluster\_size$.
 
 Limiting new events in the ground truth based on the $min\_cluster\_size$
 gives the opposite result as initially expected.
-Figure \ref{fig:event_detection_differences_with_min_cluster_size} clearly shows
+\figref{fig:event_detection_differences_with_min_cluster_size} clearly shows
 an increase in the difference between predicted events and the adjusted ground truth.
 This means we already detected more new events than there were present in the ground truth
 and limiting it based on the $min\_cluster\_size$ only lowered the true number of events,
 thus leading to an increase in the difference.
-A look at the raw data from an initial simulation run in Figure \ref{fig:event_detection_by_date_3000}
+A look at the raw data from an initial simulation run in \figref{fig:event_detection_by_date_3000}
 validates this assumption.
 
 \begin{figure}[h]
@@ -131,7 +131,7 @@ validates this assumption.
     \label{fig:event_detection_by_date_3000}
 \end{figure}
 
-The raw data in Figure \ref{fig:event_detection_by_date_3000}
+The raw data in \figref{fig:event_detection_by_date_3000}
 also shows a direct correlation between the number of detected new events and the number of detected changes in events.
 The more changes we missed, the more new events are detected.
 This is to be expected,
@@ -140,7 +140,7 @@ If a cluster in the current batch could not be matched to a cluster from the pre
 the cluster from the current batch will be seen as a new event.
 Therefore the accuracy in finding pairs of clusters in crucial to a better performance.
 The online clustering makes use of Locality Sensitive Hashing
-as explained in section \ref{subsubsec:4c_implementation}.
+as explained in \subsubsecref{subsubsec:4c_implementation}.
 The current threshold value for determining the similarity is set to 0.75.
 To see the impact on the similarity threshold,
 we run the online clustering again with a batch size of n=3000 and different threshold values.
@@ -152,7 +152,7 @@ we run the online clustering again with a batch size of n=3000 and different thr
     \label{fig:event_detection_differences_threshold}
 \end{figure}
 
-Figure \ref{fig:event_detection_differences_threshold}
+\figref{fig:event_detection_differences_threshold}
 shows the effect of the threshold on the difference in decided over true events.
 We see how the initial threshold of 0.75 was set too high,
 as lower threshold values such as 0.1 provide a significant lower difference.
@@ -160,12 +160,12 @@ While there is still a substantial variance per day the median of 0.1 and 0.5
 is generally more stable and lower than with a threshold value of 0.75.
 The reason for the better performance of lower threshold values,
 is that the overlap between batches decreases with an increase in the volume of news articles.
-This is clearly visible during the peaks in Figure \ref{fig:event_detection_differences_threshold}.
+This is clearly visible during the peaks in \figref{fig:event_detection_differences_threshold}.
 Thus a high similarity threshold cannot be met,
 since there exists only an overlap of a few news articles for the same cluster between batches.
-The MP-Score is also improved for new events as can be seen in Figure \ref{fig:event_detection_mp_score_3000_0_1}.
-While there is more variance than in similar plots from Figure \ref{fig:event_detection_mp_score_1000}
-and Figure \ref{fig:event_detection_mp_score_5000},
+The MP-Score is also improved for new events as can be seen in \figref{fig:event_detection_mp_score_3000_0_1}.
+While there is more variance than in similar plots from \figref{fig:event_detection_mp_score_1000}
+and \figref{fig:event_detection_mp_score_5000},
 the median from using threshold=0.1 clearly surpasses any measure from using threshold=0.75.
 The high variance in the boxplot is due to the fact, that there are only a few new events per hour, if any.
 This means detecting no events, when there are none leads to a score of 1,
@@ -187,7 +187,7 @@ which is approximately 1,000 stories.
 The number of the upper limit is based on observations from the clustering method evaluation.
 Higher number of samples resulted in frequent memory errors and while giving lower scores.
 
-Figure \ref{fig:event_detection_differences_hours} shows the difference in detected events
+\figref{fig:event_detection_differences_hours} shows the difference in detected events
 compared with the true number of events using the first dynamic method.
 The variance is still quite high, especially during the peaks,
 where a lot of news articles are present in the data stream.
@@ -215,7 +215,7 @@ The lower bound is set to 3,000, since the evaluation of a fixed batch sizes pro
 Our initial assumption was, that having a good lower bound
 would give a good baseline and the relative factor allows the batch size to grow with the increase in the volume of samples.
 The overall performance should therefore be superior to using only the fixed batch size.
-The data proved our assumption to be incorrect as can be seen in Figure \ref{fig:event_detection_differences_hours}.
+The data proved our assumption to be incorrect as can be seen in \figref{fig:event_detection_differences_hours}.
 The best scores are achieved by using a factor of 25.
 The overall score is 0.692 with a standard deviation of 0.091.
 The detection of new events results in a score of 0.589 with a standard deviation of 0.429.
@@ -231,7 +231,7 @@ The score of detecting changes is 0.682 with a standard deviation of 0.136.
 In addition, the data shows an interesting observation, where using a factor of 50 results in some extreme outliers.
 The reason can be explained based on our previous clustering evaluation,
 where we showed the decrease in precision with larger number of samples.
-Figure \ref{fig:nrows_by_new_rows} shows the maximum number of samples processed in a single batch.
+\figref{fig:nrows_by_new_rows} shows the maximum number of samples processed in a single batch.
 The factor 50 reaches the upper limit during most peaks in the data stream.
 Clustering with 30,000 resulted in an lower average score of roughly 0.24 compared to the best result.
 Therefore an increasing amount of news articles is classified as noise and stories
@@ -245,7 +245,7 @@ This leads to even bigger decreases in the event detection as this data shows.
     \label{fig:nrows_by_new_rows}
  \end{figure}
 
-To conclude the evaluation of different methods for setting the batch size Table \ref{tab:batch_size_methods}
+To conclude the evaluation of different methods for setting the batch size \tabref{tab:batch_size_methods}
 shows the best approach per method.
 The highest scores are highlighted as bold.
 Based on this data, the time based method seems to provide the best results,
