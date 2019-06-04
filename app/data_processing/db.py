@@ -61,14 +61,14 @@ def get_clusters():
     return data
 
 
-def add_cluster(identifier, method_id=None):
+def add_cluster(identifier, date=None, method_id=None):
     connection = get_connection()
 
-    insert_sql = "INSERT INTO cluster" " (identifier, method_evaluation_id)" " VALUES ( %s, %s )"
+    insert_sql = "INSERT INTO cluster" " (identifier, simulated_date, method_evaluation_id)" " VALUES ( %s, %s, %s )"
 
     insert_id = None
     with connection.cursor() as cursor:
-        cursor.execute(insert_sql, args=[identifier, method_id])
+        cursor.execute(insert_sql, args=[identifier, date, method_id])
         insert_id = cursor.lastrowid
         connection.commit()
 

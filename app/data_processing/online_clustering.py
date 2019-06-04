@@ -182,11 +182,11 @@ def get_stories_from_news_ids(news_ids):
     return news_by_story
 
 
-def persist_cluster_and_events(new_clusters, changed_clusters):
+def persist_cluster_and_events(new_clusters, changed_clusters, date):
     # Add new clusters
     for cluster in new_clusters:
         identifier = ",".join(map(str, cluster))
-        cluster_id = db.add_cluster(identifier)
+        cluster_id = db.add_cluster(identifier, date)
 
         for news_id in cluster:
             db.add_news_to_cluster(cluster_id, news_id)
@@ -196,7 +196,7 @@ def persist_cluster_and_events(new_clusters, changed_clusters):
     # Add changed clusters as new clusters per batch
     for cluster in changed_clusters:
         identifier = ",".join(map(str, cluster["new_news"]))
-        cluster_id = db.add_cluster(identifier)
+        cluster_id = db.add_cluster(identifier, date)
 
         for news_id in cluster["new_news"]:
             db.add_news_to_cluster(cluster_id, news_id)
@@ -208,7 +208,7 @@ def persist_cluster_and_events(new_clusters, changed_clusters):
             db.add_event(Event.TOPIC_CHANGED, cluster_id, str(changes))
 
 
-def run_event_detection(current_clusters=[], existing_clusters=[], verbose=False, threshold=0.75, persit_clusters_in_db=False):
+def run_event_detection(current_clusters=[], existing_clusters=[], verbose=False, threshold=0.75, persit_clusters_in_db=False, date=None):
 
     log_message = ""
     failed = False
@@ -223,7 +223,7 @@ def run_event_detection(current_clusters=[], existing_clusters=[], verbose=False
 
         if persit_clusters_in_db:
             # Store clusters and events in db for closer analysis
-            persist_cluster_and_events(new_clusters, changed_clusters)
+            persist_cluster_and_events(new_clusters, changed_clusters, date)
 
         # Get true events based on labelled test data
         new_news_ids = list(chain.from_iterable(current_clusters))
@@ -298,6 +298,7 @@ if __name__ == "__main__":
 
     ap = argparse.ArgumentParser(description="Run the batchwise clustering over a simulated stream of news articles.", formatter_class=RawTextHelpFormatter)
     ap.add_argument("--verbose", dest="verbose", action="store_true", help="\ndefault: False")
+    ap.add_argument("--persist_in_db", dest="persist_in_db", action="store_true", help="\ndefault: False")
     ap.add_argument("--rows", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
     ap.add_argument("--hours", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
     ap.add_argument("--factors", required=False, type=str, default=None, help="number of samples to process per batch\ndefault: 1000")
@@ -306,6 +307,7 @@ if __name__ == "__main__":
     ap.add_argument("--threshold", required=False, type=str, default=None, help="similarity threshold for cluster matching\ndefault: 0.75")
     ap.set_defaults(full_cluster=False)
     ap.set_defaults(verbose=False)
+    ap.set_defaults(persist_in_db=False)
     args = vars(ap.parse_args())
 
     thresholds = list(map(float, args["threshold"].split(","))) if args["threshold"] is not None else [0.75]
@@ -316,6 +318,7 @@ if __name__ == "__main__":
 
     date = args["date"]
     verbose = args["verbose"]
+    persist_in_db = args["persist_in_db"]
     run_n_days = args["run_n_days"]
 
     # run the simulation:
@@ -339,14 +342,14 @@ if __name__ == "__main__":
                     print()
                     print("Date: ", current_date)
 
-                current_clusters = cluster_news_by_row(rows, current_date)
+                current_clusters = cluster_news_by_rows(nrows, current_date)
                 result, new_rows, mp_score, processing_time = run_event_detection(
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
-                    persit_clusters_in_db=True)
+                    persit_clusters_in_db=persist_in_db)
                 
-                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, rows, mp_score, threshold)
+                db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, nrows, mp_score, threshold)
                 previous_clusters = current_clusters
 
                 current_date += timedelta(hours=1)
@@ -371,7 +374,7 @@ if __name__ == "__main__":
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
-                    persit_clusters_in_db=False)
+                    persit_clusters_in_db=persist_in_db)
                 
                 db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, hours=hours)
                 previous_clusters = current_clusters
@@ -399,7 +402,7 @@ if __name__ == "__main__":
                     current_clusters=current_clusters, 
                     existing_clusters=previous_clusters, 
                     verbose=verbose, threshold=threshold, 
-                    persit_clusters_in_db=False)
+                    persit_clusters_in_db=persist_in_db)
                 
                 db.add_script_execution(script_name, str(current_date), processing_time, str(result), new_rows, mp_score, threshold, factor=factor)
                 previous_clusters = current_clusters

@@ -146,3 +146,5 @@ docker-compose run -d cluster_evaluation python online_clustering.py --date "201
 -------- Test
 
 docker-compose run cluster_evaluation python cluster_evaluation_framework.py --methods kmeans,hdbscan  --stories 30 --runs 1 --tokenizers newspaper_text,text_lemmatized_without_stopwords --vectorizers TfidfVectorizer
+
+python online_clustering.py --date "2014-05-09 15:00:00" --run_n_days 5 --rows 3000 --threshold 0.1 --verbose --persist_in_db

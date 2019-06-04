@@ -127,14 +127,18 @@ bla bla bla.
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|r|r|r|}
+    \scalebox{0.75}{
+    \begin{tabular}{|l|r|r|r|r|r|r|}
         \hline
-        \textbf{Batch size method} & \textbf{Median} & \textbf{Standard deviation} \\
+        \textbf{Batch size method} & \multicolumn{2}{ |c| }{\textbf{Overall clustering}}  & \multicolumn{2}{ |c|}{\textbf{New events}}  & \multicolumn{2}{ |c| }{\textbf{Changes in existing events}} \\
         \hline
-        Fixed & 0 & 0 \\ \hline
-        Time based & 0 & 0 \\ \hline
-        Relative & 0 & 0 \\ \hline
+         & Mean & Standard deviation & Mean & Standard deviation & Mean & Standard deviation \\
+        \hline
+        Fixed with n=3000 & 0.701 & 0.085 & 0.542 & 0.435 & 0.683 & 0.144\\ \hline
+        Time based with hours=24 & 0.717 & 0.119 & 0.618 & 0.426 & 0.694 & 0.16 \\ \hline
+        Relative with factor=25 & 0.688 & 0.091 & 0.589 & 0.427 & 0.677 & 0.135 \\ \hline
     \end{tabular}
+    }
     \caption{Final scores obtained by each method for setting the batch size.}
     \label{tab:batch_size_methods}
 \end{table}

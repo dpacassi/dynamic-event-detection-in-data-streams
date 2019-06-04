@@ -479,7 +479,7 @@ def plot_event_detection_differences_by_hours():
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-    _plot_event_differences("hours", data, plt, ax1, ax2, [24,48,72])
+    _plot_event_differences("hours", data, plt, ax1, ax2, [72, 48, 24,])
 
     ax1.set_title("Difference in true vs detected events with batch_size n=hours")
     ax2.set_title("Difference in true vs detected changes with batch_size n=hours")
@@ -501,7 +501,7 @@ def plot_event_detection_differences_by_relative():
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-    _plot_event_differences("fraction", data, plt, ax1, ax2, [10,25,50])
+    _plot_event_differences("fraction", data, plt, ax1, ax2, [50, 25, 10])
 
     ax1.set_title("Difference in true vs detected events with batch_size n=factor")
     ax2.set_title("Difference in true vs detected changes with batch_size n=factor")
@@ -523,7 +523,7 @@ def plot_nrows_by_new_rows():
 
     fig = plt.figure(figsize=(15, 5))
 
-    nrows = data["fraction"].unique()
+    nrows = [10, 25 ,50]
     for i, nrow in enumerate(nrows):
 
         Y_rows = collections.defaultdict(list)
@@ -553,15 +553,11 @@ def plot_nrows_by_new_rows():
 
     plt.ylabel("Number of samples")
 
-    #plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d.%m"))
-    #plt.gca().xaxis.set_major_locator(mdates.AutoDateLocator())
-    #plt.gcf().autofmt_xdate()
-
-    plt.xlabel("Time")
+    plt.xlabel("Days")
     plt.legend()
     plt.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
 
-    plt.title("Max number of samples process by a single batch")
+    plt.title("Max number of samples processed by a single batch")
     plt.savefig("../../doc/images/nrows_by_new_rows.png")
     plt.close(fig)
 
@@ -615,7 +611,7 @@ def _plot_event_differences(key, data, plt, ax1, ax2, nrows):
     
     plt.gcf().autofmt_xdate()
 
-    plt.ylim(top=100)
+    # plt.ylim(top=100)
     ax1.grid(True, "major", ls="--", lw=0.5, c="k", alpha=0.3)
     ax1.legend()
 
@@ -1083,48 +1079,16 @@ def plot_online_clustering_example(story, keyword):
 
     data = pandas.read_sql(sql=sql, con=connection, params=[story])
 
-    articles = collections.defaultdict(int)
-    articles_ids = collections.defaultdict(list)
-    article_position_by_id = dict()
-
-    dates = data["computed_publish_date"].values
-    patches = []
-
-    current_time = datetime.fromtimestamp(dates[0].astype(datetime)  / 1e9)
-    end_time = datetime.fromtimestamp(dates[-1].astype(datetime)  / 1e9)
-
-    while current_time < end_time:
-        current_hour = current_time.strftime("%d.%m %H:00") 
-        articles[current_hour] = 0
-        current_time += timedelta(hours=1)
-
-    for i, date in enumerate(dates):
-        data_hour = datetime.fromtimestamp(date.astype(datetime) / 1e9).strftime("%d.%m %H:00") 
-        articles[data_hour] += 50
-        articles_ids[data_hour].append(data["id"].values[i])
-
-    X = articles.keys()
-    Y = [1]*len(X)
-    S = list(articles.values())
-    blue_points = [0]*len(X)
-
-    # prepare coordinates
-    for i, hour in enumerate(articles):
-        if hour in articles_ids:
-            for article_id in articles_ids[hour]:
-                article_position_by_id[article_id] = i
-
     
-    event_sql = (
-        "select event.id as event_id, news_article.id as news_id, event.type as event_type from event"
+    cluster_sql = (
+        "select cluster.id as cluster_id, count(cluster_news_article.news_article_id) as news_count from event"
         " join cluster_news_article on cluster_news_article.cluster_id = event.cluster_id"
-        " join cluster on cluster.id = event.cluster_id"
-        " join news_article on cluster_news_article.news_article_id = news_article.id and news_article.story = %s and preprocessed = 1"
-        " where event.insert_date > '2019-05-30 09:00:00'"
-        " order by event.insert_date, news_article.computed_publish_date asc"
+        " where cluster.insert_date > '2019-05-30 09:00:00'"
+        " group by cluster.id"
+        " order by cluster.insert_date asc"
     )
 
-    event_data = pandas.read_sql(sql=event_sql, con=connection, params=[story])
+    data = pandas.read_sql(sql=event_sql, con=connection, params=[story])
 
     events = collections.defaultdict(list)
     colors = dict()
@@ -1191,14 +1155,36 @@ def calculate_score_and_variance():
 
     sql = (
         "select last_processed_date, result, new_rows, is_full_cluster, nrows, mp_score from script_execution"
-        " where failed = 0 and threshold < 0.2 and nrows is not null"
+        " where failed = 0 and execution_date < '2019-05-28 14:00:00' and threshold < 0.2 and nrows is not null"
         " order by last_processed_date"
     )
 
     data = pandas.read_sql(sql=sql, con=connection)
+    print_statistics("nrows", data)
+
+    sql = (
+        "select last_processed_date, result, new_rows, is_full_cluster, fraction, mp_score from script_execution"
+        " where threshold < 0.2 and fraction is not null"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    print_statistics("fraction", data)
+
+    sql = (
+        "select last_processed_date, result, new_rows, is_full_cluster, hours, mp_score from script_execution"
+        " where threshold < 0.2 and hours is not null"
+        " order by last_processed_date"
+    )
+
+    data = pandas.read_sql(sql=sql, con=connection)
+    print_statistics("hours", data)
+
     connection.close()
 
-    nrows = data["nrows"].unique()
+
+def print_statistics(key, data):
+    nrows = data[key].unique()
     for nrow in nrows:
         Y_mp_score = []
         Y_change_mp_score = []
@@ -1206,28 +1192,29 @@ def calculate_score_and_variance():
 
         for index, row in data.iterrows():
             result = json.loads(row["result"].replace("'", '"'))
-            if row["nrows"] == nrow:
+            if row[key] == nrow:
                 Y_mp_score.append(row["mp_score"])
 
                 Y_change_mp_score.append(result["topic_changed"]["mp_score"])
                 Y_add_mp_score.append(result["topic_added"]["mp_score"])
-            
-        print("Rows:", nrow)
+
+        print("-------")
+        print("{}: {}".format(key,nrow))
         print("-- MP Score --")
-        print("Median:", statistics.median(Y_mp_score))
-        print("Average:", statistics.mean(Y_mp_score))
-        print("Variance:", statistics.variance(Y_mp_score))
-        print("Std:", statistics.stdev(Y_mp_score))
+        print("Median:", round(statistics.median(Y_mp_score),3))
+        print("Average:", round(statistics.mean(Y_mp_score),3))
+        print("Variance:", round(statistics.variance(Y_mp_score),3))
+        print("Std:", round(statistics.stdev(Y_mp_score),3))
         print("-- New events --")
-        print("Median:", statistics.median(Y_add_mp_score))
-        print("Average:", statistics.mean(Y_add_mp_score))
-        print("Variance:", statistics.variance(Y_add_mp_score))
-        print("Std:", statistics.stdev(Y_add_mp_score))
+        print("Median:", round(statistics.median(Y_add_mp_score),3))
+        print("Average:", round(statistics.mean(Y_add_mp_score),3))
+        print("Variance:", round(statistics.variance(Y_add_mp_score),3))
+        print("Std:", round(statistics.stdev(Y_add_mp_score),3))
         print("-- Event changes --")
-        print("Median:", statistics.median(Y_change_mp_score))
-        print("Average:", statistics.mean(Y_change_mp_score))
-        print("Variance:", statistics.variance(Y_change_mp_score))
-        print("Std:", statistics.stdev(Y_change_mp_score))
+        print("Median:", round(statistics.median(Y_change_mp_score),3))
+        print("Average:", round(statistics.mean(Y_change_mp_score),3))
+        print("Variance:", round(statistics.variance(Y_change_mp_score),3))
+        print("Std:", round(statistics.stdev(Y_change_mp_score),3))
         
 
 # Clustering method evaluation
@@ -1249,9 +1236,9 @@ def calculate_score_and_variance():
 # plot_mp_scores_for_event_detection_by_date()
 plot_event_detection_differences_by_relative()
 plot_event_detection_differences_by_hours()
-# calculate_score_and_variance()
+calculate_score_and_variance()
 # plot_event_detection_overlap()
-#plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
+# plot_online_clustering_example(story = 'dTEqnWhDkbceWsMQa07JPBzkaYb3M', keyword="gmail")
 #plot_online_clustering_example(story = 'dMz8NzNxiPqTctM7zwUCIuAs__DyM', keyword="hillshire")
 plot_nrows_by_new_rows()
 
