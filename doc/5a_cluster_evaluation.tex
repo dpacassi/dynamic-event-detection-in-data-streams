@@ -10,18 +10,40 @@ The precision is measured with the MP-Score.
 
 \paragraph{Text preprocessing}
 The first step in working with text is to apply preprocessing techniques
-for improving the quality of the data before clustering it.
+to improve the quality of the data before clustering it.
 We look at five different preprocessing methods as described in \subsecref{subsec:3_text_preprocessing}
 and evaluate each.
 The methods are:
 
 \begin{itemize}
     \item Full text with stop word removal
+    \item Text Stemming
+    \item Text Lemmatization
     \item Keyphrase Extraction
     \item \Gls{ner}
-    \item Text Lemmatization
-    \item Text Stemming
 \end{itemize}
+
+Regardless of the quality, we can already compare the processing times of each method.
+As we can see in \tabref{tab:preprocessing_times}, Text Stemming is by far the fastest method of the above mentioned
+(\textit{with Stop word removal left out}).
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|r|r|r|r|}
+    \hline
+     & \textbf{Minimum time (s)} & \textbf{Average time (s)} & \textbf{Maximum time (s)} \\ \hline
+    \textbf{Text Stemming} & 0.1 & 2.3 & 4.0 \\ \hline
+    \textbf{Text Lemmatization} & 113.0 & 172.3 & 1414.1 \\ \hline
+    \textbf{Keyphrase Extraction} & 8.5 & 83.5 & 954.3 \\ \hline
+    \textbf{\Gls{ner}} & 8.7 & 58.2 & 469.3 \\ \hline
+    \end{tabular}
+    \caption{Comparison of text preprocessing times.}
+    \label{tab:preprocessing_times}
+\end{table}
+
+Text Stemming needs in average $2.3 seconds$ to process one article of our data set.
+Text Lemmatization needs in average $75\times$ more time to process a news article and is
+the slowest evaluated text preprocessing method.
 
 \paragraph{Text vectorization}
 Before the text can be clustered, it has to be transformed into a vector space model.
