@@ -51,7 +51,10 @@ which causes too many new topics to be detected.
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_differences}
-    \caption{Comparison between the difference in detected and true events. The line represents the median, while the area shows the range from the minimum to the maximum value}
+    \caption{
+        Comparison between the difference in detected and true events.
+        The line represents the median, while the area shows the range from the minimum to the maximum value
+    }
     \label{fig:event_detection_differences}
 \end{figure}
 
@@ -61,7 +64,7 @@ by comparing the differences using a batch size of 3,000 with a batch size of 5,
 The batch size n=3000 shows a generally lower difference in the detection of new events than with n=5000.
 The differences between both batch sizes are less significant when detecting changes in existing events.
 
-Based on the overall differences, we do not know the accuracy of those predictions. 
+Based on the overall differences, we do not know the accuracy of those predictions.
 If the difference between newly detected events and true events is zero,
 there is still the possibility, that the events itself are different from the ground truth,
 and thus contain false positives.
@@ -86,8 +89,8 @@ we note that there is less variance in the overall MP-Score, which compares the 
 Although the variance for new and existing event detections is still fairly high.
 Additionally while the variance is high, the median for new topics is mostly around 0.1.
 This tells us that most of the newly detected events do not correspond with new events according to the ground truth.
-The detection of extensions of existing events is generally more accurate with a median between 0.5 and 0.8 using n=5000,
-but there is still are wide variance noticeable.
+The detection of extensions of existing events is generally more accurate
+with a median between 0.5 and 0.8 using n=5000, but there is still are wide variance noticeable.
 
 \begin{figure}[h]
     \centering
@@ -213,7 +216,8 @@ In addition to an upper bound, this method uses a lower bound as well,
 to prevent the overlap between batches from becoming too small.
 The lower bound is set to 3,000, since the evaluation of a fixed batch sizes proved 3,000 to provide the best results.
 Our initial assumption was, that having a good lower bound
-would give a good baseline and the relative factor allows the batch size to grow with the increase in the volume of samples.
+would give a good baseline and the relative factor allows the batch size
+to grow with the increase in the volume of samples.
 The overall performance should therefore be superior to using only the fixed batch size.
 The data proved our assumption to be incorrect as can be seen in \figref{fig:event_detection_differences_hours}.
 The best scores are achieved by using a factor of 25.

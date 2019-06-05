@@ -138,7 +138,7 @@ The first paper describing a stemming algorithm was written by Julie Beth Lovins
 as early as in 1968.
 In her algorithm she used an ordered list of 294 suffixes to strip them out and then applies one of
 29 associated application rules followed by a set of 35 rules to check if the remaining stem has to be
-modified furtherly.
+modified further.
 
 Lovins' stemming algorithm was very successful but got mostly replaced by
 M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
@@ -257,7 +257,7 @@ However, in the first document \textit{d1} the term should have received a highe
 than in document \textit{d2} as it covered a bigger percentage of the document.
 
 This is what tf-idf tries to fix.
-Tf-idf was first introduced in 1975 by G. Salton, A. Wong and C. S. Yang \cite{salton1975}
+Tf-idf was first introduced in 1975 by G. Salton, A. Wong and C. S. Yang\cite{salton1975}
 and defines the equation as displayed in \equref{equ:tfidf}.
 
 \begin{equation}
@@ -285,7 +285,7 @@ we receive following value: $3.386$.
 What scikit-learn now does is to normalize this value using the Euclidean norm:
 
 \begin{equation}
-    v_{norm} = \frac{v}{||v||_2} = \frac{v}{\sqrt{v_1{^2}+v_2{^2}+...+v_n{^2}}}
+    v_{norm} = \frac{v}{||v||_2} = \frac{v}{\sqrt{v_1{^2}+v_2{^2}+\ldots+v_n{^2}}}
     \label{equ:euclidean}
 \end{equation}
 
@@ -397,7 +397,7 @@ if the distance from the point to the clusters do not differ.
 \subsubsection{HDBSCAN}
 \label{subsubsec:3_hdbscan}
 
-HDBSCAN is a hierarchical density-based clustering algorithm \cite{McInnes2017},
+HDBSCAN is a hierarchical density-based clustering algorithm\cite{McInnes2017},
 based on DBSCAN and improves its sensitivity for clusters of varying densities.
 Therefore defining an epsilon parameter, which acts as a threshold for finding clusters, is no longer necessary.
 This makes the algorithm more stable and flexible for different applications.
@@ -427,7 +427,10 @@ TODO describe example in \figref{fig:hdbscan_1}.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{hdbscan_1}
-    \caption{The core distances for three points shown as circles. Source\cite{how_hdbscan_works}}
+    \caption{
+        The core distances for three points shown as circles.
+        Source\cite{how_hdbscan_works}
+    }
     \label{fig:hdbscan_1}
 \end{figure}
 
@@ -459,7 +462,10 @@ The dendogram in \figref{fig:hdbscan_2} shows a possible cluster hierarchy. %TOD
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{hdbscan_2}
-    \caption{The cluster hierarchy shown as a dendogram. Source\cite{how_hdbscan_works}}
+    \caption{
+        The cluster hierarchy shown as a dendogram.
+        Source\cite{how_hdbscan_works}
+    }
     \label{fig:hdbscan_2}
 \end{figure}
 
@@ -474,7 +480,10 @@ This is were HDBSCAN improves upon DBSCAN, by taking additional steps for findin
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{hdbscan_3}
-    \caption{Condensed cluster hierarchy. Source\cite{how_hdbscan_works}}
+    \caption{
+        Condensed cluster hierarchy.
+        Source\cite{how_hdbscan_works}
+    }
     \label{fig:hdbscan_3}
 \end{figure}
 
@@ -490,8 +499,8 @@ This is repeated until no more splits can be made.
 \subparagraph{5. Extract the clusters}
 The extraction of the final clusters from the condensed tree is based on the stability per cluster
 and once it is selected, none of its subclusters can be chosen.
-The stability is based on the persistence of a cluster,
-which is measured by $\lambda = \frac{1}{distance}$. The stability for a cluster $C$ is defined as
+The stability is based on the persistence of a cluster, which is measured by $\lambda = \frac{1}{distance}$.
+The stability for a cluster $C$ is defined as
 
 \begin{equation}
 \sum_{p \in \text{C}}^{|C|} ({\lambda}_{p} - {\lambda}_{birth})

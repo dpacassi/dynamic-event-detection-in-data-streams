@@ -4,11 +4,13 @@
 \subsubsection{Design}
 \label{subsubsec:4b_design}
 
-The goal of the clustering evaluation is to find the optimal parameters and preprocessing methods for applying HDBSCAN in an online setting.
+The goal of the clustering evaluation is to find the optimal parameters and preprocessing methods
+for applying HDBSCAN in an online setting.
 Therefore the clustering evaluation is designed to run HDBSCAN on our test data,
 using a combination of different text processing methods, vector space models and parameters.
 \textit{k}-means is used to provide a benchmark for HDBSCAN evaluation.
-Once a clustering has been performed, the result is measured based on the ground truth and stored in a database for later analysis.
+Once a clustering has been performed,
+the result is measured based on the ground truth and stored in a database for later analysis.
 
 An important consideration is the variety of samples to use for a clustering run.
 Using only a single set of samples might bias the score against this specific set of samples
@@ -37,9 +39,10 @@ The NMI is an entropy-based measure and tries to quantify the amount shared info
 The score proved to work well for our initial evaluations, but upon closer inspection certain anomalies were found.
 An example is given in \tabref{tab:nmi_kmeans_example}, where \textit{k}-means achieved a rather high score,
 regardless of the large difference between the true amount of clusters and the approximation using $\sqrt{n}$.
-We were not able to explain this behaviour,
-although there are multiple papers about the selection bias of NMI for higher numbers of clusters\cite{LEI201758}\cite{clustering_anmi}.
-Other scoring functions such as V-Measure or the Adjusted Rand Index showed similar unexpected results with different clusterings.
+We were not able to explain this behaviour, although there are multiple papers
+about the selection bias of NMI for higher numbers of clusters\cite{LEI201758, clustering_anmi}.
+Other scoring functions such as V-Measure or the Adjusted Rand Index
+showed similar unexpected results with different clusterings.
 Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching\cite{data_mining}
 and the Jaccard Index, which we call MP-Score.
 
@@ -52,7 +55,10 @@ and the Jaccard Index, which we call MP-Score.
     \textit{k}-means & 19255 & 0.754 & 600 & 457 \\ \hline
     HDBSCAN & 19255 & 0.742 & 600 & 2 \\ \hline
     \end{tabular}
-    \caption{\textit{k}-means has a higher NMI score than HDBSCAN, while having a much larger difference in number of clusters.}
+    \caption{
+        \textit{k}-means has a higher NMI score than HDBSCAN,
+        while having a much larger difference in number of clusters.
+    }
     \label{tab:nmi_kmeans_example}
 \end{table}
 
@@ -75,7 +81,7 @@ The clusterings are defined as follows:
     C = \{\{1,2\},\{3,4,5,6\},\{7\},\{8,9\}\}
 \end{gather*}
 
-We calculate the similarity as defined in Equation \eqref{equ:similarity},
+We calculate the similarity as defined in \equref{equ:similarity},
 for each possible pair between $T$ and $C$ starting with $t_1= \{1,2,3\}$ and $c_1 = \{1,2\}$:
 
 \begin{align*}
@@ -106,7 +112,8 @@ since clusters do not share labels across different clusterings.
 To solve this, we make two assumptions based on the principle of Maximum Matching:
 
 \begin{enumerate}
-    \item The higher the similarity between two clusters, the more likely it is, that both clusters are describing the same group of documents.
+    \item The higher the similarity between two clusters,
+          the more likely it is, that both clusters are describing the same group of documents.
     \item Each cluster can be associated with a cluster from another clustering only once.
 \end{enumerate}
 
@@ -155,12 +162,15 @@ It is defined as follows:
 \end{equation}
 
 where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$.
-Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster and the size of the predicted cluster.
-The reason both sizes are used, is that we want to reflect the difference between the number of predicted clusters and the ground truth.
+Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster
+and the size of the predicted cluster.
+The reason both sizes are used,
+is that we want to reflect the difference between the number of predicted clusters and the ground truth.
 Using only the true number of elements as the weight, would affect the score if $|C| < |T|$, but not $|C| > |T|$.
 Hence the number of predicted elements has to be included into the weight.
 
-To continue our example we have to calculate the weights based on the coordinates of the selected values from our similarity matrix $A$.
+To continue our example,
+we have to calculate the weights based on the coordinates of the selected values from our similarity matrix $A$.
 The coordinates are $(1,1), (2,2), (3,4)$.
 As a result we calculate the following weights:
 
@@ -177,7 +187,8 @@ In the fourth and final step we calculate the weighted average
         \text{MP-Score} = \sum_{i=0}^{|S|} w_is_i \{w_i \in W \wedge s_i \in S\}
 \end{equation}
 
-where $S$ contains the selected values from the similarity matrix with $s_{i} \in S$ and $W$ is the set of weights with $w_i \in W$.
+where $S$ contains the selected values from the similarity matrix
+with $s_{i} \in S$ and $W$ is the set of weights with $w_i \in W$.
 Using our previously selected similarity values $S = f(A) = \{0.667, 0.6, 1\}$
 and the corresponding weights $W = \{0.278, 0.444, 0.222\}$,
 the calculation for the final average would be done as follows:
@@ -191,13 +202,16 @@ The complete implementation of the scoring function can be found in the appendix
 
 \paragraph{Comparison against other measures}
 The test scenarios in \tabref{tab:score_scenarios} show the resulting scores of our similarity score, NMI and ARI.
-The second scenario results in a ARI score of 0.308, while the NMI with 0.564 and the MP-Score with 0.637 are both higher.
+The second scenario results in a ARI score of 0.308,
+while the NMI with 0.564 and the MP-Score with 0.637 are both higher.
 Intuitively we would assume the higher score to better represent the predicted clustering,
 since the number of clusters is correct and only two out of nine elements are assigned to the wrong cluster.
 Scenario six shows a similar case.
 Scenarios four and especially five show the previously mentioned bias of NMI with regards to higher numbers of clusters.
-The seventh scenario gives an interesting result were both NMI and ARI result in zero while the MP-Score results in 0.321.
-The relatively high MP-Score is because a true cluster with four elements is matched with the predicted cluster containing nine elements.
+The seventh scenario gives an interesting result,
+where both NMI and ARI result in zero while the MP-Score results in 0.321.
+The relatively high MP-Score is because a true cluster with four elements is matched
+with the predicted cluster containing nine elements.
 This result in a similarity of 0.444, which is then lowered by the weight.
 The NMI does not infer any entropy, since every element ends up in the same cluster independently from the ground truth.
 The ARI results in zero because of its adjustment for chance.
@@ -253,8 +267,11 @@ The main features include:
     \item Defining the number of stories to run the evaluation with and load all news articles from those stories.
     \item Repeating evaluation runs with different sets of data.
     \item Providing different vector space models for converting the textual data into a vector space model.
-    \item Defining a range for each parameter of a clustering method and running it with each possible combination of those parameters.
-    \item Storing the result the result in a database and creating relations between news articles, clusters and evaluation runs. This allows for manual inspection and analysis of individual articles inside a predicted cluster.
+    \item Defining a range for each parameter of a clustering method
+          and running it with each possible combination of those parameters.
+    \item Storing the result the result in a database and creating relations between news articles,
+          clusters and evaluation runs.
+          This allows for manual inspection and analysis of individual articles inside a predicted cluster.
 \end{itemize}
 
 The implementation is done with Python.
@@ -265,18 +282,21 @@ We decided to use scikit-learn because of its rich documentation,
 the wide range of tools and algorithms it provides for clustering and our previous experience with it.
 Additionally the framework runs in a fully dockerized environment, which includes the database.
 This allows the framework to run independently from the underlying host, as long as the host supports docker.
-This principle was useful for developing and testing the framework in a local environment and deploying it on a remote server for long running evaluations,
+This principle was useful for developing and testing the framework in a local environment
+and deploying it on a remote server for long running evaluations,
 without worrying about setting up and installing all dependencies again.
 
 \paragraph{Defining cluster parameters}
-The parameters for each available clustering method are defined beforehand in a dictionary as can be seen in \lstref{lst:cluster_method_parameters}.
+The parameters for each available clustering method are defined beforehand in a dictionary
+as can be seen in \lstref{lst:cluster_method_parameters}.
 Parameters are defined as a list of possible variations.
 For example if we want to run HDBSCAN with two different metrics \textit{cosine} and \textit{euclidean},
 we define the metric parameter as \lstinline{"metric": ["cosine", "euclidean"]}.
 When running a clustering method, it will be executed with each possible combination of parameters.
 This means a single evaluation of HDBSCAN, will include 16 different runs,
 since there are two different metrics and eight different options for $min\_cluster\_size$.
-This is important to consider for running clustering methods with long processing times or running evaluations on large sample sizes.
+This is important to consider for running clustering methods with long processing times
+or running evaluations on large sample sizes.
 
 \begin{lstlisting}[caption=Predefined parameters for different clustering methods,label={lst:cluster_method_parameters}]
 parameters_by_method = {

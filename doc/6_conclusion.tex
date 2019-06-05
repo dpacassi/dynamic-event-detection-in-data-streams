@@ -6,7 +6,8 @@
 
 We started our work by searching for a suitable data set to create our clustering evaluations with.
 The primary requirement was, to have data points with their corresponding cluster labels.
-Having a labelled data set allows us to apply external measures and evaluate a resulting clutering against the ground truth.
+Having a labelled data set allows us to apply external measures
+and evaluate a resulting clustering against the ground truth.
 After selecting a few data set for closer inspection, we settled on the News Aggregator Dataset,
 which contains 422,937 labelled news articles, where a label describes the story the news article is about.
 Since the same story label applies to multiple news articles, we could use this as a cluster descriptor.
@@ -14,16 +15,19 @@ Unfortunately the data set only contained headlines, which did not contain enoug
 Therefore we collected the full text from each news article based on the provided source url.
 The content retrieval process turned out to generate a significant amount of noise,
 due to expired urls, paywalls, parsing errors or wrong redirects.
-To reduce the noise, we applied different cleansing techniques and ended up with approximately TODO usable news articles.
+To reduce the noise, we applied different cleansing techniques
+and ended up with approximately TODO usable news articles.
 
-Once the data set was ready, we designed an evaluation framework to automatically run clustering methods with a variety of settings.
+Once the data set was ready, we designed an evaluation framework to automatically run clustering methods
+with a variety of settings.
 The focus was to find a combination of text preprocessing methods,
 vector space model and parameters for the clustering method, which would provide the best clustering.
 Furthermore we developed a custom scoring function to measure the results of a clustering,
 since existing measures proved to be unintuitive and biased against certain results,
 such as the number of clusters.
 After having done many clustering evaluations based on our test data,
-we focused on analysing the collected data for our primary clustering method HDBSCAN and compared it to \textit{k}-means.
+we focused on analysing the collected data for our primary clustering method HDBSCAN
+and compared it to \textit{k}-means.
 The analysis gave valuable insight into the behaviour of HDBSCAN with different vector space models
 combined with different preprocessing methods and parameters.
 We noted the initial good performance and the decrease in the quality of the clustering the bigger the sample size got.
@@ -42,7 +46,8 @@ we look at the difference in assigned news articles and can therefore detect cha
 The detection of events is measured against the ground truth.
 We explored different batch sizes and similarity thresholds for finding pairs of clusters between batches.
 Since finding pairs of clusters, requires a large enough overlap in identical news articles,
-the batch size has to account for this factor with regards to the volume of incoming news articles through the data stream.
+the batch size has to account for this factor with regards to the volume of incoming news articles
+through the data stream.
 Additionally since events are represented as clusters,
 the sum of events can be regarded as a subclustering of the overall clustering.
 Although this makes the subclustering more sensitive to inaccuracies in the overall clustering,
@@ -63,7 +68,8 @@ Word embeddings allow for the detection of similar words and therefore reduce th
 of the vector space model substantially more than even Text Lemmatization.
 Thus leading to a potential improved clustering and reducing the noise rate.
 
-As we have shown, the current implementation of HDBSCAN still leaves room for improvement in regards to space complexity.
+As we have shown, the current implementation of HDBSCAN
+still leaves room for improvement in regards to space complexity.
 Finding potential optimizations in memory consumption would not necessarily improve our approach,
 since the quality of clusters decreases with larger sample sets,
 but might be a valuable contribution to the community and enable future work with larger data sets.
