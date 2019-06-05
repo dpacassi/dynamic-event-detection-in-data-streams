@@ -7,7 +7,7 @@ it is important to rely on the right data set for training and evaluation.
 \subsubsection{Data Set Candidates}
 \label{subsubsec:4a_data_set_candidates}
 
-As our goal is to detect events in data streams, we've evaluated different data sets and
+As our goal is to detect events in data streams, we have evaluated different data sets and
 their possibilities to extract events from their data themselves.
 
 \begin{table}[h]
@@ -15,13 +15,13 @@ their possibilities to extract events from their data themselves.
     \begin{tabular}{|l|r|l|}
     \hline
     \textbf{Data set} & \textbf{Number of rows} & \textbf{Description} \\ \hline
-    GDELT 2.0 & 575'000'000+ & Print and web news from around the world. \\ \hline
-    ChallengeNetwork & 4'449'294 & Network packages including anomalies. \\ \hline
-    One Million Posts Corpus & 1'011'773 & User comments to news articles. \\ \hline
-    Online Retail Data Set & 541'909 & Customer retail purchases of one year. \\ \hline
-    News Aggregator Dataset & 422'937 & Clustered news articles. \\ \hline
-    Dodgers Loop Sensor Data Set & 50'400 & Number of cars driven through a ramp. \\ \hline
-    10k German News Articles & 10'273 & German news articles. \\ \hline
+    GDELT 2.0 & 575,000,000+ & Print and web news from around the world. \\ \hline
+    ChallengeNetwork & 4,449,294 & Network packages including anomalies. \\ \hline
+    One Million Posts Corpus & 1,011,773 & User comments to news articles. \\ \hline
+    Online Retail Data Set & 541,909 & Customer retail purchases of one year. \\ \hline
+    News Aggregator Dataset & 422,937 & Clustered news articles. \\ \hline
+    Dodgers Loop Sensor Data Set & 50,400 & Number of cars driven through a ramp. \\ \hline
+    10k German News Articles & 10,273 & German news articles. \\ \hline
     \end{tabular}
     \caption{Evaluated data set candidates ordered by data set size.}
     \label{tab:data_set_candidates}
@@ -62,15 +62,16 @@ However, from above data sets only two contained prelabeled events:
         \end{itemize}
     \item News Aggregator Dataset
         \begin{itemize}
-            \item 422'937 labeled events. % Todo: x events in y clusters
+            \item 422,937 labeled events. % Todo: x events in y clusters
         \end{itemize}
 \end{enumerate}
 
-As we didn't want to lose too much time in manually clustering data, we've decided to go with one of these two.
+As we did not want to lose too much time in manually clustering data,
+we have decided to go with one of these two.
 Regarding our two options, our choice was simple:\\
 We went for the \textbf{The News Aggregator Dataset} since it not only provided more data,
 but our work built on the news articles use case could later be continued with real live data.
-The \textbf{GDELT 2.0} data set for example, provides around 1'000 to 2'000 new news articles every 15 minutes.
+The \textbf{GDELT 2.0} data set for example, provides around 1,000 to 2,000 new news articles every 15 minutes.
 
 \subsubsection{Data Retrieval}
 \label{subsubsec:4a_data_retrieval}
@@ -83,7 +84,8 @@ a Python3 library that allows us to retrieve the text from news articles easily.
 
 The library only requires an URL to download and extract the news article from a website, see following example:
 
-% Todo: Hyphen gets converted inside "lstlisting". Copy & paste the URL from the PDF into a browser -> it won't work.
+% Todo: Hyphen gets converted inside "lstlisting".
+% Copy & paste the URL from the PDF into a browser -> it won't work.
 \begin{lstlisting}[language=Python, caption=Retrieve the news article from an URL., label={lst:newspaper3k_code}]
     from newspaper import Article
 
@@ -94,7 +96,7 @@ The library only requires an URL to download and extract the news article from a
 \end{lstlisting}
 
 All we had to do now is to run this code for all news articles.
-To speed this process up, we've loaded the data set into a database and run 8 concurrent processes which
+To speed this process up, we have loaded the data set into a database and run 8 concurrent processes which
 retrieved the news articles content from the web in different batches.
 
 \subsubsection{Data Cleansing}
@@ -102,7 +104,7 @@ retrieved the news articles content from the web in different batches.
 
 The data set contains news articles collected from March 10th to August 10th of 2014.
 Five years later, many resources are not online anymore or are not accessible from Europe due to GDPR.
-We've used following SQL query to filter out news articles that were most likely corrupt:
+We have used following SQL query to filter out news articles that were most likely corrupt:
 
 \begin{lstlisting}[language=SQL, caption=Retrieve valid news articles., label={lst:valid_news_articles_sql}]
     SELECT *
