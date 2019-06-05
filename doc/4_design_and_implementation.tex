@@ -4,34 +4,41 @@
 The methodology consist of three parts, where each part builds upon the results from the previous one.
 Initially the test data is created, which will be used for all evaluations.
 Once the data is available, we evaluate HDBSCAN and determine the settings,
-which lead to optimal results regarding our specific use case.
+which leads to optimal results regarding our specific use case.
 The final part applies the results obtained from the previous evaluation in an online setting.
 
 \subsection{Dataflow}
 \label{subsec:4_dataflow}
-% Todo: Add a box diagram of the dataflow
-% E.g. News article -> Text preprocessing -> Clustering -> Output
 
-\begin{tikzpicture}[
-    squarednode/.style={rectangle, align=center, draw=black!60, very thick, minimum size=5mm},
-    ]
+The dataflow starts with receiving new news articles every hour.
+The articles content will then be preprocessed (see \subsecref{subsec:3_text_preprocessing})
+and vectorized.
+With the computed vectors, the articles will then be clustered to existing or new news stories.
+The cluster changes represent our detected events.
 
-    %Nodes
-    \node[squarednode] (newsarticle)                                {Collection of\\ news articles};
-    \node[squarednode] (preprocessing)  [right=of newsarticle]      {Text preprocessing};
-    \node[squarednode] (vectorization)  [right=of preprocessing]    {Vectorization};
-    \node[squarednode] (clustering)     [right=of vectorization]    {Clustering};
-    \node[squarednode] (result)         [right=of clustering]       {Result};
-     
-    %Lines
-    \draw[->] (newsarticle.east) -- (preprocessing.west);
-    \draw[->] (preprocessing.east) -- (vectorization.west);
-    \draw[->] (vectorization.east) -- (clustering.west);
-    \draw[->] (clustering.east) -- (result.west);
+\begin{figure}[!htb]
+    \centering
+    \begin{tikzpicture}[
+            squarednode/.style={rectangle, align=center, draw=black!60, very thick, minimum size=5mm},
+        ]
 
-\end{tikzpicture}
-    
-TODO describe
+        % Nodes.
+        \node[squarednode] (incoming_data)                               {Incoming\\news articles};
+        \node[squarednode] (preprocessing)   [right=of incoming_data]    {Text\\preprocessing};
+        \node[squarednode] (vectorization)   [right=of preprocessing]    {Vectorization};
+        \node[squarednode] (clustering)      [right=of vectorization]    {Clustering};
+        \node[squarednode] (event_detection) [right=of clustering]       {Event\\detection};
+
+        % Lines.
+        \draw[->] (incoming_data.east) -- (preprocessing.west);
+        \draw[->] (preprocessing.east) -- (vectorization.west);
+        \draw[->] (vectorization.east) -- (clustering.west);
+        \draw[->] (clustering.east) -- (event_detection.west);
+    \end{tikzpicture}
+
+    \caption{Dataflow}
+    \label{fig:dataflow}
+\end{figure}
 
 \input{4a_data_set}
 \input{4b_cluster_evaluation}
