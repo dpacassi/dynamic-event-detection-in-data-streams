@@ -10,15 +10,15 @@ It is able to work with clusters of varying densities,
 does not require to know the number of clusters in advance 
 and is efficient with a time complexity of $O(nlog(n))$.
 The density requirement is based on our test data, which contains clusters with sizes ranging from 2 to over 400. 
-In addition, we do not know the number of clusters in the data stream and therefore can not provide an approximation
+In addition, we do not know the number of clusters in the data stream and can therefore not provide an approximation
 beforehand. This already disqualifies a wide range of clustering methods such as \textit{k}-means. 
 Another feature of HDBSCAN is its ability to discard samples as noise. 
 This can be a useful feature once applied to an online setting, 
-since noisy data is to be expected in a data stream from external sources. 
+since noisy data is to be expected in real world data streams.
 
 The goal of the clustering evaluation is to find the optimal parameters and preprocessing methods
 for running HDBSCAN on our test data and to measure the overall performance.
-Therefore the clustering evaluation is designed to run HDBSCAN using a combination of different text processing methods, vector space models and parameters.
+The clustering evaluation is designed to run HDBSCAN using a combination of different text preprocessing methods, vectorizers and parameters.
 \textit{k}-means is used to provide a benchmark for the HDBSCAN evaluation.
 Once a clustering has been performed,
 the result is measured based on the ground truth and stored in a database for later analysis.
@@ -28,15 +28,15 @@ Using one set of samples might bias the score against this specific set of sampl
 and some methods might perform better or worse depending on the samples.
 To introduce variability, while still retaining repeatability, an evaluation run will be repeated multiple times.
 Each repetition will load a new set of samples, iterating linearly through the data set.
-For example if we define the number of repetitions as 2 with a sample size of 1000,
-the evaluation will be done on the first 1000 samples with all possible settings
-and the second run will load the next 1000 samples, thus containing samples with indices ranging from 1001 to 2000.
+For example, if we define the number of repetitions as 2 with a sample size of 1,000,
+the evaluation will be done on the first 1,000 samples with all possible settings
+and the second run will load the next 1,000 samples, thus containing samples with indices ranging from 1,001 to 2,000.
 The reason we do not load random sets of samples is repeatability.
 If we make any changes in the implementation or the scoring function,
 we want to be able to compare the new results with the previous ones in a deterministic manner.
 
 Furthermore, news articles are loaded based on their stories. 
-Thus an evaluation done with 30 stories, will actually load all news articles belonging to these stories.
+An evaluation with 30 stories will actually load all news articles belonging to these stories.
 This is done to prevent stories from being cut off, resulting in potential noise.
 
 \subsubsection{Scoring Function}
@@ -44,10 +44,14 @@ This is done to prevent stories from being cut off, resulting in potential noise
 
 The scoring function is essential for evaluating the result of a clustering method.
 The score should reflect the quality of the individual clusters and of the clustering as a whole.
-The number of existing measures for clustering is vast and can be split into three main categories.
-Internal measures determine the score based on criteria derived from the data itself,
- external measures depend on criteria non-existent in the data itself such as class labels
- and relative measures compare different clusterings with each other.
+The number of existing measures for clustering is vast and can be split into three main categories:
+
+\begin{itemize}
+    \item Internal measures determine the score based on criteria derived from the data itself.
+    \item External measures depend on criteria non-existent in the data itself such as class labels.
+    \item Relative measures compare different clusterings with each other.
+\end{itemize}
+
 Since the ground truth is known in our test data, we are going to apply an external measure.
 
 Initially we used \gls{nmi} as our primary scoring function.
@@ -58,7 +62,7 @@ regardless of the large difference between the true amount of clusters and the a
 We were not able to explain this behaviour, although there are multiple papers
 about the selection bias of \gls{nmi} for higher numbers of clusters\cite{LEI201758, clustering_anmi}.
 Other scoring functions such as V-Measure or the \gls{ari} showed similar unexpected results with different clusterings.
-Therefore we decided to develop our own scoring function based on the ideas of Maximum Matching\cite{data_mining}
+Therefore, we decided to develop our own scoring function based on the ideas of Maximum Matching\cite{data_mining}
 and the Jaccard Index, which we call MP-Score.
 
 \begin{table}[h]
@@ -104,7 +108,7 @@ for each possible pair of clusters between $T$ and $C$ starting with $t_1= \{1,2
     = \frac{2}{3} = 0.667 \\
 \end{align*}
 
-After doing this for each possible pair we get the similarity matrix $A$:
+After doing this for each possible pair, we get the similarity matrix $A$:
 
 \begin{gather*}
 \begin{array}{rcl}
@@ -119,7 +123,7 @@ After doing this for each possible pair we get the similarity matrix $A$:
 \end{array}
 \end{gather*}
 
-As a next step we have to select the most relevant similarity values from each row of the similarity matrix.
+As a next step, we have to select the most relevant similarity values from each row of the similarity matrix.
 
 Finding relevant values in the similarity matrix is non-trivial,
 since clusters do not share labels across different clusterings.
@@ -127,13 +131,13 @@ To solve this, we make two assumptions based on the principle of Maximum Matchin
 
 \begin{enumerate}
     \item The higher the similarity between two clusters,
-          the more likely it is, that both clusters are describing the same group of documents.
+          the more likely it is that both clusters are describing the same group of documents.
     \item Each cluster can be associated with a cluster from another clustering only once.
 \end{enumerate}
 
-Based on those assumptions we select the highest similarity value per row,
+Based on these assumptions we select the highest similarity value per row,
 whose column is not already associated with another row.
-Applying this selection function $f$ to our previously calculated similarity matrix $A$
+Applying this selection function $f$ to our previously calculated similarity matrix $A$,
 results in the set containing the most relevant similarity values.
 
 \begin{gather*}
@@ -161,11 +165,11 @@ Consider the following example with a different similarity matrix $B$, which doe
 
 The selected similarity for the second row is 0.667 instead of 0.8.
 This is because the fourth column is already associated with the third row, while having a similarity greater than 0.8.
-Therefore based on our assumption that clusters cannot be associated twice,
+Based on our assumption that clusters cannot be associated twice,
 the second highest similarity is used for the second column.
 In case no association could be found, the value would be set to zero.
 
-As a third step we have to calculate the weights to be used for the weighted average.
+In a third step we have to calculate the weights to be used for the weighted average.
 The weight is based on the number of elements inside the cluster
 and necessary to represent differences in predicted and true number of clusters in the final score.
 It is defined as follows:
@@ -176,25 +180,25 @@ It is defined as follows:
 \end{equation}
 
 where $T$ is the ground truth with $t_i \in T$ and $C$ the predicted clustering with  $c_j \in C$.
-Therefore the weight for a pairing $t_ic_j$ includes both the size of the true cluster
+The weight for a pairing $t_ic_j$ includes both the size of the true cluster
 and the size of the predicted cluster.
 The reason both sizes are used,
 is that we want to reflect the difference between the number of predicted clusters and the ground truth.
 Using only the true number of elements as the weight, would affect the score if $|C| < |T|$, but not $|C| > |T|$.
-Hence the number of predicted elements has to be included into the weight.
+Hence, the number of predicted elements has to be included into the weight.
 
 To continue our example,
 we have to calculate the weights based on the coordinates of the selected values from our similarity matrix $A$.
-The coordinates are $(0,0), (1,1), (2,3)$.
+The coordinates are $(1,1), (2,2), (3,4)$.
 As a result we calculate the following weights:
 
 \begin{align*}
-    w_{0,0} &= \frac{|t_0| + |c_0|}{|T|+|C|} = \frac{3 + 2}{9 + 9} = \frac{5}{18} = 0.278 \\
-    w_{1,1} &= \frac{|t_1| + |c_1|}{|T|+|C|} = \frac{4 + 4}{9 + 9} = \frac{8}{18} = 0.444 \\
-    w_{2,3} &= \frac{|t_2| + |c_3|}{|T|+|C|} = \frac{2 + 2}{9 + 9} = \frac{4}{18} = 0.222
+    w_{1,1} &= \frac{|t_1| + |c_1|}{|T|+|C|} = \frac{3 + 2}{9 + 9} = \frac{5}{18} = 0.278 \\
+    w_{2,2} &= \frac{|t_2| + |c_2|}{|T|+|C|} = \frac{4 + 4}{9 + 9} = \frac{8}{18} = 0.444 \\
+    w_{3,4} &= \frac{|t_3| + |c_4|}{|T|+|C|} = \frac{2 + 2}{9 + 9} = \frac{4}{18} = 0.222
 \end{align*}
 
-In the fourth and final step we calculate the weighted average
+In the fourth and final step, we calculate the weighted average
 
 \begin{equation}
     \label{equ:weighted_average}
@@ -226,16 +230,16 @@ The seventh scenario gives an interesting result,
 where both \gls{nmi} and \gls{ari} result in zero while the MP-Score results in 0.321.
 The relatively high MP-Score is because a true cluster with four elements is matched
 with the predicted cluster containing nine elements.
-This result in a similarity of 0.444, which is then lowered by the weight.
+This results in a similarity of 0.444, which is then lowered by the weight.
 The \gls{nmi} does not infer any entropy, since every element ends up in the same cluster independently from the ground truth.
-The \gls{ari} results in zero because of its adjustment for chance.
-Overall the MP-Score behaves rather intuitively, although it is not corrected for randomness.
+The \gls{ari} results in 0 because of its adjustment for chance.
+Overall, the MP-Score behaves rather intuitively, although it is not corrected for randomness.
 This means even a completely random clustering would result in a MP-Score greater than 0,
-while an adjusted measure such as the \gls{ari} would be 0 in such a case.
+while an adjusted measure such as the \gls{ari} would be 0 in such case.
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|l|l|l|l|l|}
+    \begin{tabular}{|r|l|r|r|r|}
     \hline
     \multicolumn{5}{ |c| }{\textbf{Test scenarios with ground truth $T = \{\{1,2,3\},\{4,5,6,7\},\{8,9\}\}$}} \\
     \hline
@@ -253,7 +257,7 @@ while an adjusted measure such as the \gls{ari} would be 0 in such a case.
     \label{tab:score_scenarios}
 \end{table}
 
-As a final note we repeat the evaluation shown in \tabref{tab:nmi_kmeans_example} a second time using the MP-Score.
+We repeated the evaluation shown in \tabref{tab:nmi_kmeans_example} a second time using the MP-Score.
 The score (\tabref{tab:avg_predict_kmeans_example}) for \textit{k}-means is now considerably lower than HDBSCAN.
 This reflects what we would expect based on the difference in the number of predicted clusters.
 
@@ -283,27 +287,28 @@ The main features include:
     \item Providing different vectorizers for converting the textual data into a \gls{vsm}.
     \item Defining a range for each parameter of a clustering method
           and running it with each possible combination of those parameters.
-    \item Storing the result the result in a database and creating relations between news articles,
+    \item Storing the result in a database and creating relations between news articles,
           clusters and evaluation runs.
           This allows for manual inspection and analysis of individual articles inside a predicted cluster.
 \end{itemize}
 
-The implementation is done with Python.
+The implementation was done with Python.
 Clustering methods and vectorizers are provided by the scikit-learn library\cite{scikit-learn},
 while the specific HDBSCAN implementation is provided by a scikit-learn-contrib package\cite{McInnes2017}.
 scikit-learn-contrib is a collection of high quality third-party projects compatible with scikit-learn.
 We decided to use scikit-learn because of its rich documentation,
 the wide range of tools and algorithms it provides for clustering and our previous experience with it.
-Additionally the framework runs in a fully dockerized environment, which includes the database.
+
+The framework runs in a fully dockerized environment, which includes the database.
 This allows the framework to run independently from the underlying host, as long as the host supports Docker.
 This principle is useful for developing and testing the framework in a local environment
 and deploying it on a remote server for long running evaluations,
-without worrying about setting up and installing all dependencies.
+without having to worry about setting up and installing all dependencies.
 
 The parameters for each available clustering method are defined beforehand in a dictionary
 as can be seen in \lstref{lst:cluster_method_parameters}.
 Parameters are defined as a list of possible variations.
-For example if we want to run HDBSCAN with two different metrics \textit{cosine} and \textit{euclidean},
+For example, if we want to run HDBSCAN with two different metrics \textit{cosine} and \textit{euclidean},
 we define the metric parameter as \lstinline{"metric": ["cosine", "euclidean"]}.
 When running a clustering method, it will be executed with each possible combination of parameters.
 This means a single evaluation of HDBSCAN, will include 16 different runs,
@@ -312,34 +317,34 @@ This is important to consider for running clustering methods with long processin
 or running evaluations on large sample sizes.
 
 \begin{lstlisting}[language=Python, caption=Predefined parameters for different clustering methods.,label={lst:cluster_method_parameters}]
-parameters_by_method = {
-    self.kmeans: {
-        "n_cluster": ["n_square", "n_true"]
-    },
-    self.hdbscan: {
-        "min_cluster_size": range(2, 10),
-        "metric": ["cosine", "euclidean"]
-    },
-    self.meanshift: {"cluster_all": [True, False]},
-    self.birch: {
-        "branching_factor": range(10, 100, 10),
-        "threshold": range(2, 6),
-    },
-    self.affinity_propagation: {
-        "affinity": ["euclidean"],
-        "convergence_iter": [15],
-        "damping": np.arange(0.5, 0.9, 0.1),
-        "max_iter": [50, 100, 200, 500],
-    },
-    self.spectral_clustering: {
-        "affinity": ["rbf"],
-        "assign_labels": ["kmeans", "discretize"],
-    },
-}
+    parameters_by_method = {
+        self.kmeans: {
+            "n_cluster": ["n_square", "n_true"]
+        },
+        self.hdbscan: {
+            "min_cluster_size": range(2, 10),
+            "metric": ["cosine", "euclidean"]
+        },
+        self.meanshift: {"cluster_all": [True, False]},
+        self.birch: {
+            "branching_factor": range(10, 100, 10),
+            "threshold": range(2, 6),
+        },
+        self.affinity_propagation: {
+            "affinity": ["euclidean"],
+            "convergence_iter": [15],
+            "damping": np.arange(0.5, 0.9, 0.1),
+            "max_iter": [50, 100, 200, 500],
+        },
+        self.spectral_clustering: {
+            "affinity": ["rbf"],
+            "assign_labels": ["kmeans", "discretize"],
+        },
+    }
 \end{lstlisting}
 
 \paragraph{CLI}
-The evaluation framework provides a command line interface to start evaluation runs and specify relevant settings.
+The evaluation framework provides a command line interface to start evaluation runs and specify relevant arguments.
 \lstref{lst:cluster_evaluation_framework} shows the full interface.
 
 \begin{lstlisting}[caption=Command line interface for the evaluation framework., label={lst:cluster_evaluation_framework}]

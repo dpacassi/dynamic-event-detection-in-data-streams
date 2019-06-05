@@ -10,7 +10,7 @@ The events of interest for this application are the discovery of new stories and
 Thus we define our two types of events as follows:
 
 \begin{itemize}
-    \item New event: A new cluster of news articles appears in the data stream, which describe the same story.
+    \item New event: A new cluster of news articles appears in the data stream, which write about the same story.
     \item Event extended: An existing story is extended by additional news articles.
 \end{itemize}
 
@@ -24,11 +24,12 @@ Events are detected by comparing clusters from successive batches.
 \figref{fig:timeline} illustrates this with three batches,
 where the resulting clusters from batch $t$ will be compared with the previous result from batch $t - 1$,
 while batch $t - 1$ was previously compared with batch $t - 2$.
-In this example each batch only contains samples from a limited time period,
+
+In this example, each batch only contains samples from a limited time period,
 where $\triangle t$ stands for the time period between batches.
 Since a batch does not contain the full set of samples, we have to consider the overlap between batches.
 The size of the overlap is essential to find similar clusters from different batches.
-If a similar cluster already exists in the previous batch
+If a similar cluster already exists in the previous batch,
 the differences between these clusters are detected as a change in an existing event.
 If no pair exists for a cluster from a current batch, this cluster will be regarded as a new event.
 The similarity between clusters is based on the same assumptions
@@ -69,13 +70,13 @@ as for the scoring function described in \subsubsecref{subsubsec:4b_scoring_func
 \end{figure}
 
 The overlap between batches depends on the batch size and the number of new samples in $\triangle t$.
-A high volume of incoming samples combined with a small batch sizes
+A high volume of incoming samples combined with a small batch size
 would result in an overlap too small to find pairs of clusters.
-All clusters from the current batch would be detected as new in such a case.
+All clusters from the current batch would be detected as new in such case.
 To decrease the negative impact on the event detection by peaks in the data stream,
 we need a batch size which grows accordingly.
-The ideal batch size therefore provides enough overlap between batches to find pairs of clusters
-and small enough to allow for efficient processing.
+The ideal batch size provides enough overlap between batches to find pairs of clusters
+and is small enough to allow efficient processing.
 We explore three different methods for determining the ideal batch size:
 
 \begin{enumerate}
@@ -90,7 +91,7 @@ We explore three different methods for determining the ideal batch size:
           to keep the space and time consumption of the clustering method reasonable.
     \item \textbf{Size by incoming data}: This method defines the batch size relative to the incoming stream of data.
           We count the number of new samples since the last batch and multiply it by a predefined factor.
-          For example if we want the new samples to be 1\%
+          For example, if we want the new samples to be 1\%
           of the overall clustering, we define the factor as 100.
           The batch size will be limited by a lower and an upper bound.
           The lower bound prevents the overlap between batches from getting too small.
@@ -98,34 +99,34 @@ We explore three different methods for determining the ideal batch size:
 \end{enumerate}
 
 The evaluation will use the MP-Score to measure the precision of the event detection,
-since our model represents events as a clusters.
+since our model represents events as clusters.
 True events can be extracted directly from the ground truth based on news articles from two successive batches.
 
 \subsubsection{Implementation}
 \label{subsubsec:4c_implementation}
 
 The online clustering implemented for this thesis does not operate in a true online setting,
-but rather it takes our existing test data and simulates a data stream over time.
+but rather in a simulated data stream over time.
 The simulated approach allows us to directly compare the resulting events
 with the ground truth and thus evaluate different settings.
-The implementation is done with Python and runs in a dockerized environment similar to the evaluation framework.
+The implementation was done with Python and runs in a dockerized environment similar to the evaluation framework.
 
 The detection of events relies on comparing clusters between successive batches. 
 We apply \gls{lsh}\cite{alex2015practical} to find clusters most similar to each other.
-In its essence \gls{lsh} is an efficient way to find similar documents, 
+In its essence, \gls{lsh} is an efficient way to find similar documents,
 which does not require to calculate the similarity between each possible pair of documents. 
 The implementation for \gls{lsh} is provided by the datasketch library\cite{eric_zhu_2017_290602}.
 
-Once we have found pairs of clusters, which represent the same story, detecting events becomes trivial.
-For each pair we subtract the current cluster with the cluster from the previous batch. 
+Once we have found pairs of clusters which represent the same story, detecting events becomes trivial.
+For each pair we subtract the cluster from the previous batch from the current cluster.
 The resulting set contains all news articles, which are only present in the current cluster.
 These articles are then summarized as a change of an existing event. 
 If the previous batch did not contain any similar clusters for a cluster from the current batch, 
 the cluster is considered as a new event.
 
-Since events are themselves clusters of news articles,
+Since events are clusters of news articles themselves,
 we apply the MP-Score to measure the precision of detected events. 
-Calculating the score is $O(n^2)$, but since the application runs on a simulated timeline and the scoring is only part of the evaluation,
+Calculating the score has a time complexity of $O(n^2)$, but since the application runs on a simulated timeline and the scoring is only part of the evaluation,
 time complexity is a minor concern in this case.
 
 \paragraph{CLI}
