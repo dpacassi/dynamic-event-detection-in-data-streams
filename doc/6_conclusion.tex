@@ -5,7 +5,7 @@
 \label{subsec:6_summary}
 
 We started our work by searching for a suitable data set to create our clustering evaluations with.
-The primary requirement was, to have data points with their corresponding cluster labels.
+The primary requirement was to have data points with corresponding cluster labels.
 Having a labelled data set allows us to apply external measures
 and evaluate a resulting clustering against the ground truth.
 After selecting a few data set for closer inspection, we settled on the News Aggregator Data Set,
@@ -16,7 +16,7 @@ Therefore we collected the full text from each news article based on the provide
 The content retrieval process turned out to generate a significant amount of noise,
 due to expired urls, paywalls, parsing errors or wrong redirects.
 To reduce the noise, we applied different cleansing techniques
-and ended up with approximately TODO usable news articles.
+and ended up with 235,070 usable news articles.
 
 Once the data set was ready, we designed an evaluation framework to automatically run clustering methods
 with a variety of settings.
@@ -25,37 +25,30 @@ vector space model and parameters for the clustering method, which would provide
 Furthermore we developed a custom scoring function to measure the results of a clustering,
 since existing measures proved to be unintuitive and biased against certain results,
 such as the number of clusters.
-After having done many clustering evaluations based on our test data,
-we focused on analysing the collected data for our primary clustering method HDBSCAN
-and compared it to \textit{k}-means.
 The analysis gave valuable insight into the behaviour of HDBSCAN with different vector space models
 combined with different preprocessing methods and parameters.
-We noted the initial good performance and the decrease in the quality of the clustering the bigger the sample size got.
+We noted the initial good performance and the decrease in the quality of the clustering the larger sample sets.
 However the amount of news articles proved to be substantial with up to 30\%.
 Possible explanations were explored,
 such as actual noisy data and different representations of articles belonging to the same cluster with tf-idf.
+Furthermore we found HDBSCAN to be both faster and more precise than \textit{k}-means.
 
 Having determined the optimal settings in the HDBSCAN evaluation,
-we applied them in a simulated online setting for event detection.
+we applied them for the event detection using a simulated stream of news articles.
 The event detection was accomplished by running the clustering in batches over time.
-Events are detected by comparing a batch with its predecessor.
-If a batch contains clusters, which do not appear in the previous batch,
-than those clusters are considered as new events.
-If a cluster did exist in the previous batch,
-we look at the difference in assigned news articles and can therefore detect changes in existing event.
-The detection of events is measured against the ground truth.
 We explored three methods for setting the batch size and different similarity thresholds for finding pairs of clusters between batches.
 Since finding pairs of clusters, requires a large enough overlap in identical news articles,
 the batch size has to account for this factor with regards to the volume of incoming news articles
 through the data stream. 
-The best method for determining the batch size turned out to be based on a fixed time period. 
-This means we load samples from the past 24 hours for every batch. 
-Thus peaks in volume during this time period will be included and not cut off by a fixed batch size.  
+The best method for determining the batch size turned out to be based on a fixed time period,
+where we load samples from the past 24 hours for every batch. 
+Thus peaks in volume during this time period will be included and not cut off by a static batch size.  
 Additionally since events are represented as clusters,
 the sum of events can be regarded as a subclustering of the overall clustering.
 Although this makes the subclustering more sensitive to the noise rate, due to the smaller size of events.
 In conclusion we found the precision of the event detection to have a high variance for new events, 
-rendering it rather unstable.
+rendering it rather unstable in its current form.
+A continuation of this work should focus on improving the overall clustering to increase the precision of the event detection.
 
 \subsection{Future Work}
 \label{subsec:6_future_work}
