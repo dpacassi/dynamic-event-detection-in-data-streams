@@ -1,20 +1,35 @@
 \section{Related Work}
 \label{sec:2_related_work}
 
-Text based event detection is a diverse field and with increasingly large amounts
-of available information online a compelling topic for research.
-With the popularity of social media a lot of research around event detection
-has been done on micro blogs\cite{microblog_clustering} such as Twitter\cite{twitter_survey, social_media_survey}.
-However, this thesis focuses on news articles as the primary data source.
+Text based event detection is a diverse field with an increasing amount of available information online.
+With the popularity of social media, a lot of research around event detection
+has been done on micro blogs\cite{microblog_clustering}, such as Twitter\cite{twitter_survey, social_media_survey}.
+
+\paragraph{Text Preprocessing}
+% \label{subsec:2_text_preprocessing}
+Text Stemming and Text Lemmatization have been around for decades and both are proven to not only work
+in theory but also in practice.
+So it comes as no surprise that many people try to improve them with new methods such as
+Ultra-stemming\cite{UltraStemming} or corpus-based stemming algorithms\cite{CorpusBasedStemming}.
+
+There are also different papers comparing the preprocessing methods
+with each other\cite{Suryanarayana2015SteppingTA, BounabiMS17}.
+
+With that many resources available, it is important to be aware that the different methods
+score differently for each language and each data set.
+Having enough time for evaluating potential candidates is crucial.
+
+\paragraph{Clustering}
+% \label{subsec:2_clustering}
+This thesis focuses on news articles as the primary data source.
 Text based clustering as a technique for event detection
 has already been explored with different approaches such as
 using custom methods based on neural networks\cite{text_clustering_topic_detection}
 or by using a modified version of DBSCAN
 to account for its sensitivity for differences in cluster densities\cite{dbscan_martingale}.
+
 Based on the promising results with DBSCAN, we want to further explore text clustering
 using its successor HDBSCAN\cite{McInnes2017} and apply it in an online setting.
 Regarding the clustering validation, there has already been research into recognizing biases
 of different scoring functions\cite{Wu:2009:ARM:1557019.1557115}
 and developing custom scoring functions as a result\cite{gates2017comparing}.
-
-TODO add related work for preprocessing
