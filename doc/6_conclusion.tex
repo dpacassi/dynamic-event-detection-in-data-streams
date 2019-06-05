@@ -44,16 +44,18 @@ than those clusters are considered as new events.
 If a cluster did exist in the previous batch,
 we look at the difference in assigned news articles and can therefore detect changes in existing event.
 The detection of events is measured against the ground truth.
-We explored different batch sizes and similarity thresholds for finding pairs of clusters between batches.
+We explored three methods for setting the batch size and different similarity thresholds for finding pairs of clusters between batches.
 Since finding pairs of clusters, requires a large enough overlap in identical news articles,
 the batch size has to account for this factor with regards to the volume of incoming news articles
-through the data stream.
+through the data stream. 
+The best method for determining the batch size turned out to be based on a fixed time period. 
+This means we load samples from the past 24 hours for every batch. 
+Thus peaks in volume during this time period will be included and not cut off by a fixed batch size.  
 Additionally since events are represented as clusters,
 the sum of events can be regarded as a subclustering of the overall clustering.
-Although this makes the subclustering more sensitive to inaccuracies in the overall clustering,
-which explains the high error rate we observed in detecting new events.
-In conclusion we found the error rate in detected events to be rather high for our approach
-and therefore not applicable in a real world scenario in its current state.
+Although this makes the subclustering more sensitive to the noise rate, due to the smaller size of events.
+In conclusion we found the precision of the event detection to have a high variance for new events, 
+rendering it rather unstable.
 
 \subsection{Future Work}
 \label{subsec:6_future_work}

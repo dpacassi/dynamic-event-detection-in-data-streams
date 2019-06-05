@@ -108,36 +108,25 @@ The online clustering implemented for this thesis does not operate in a true onl
 but rather it takes our existing test data and simulates a data stream over time.
 The simulated approach allows us to directly compare the resulting events
 with the ground truth and thus evaluate different settings.
-The implementation is done with Python and runs in a similar dockerized environment as the evaluation framework.
+The implementation is done with Python and runs in a dockerized environment similar to the evaluation framework.
 
-\paragraph{Comparing clusters}
-To detect events between batches of clusterings,
-we have find pairs of clusters describing the same story.
-This problem is solved in the evaluation framework as part of the scoring function,
-by calculating the similarity for each possible cluster pair.
-The resulting time complexity is $O(n^2)$, which we deemed acceptable for the static evaluation.
-However in a dynamic setting such as the online clustering, performance is an important factor,
-since it restricts the lengths of the time delta between batches and the overall batch size.
-Thus we decided to use Locality-Sensitive Hashing (LSH)\cite{alex2015practical} to find similar clusters.
-This reduces the time complexity to $O(log(n))$.
-The implementation for LSH is provided by the datasketch library\cite{eric_zhu_2017_290602}.
+The detection of events relies on comparing clusters between successive batches. 
+We apply \gls{lsh}\cite{alex2015practical} to find clusters most similar to each other.
+In its essence \gls{lsh} is an efficient way to find similar documents, 
+which does not require to calculate the similarity between each possible pair of documents. 
+The implementation for \gls{lsh} is provided by the datasketch library\cite{eric_zhu_2017_290602}.
 
-% TODO explain LSH?
-
-\paragraph{Detecting events}
 Once we have found pairs of clusters, which represent the same story, detecting events becomes trivial.
-For each pair we look for news articles, which are only present in the new cluster.
-These articles are then summarized in as an extension of an existing event.
-Clusters from the new batch without a matching cluster from the previous batch
-are seen as new events.
+For each pair we subtract the current cluster with the cluster from the previous batch. 
+The resulting set contains all news articles, which are only present in the current cluster.
+These articles are then summarized as a change of an existing event. 
+If the previous batch did not contain any similar clusters for a cluster from the current batch, 
+the cluster is considered as a new event.
 
-\paragraph{Measuring the quality of events} 
 Since events are themselves clusters of news articles,
-we apply the MP-Score to measure detected events against events taken from the ground truth.
-This gives an indication if the detected events contain the same news articles
-as true events and thus the rate of false positives and false negatives.
-Calculating the score is $O(n^2)$, but since the application runs on a simulated timeline,
-time complexity is only a minor concern.
+we apply the MP-Score to measure the precision of detected events. 
+Calculating the score is $O(n^2)$, but since the application runs on a simulated timeline and the scoring is only part of the evaluation,
+time complexity is a minor concern in this case.
 
 \paragraph{CLI}
 The application provides a command line interface to run the simulation with different parameters
