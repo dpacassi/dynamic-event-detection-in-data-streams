@@ -9,12 +9,12 @@ In this chapter we will explain how the most important techniques used in our th
 \label{subsec:3_text_preprocessing}
 
 When working with text data, many algorithms and methods will need to distinguish words from another.
-In most cases this is done by creating a dictionary of all known words and by \textit{vectorizing} the text data
+In most cases this is done by creating a dictionary of all known words and \textit{vectorizing} the text data
 according to the dictionary.
 
-While this works well in theory, we deal with a tremendous amount of data in real world applications.
+While this works well in theory, we deal with tremendous amount of data in real world applications.
 This results in huge directories with many vector dimensions and does not only take up more disk space
-but also text processing (computation and comparison) takes more time to process.
+but also more text processing \textit{(computation and comparison)} time.
 
 What does that mean?
 Consider the following words:
@@ -25,40 +25,42 @@ Consider the following words:
     \item SWITZERLAND
 \end{itemize}
 
-Anyone of us will be able to extract the same meaning out of these three words: The country \textit{Switzerland}.
+Anyone of us will be able to extract the same information out of these three words:
+The country \textit{Switzerland}.
 However, for machines the terms are different to another because they are written differently.
-That is why in most cases it makes sense to lowercase all text before processing them.
+That is why in most cases it makes sense to lowercase all text data before processing it.
 That way we can ensure that the above words also share the same meaning
 for a machine and thus reduce the dictionary size.
 
 \paragraph{Exceptions}
 There are a few use cases where lowercasing a text is not desired.
-For example when trying to detect the writer's sentiment.
-Someone who would write a few or all words of a sentence in uppercase might be angrier than someone who does not.
+For example, when trying to detect the writer's sentiment.
+Someone who would write a few or all words of a sentence in all uppercase
+might be angrier than someone who does not.
 
 \paragraph{Reducing the dictionary size}
-Lowercasing text can just be the beginning though.
+Lowercasing text is just the beginning though.
 Depending on the size of a document, it might make sense to not use all text data inside a document.
 A good example for this would be books.
 Vectorizing books would take too much computational power and time to process.
 In such cases, the dictionary size needs to be reduced.
-This could be accomplished by processing a summary of the book instead of the book itself
+This can be accomplished by processing a summary of the book instead of the book itself
 or by extracting the most relevant words from the whole book.
-Later could be done with Keyphrase Extraction or with \Gls{ner}.
+Later can be done with Keyphrase Extraction or with \Gls{ner}.
 
 \paragraph{Normalizing text}
 If we are not dealing with books but with articles or papers,
 there are also other alternatives to Keyphrase Extraction and \Gls{ner}.
-Using \textbf{Text Stemming} (\subsubsecref{subsubsec:3_text_stemming})
-or \textbf{Text Lemmatization} (\subsubsecref{subsubsec:3_text_lemmatization}),
-we can simplify terms and group them together to reduce
-the dictionary size.
+Using Text Stemming (\subsubsecref{subsubsec:3_text_stemming})
+or Text Lemmatization (\subsubsecref{subsubsec:3_text_lemmatization}),
+we can simplify terms and group them together to reduce the dictionary size.
 
 \subsubsection{Keyphrase Extraction}
 \label{subsubsec:3_keyphrase_extraction}
 
-When describing any kind of data, a popular thing to do is tagging.
-One of the most well-known tagging procedures are the usage hash tags and user names in social media.
+When having to describe data, one common approach is to tag the data with Keyphrases.
+Two of the most well-known tagging methods in social media
+are tagging content with Keyphrases marked with hash tags and user names marked with at signs.
 Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
 \begin{quotation}
@@ -74,20 +76,19 @@ we do not retrieve all information but we can already think of what the Tweet is
 These words would be our \textit{Keyphrases}.
 
 Now, in above example the Keyphrases were defined manually by a user.
-But in our data set (and most data sources), there are no Keyphrases.
-Luckily there are different approaches on how to retrieve Keyphrases from text data.
+But in our data set (and most data sources), there are no Keyphrases defined.
+Luckily there are different approaches on how to extract Keyphrases from text data automatically.
 
-We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used
-Keyphrase Extraction algorithms.
+We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used Keyphrase Extraction algorithms.
 Our goal is to check if working with Keyphrases alone is more, less or equal accurate
-than with the whole text.
+than with working the whole text.
 
 Since the dictionary size would be smaller, the data processing time could be improved.
 
 \subsubsection{Named Entity Recognition}
 \label{subsubsec:3_named_entity_recognition}
 
-Similar to \textit{Keyphrase Extraction}, \Gls{ner} extracts relevant terms out from a given text.
+Similar to \textit{Keyphrase Extraction}, \Gls{ner} extracts relevant terms from a given text.
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
 
@@ -106,7 +107,7 @@ we retrieve following entities:
     \item 1969 (Date)
 \end{itemize}
 
-For comparison, the same sentence would extract following \textit{Keyphrases}:
+For comparison, when extracting the \textit{Keyphrases} automatically, we receive following terms:
 
 \begin{itemize}
     \item Nobel Prize
