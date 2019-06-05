@@ -87,7 +87,7 @@ A possible alternative data set could be based on computer logs,
 which would also provide a source for data streams.
 Improvements in the overall performance of HDBSCAN will also significantly improve the event detection in data streams.
 
-TODO presegmentation
+TODO presegmentation optional?
 
 \subsection{Lessons Learned}
 \label{subsec:6_lessons_learned}
@@ -95,15 +95,19 @@ TODO presegmentation
 % State the 3 biggest lessons learned.
 % E.g. HDBSCAN is slightly better than sklearn but way faster.
 
-HDBSCAN
-
-preprocessing
+We learned that HDBSCAN is quite a versatile and efficient clustering algorithm
+and at the same time experienced the challenges in text mining. 
+The wide variety in types of articles and the noisy data caused the noise rate to be quite high.
+We underestimated at the beginning the effect this would have on the quality of the clustering 
+and moreover on the precision of the event detection.
 
 Another lesson we learned was the importance of understanding and exploring the scoring function in more detail.
 We did not research the scoring function we used in the beginning enough to be aware of their biases.
 As a result we had to restart our evaluations, once we found these anomalies in our results and 
 ultimately developed our own function.  
 
-tf-idf
-
-Good data set -> noise rate
+Further we learned to question our third-party libraries even well established ones such as scikit-learn.
+While researching the theory for tf-idf, we could not reproduce the results produced by scikit-learns tf-idf.
+It turned out scikit-learn uses a slightly different formula from the official theory. 
+Additionally the implementation of HDBSCAN is not optimized for memory consumption, 
+which we found out by looking through the issues on github. 
