@@ -32,6 +32,7 @@
 \newacronym{vsm}{VSM}{Vector space model}
 \newacronym{nlp}{NLP}{Natural Language Processing}
 \newacronym{lsh}{LSH}{Locality Sensitive Hashing}
+\newacronym{gdpr}{GDPR}{General Data Protection Regulation}
 
 \newglossaryentry{vectorizer}
 {
@@ -66,27 +67,19 @@
 
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{positioning}
-\lstset{upquote=true}
-\lstset{basicstyle=\ttfamily}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
-\newcommand\secname{Section}
-\newcommand\subsecname{Section}
-\newcommand\subsubsecname{Section}
-\newcommand\equname{Equation}
-\newcommand\lstname{Listing}
-
 \newcommand*{\tabref}[1]{\tablename~\ref{#1}}
 \newcommand*{\figref}[1]{\figurename~\ref{#1}}
-\newcommand*{\equref}[1]{\equname~\ref{#1}}
-\newcommand*{\lstref}[1]{\lstname~\ref{#1}}
-\newcommand*{\secref}[1]{\secname~\ref{#1}}
-\newcommand*{\subsecref}[1]{\subsecname~\ref{#1}}
-\newcommand*{\subsubsecref}[1]{\subsubsecname~\ref{#1}}
+\newcommand*{\equref}[1]{Equation~\ref{#1}}
+\newcommand*{\lstref}[1]{Listing~\ref{#1}}
+\newcommand*{\secref}[1]{Section~\ref{#1}}
+\newcommand*{\subsecref}[1]{Section~\ref{#1}}
+\newcommand*{\subsubsecref}[1]{Section~\ref{#1}}
 
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
@@ -94,7 +87,7 @@
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\footnotesize,
+    basicstyle=\ttfamily,
     breakatwhitespace=false,         
     breaklines=true,                 
     captionpos=b,                    
@@ -104,7 +97,8 @@
     showspaces=false,                
     showstringspaces=false,
     showtabs=false,                  
-    tabsize=2
+    tabsize=2,
+    upquote=true
 }
  
 \lstset{style=mystyle}
