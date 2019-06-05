@@ -311,7 +311,7 @@ since there are 2 different metrics and 8 different options for $min\_cluster\_s
 This is important to consider for running clustering methods with long processing times
 or running evaluations on large sample sizes.
 
-\begin{lstlisting}[caption=Predefined parameters for different clustering methods,label={lst:cluster_method_parameters}]
+\begin{lstlisting}[language=Python, caption=Predefined parameters for different clustering methods,label={lst:cluster_method_parameters}]
 parameters_by_method = {
     self.kmeans: {
         "n_cluster": ["n_square", "n_true"]
@@ -343,13 +343,15 @@ The evaluation framework provides a command line interface to start evaluation r
 \lstref{lst:cluster_evaluation_framework} shows the full interface.
 
 \begin{lstlisting}[caption=Command line interface for the evaluation framework, label={lst:cluster_evaluation_framework}]
-usage: cluster_evaluation_framework.py [-h] [--rows ROWS] [--stories STORIES]
-                                       [--methods METHODS]
-                                       [--vectorizers VECTORIZERS]
-                                       [--tokenizers TOKENIZERS] [--runs RUNS]
+usage: cluster_evaluation_framework.py [-h] [--rows ROWS] 
+                                    [--stories STORIES]
+                                    [--methods METHODS]
+                                    [--vectorizers VECTORIZERS]
+                                    [--tokenizers TOKENIZERS] 
+                                    [--runs RUNS]
 
 Run different clustering methods, with a variety of different settings.
-data_mining
+
 optional arguments:
   -h, --help            show this help message and exit
   --rows ROWS           number of samples to use for clustering 
