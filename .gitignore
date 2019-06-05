@@ -10,6 +10,7 @@ test_data/
 app/data_database/*
 !app/data_database/conf
 !app/data_database/update_metadata.py
+!app/data_database/display_news_article.py
 diff.html
 *.log
 *.lock
