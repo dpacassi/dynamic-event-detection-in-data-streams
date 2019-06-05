@@ -19,7 +19,7 @@ The methods are:
     \item Full text with stop word removal
     \item Text Stemming
     \item Text Lemmatization
-    \item Keyphrase Extraction
+    \item Keyphrase extraction
     \item \Gls{ner}
 \end{itemize}
 
@@ -34,7 +34,7 @@ As we can see in \tabref{tab:preprocessing_times}, Text Stemming is by far the f
      & \textbf{Minimum time (s)} & \textbf{Average time (s)} & \textbf{Maximum time (s)} \\ \hline
     \textbf{Text Stemming} & 0.1 & 2.3 & 4.0 \\ \hline
     \textbf{Text Lemmatization} & 113.0 & 172.3 & 1414.1 \\ \hline
-    \textbf{Keyphrase Extraction} & 8.5 & 83.5 & 954.3 \\ \hline
+    \textbf{Keyphrase extraction} & 8.5 & 83.5 & 954.3 \\ \hline
     \textbf{\Gls{ner}} & 8.7 & 58.2 & 469.3 \\ \hline
     \end{tabular}
     \caption{Comparison of text preprocessing times.}
@@ -170,13 +170,13 @@ As for the optimal preprocessing, Text Lemmatization provides the highest overal
 although closely followed by Text Stemming.
 This is to be expected, since both reduce the dimensions
 by grouping words into their base form, while still retaining most of the text.
-In contrast to Keyphrase Extraction and \Gls{ner}, which both result in a drastic reduction of the dimensions,
+In contrast to keyphrase extraction and \Gls{ner}, which both result in a drastic reduction of the dimensions,
 and therefore less detail.
 It is also interesting to see how close the score using the full text is compared to the best score per row.
 The difference between the overall best score of 0.738 achieved by Text Lemmatization
 and the score provided by using the full text of 0.731 is only 0.007.
 This means text preprocessing has a lesser impact than initially expected.
-However it is important to note, that we used pretrained models for Keyphrase Extraction and \Gls{ner}.
+However it is important to note, that we used pretrained models for keyphrase extraction and \Gls{ner}.
 Specifically training on a news corpus might improve the performance of both methods,
 but it was decided to be out of scope for this thesis.
 

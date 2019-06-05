@@ -3,15 +3,8 @@
 
 \subsection{Problem Formulation}
 \label{subsec:1_problem_formulation}
-% Wie kann in einem Datenstrom Ereignisse erkannt werden?
 
-% Bei der Suche nach neuen Ereignissen in Datenströmen, kommt es immer zum Problem was ein Ereignis genau ist. Wenn diese erste Frage geklärt ist kommt es aber zu weiteren Fragestellungen. Meistens reicht es nicht ein Ereignis statisch zu definieren, sondern die Definition entwickelt sich dynamisch über die Zeit. Die meisten Verfahren zu Ereigniserkennung werden aber bei Systemstart statisch eingestellt. Weiterhin muss man stets die Dynamik des Streams beachten, da es sonst du Blockaden und Überlauf im System kommen kann.
-
-% Ziel dieser Arbeit ist es eine Methodik zu entwickeln wie die genannten Aspekte auf geeigneten Datenströmen umgesetzt werden können.
-
-
-How can events be recognized in a data stream?
-While searching for events in a data stream, the definition of an event is not always clear.
+While searching for events in a data stream, the definition of an event is not always given.
 Providing static definitions, as most approaches do,
 does not suffice for dynamic data streams, which change over time.
 Additionally, the behaviour of the data stream is an important factor in itself,
@@ -19,29 +12,23 @@ since blockages of overflows in the system have to be prevented.
 
 An example for a dynamic data stream can be found in a stream of news articles,
 which are published in irregular time intervals and different quantities over time.
-Thus detecting events based on an incoming stream of news articles is a challenging task.
+Detecting events based on an incoming stream of news articles is therefore a challenging task.
 
-The goal is to develop and evaluate a methodology to detect events in a dynamic stream of news articles.
+The goal is to develop and evaluate a methodology to detect events in a dynamic data stream of news articles.
 
 \subsection{Motivation}
 \label{subsec:1_motivation}
+
 Today's environment is rapidly changing.
-With more devices being digitalized and connected to the internet,
-we are starting to have incredible amounts of data.
-Every smartphone, smartwatch and many other \gls{iot} devices start tracking every sensor data they record.
+Most news articles are not spread via published media anymore but digital.
+With the overwhelming amount of news, finding relevant news is difficult.
 
-There is and will be no way to process all this data manually.
+As reading all news articles is no option, an automated methodology becomes necessary.
 This is where our work becomes relevant.
-We will try to detect events from a data stream, even when new and unknown events arise.
+We want to detect events from a news data stream, in particular identifying new headlines.
 
-Our solution is based on text data, so any data in text form should be applicable.
+Since our solution is based on text data, any data in text form is applicable.
 With technologies such as speech recognition, the data could also initially be acoustic
 and converted to text before being entered into our application.
 
-That would open up use cases with smart speakers such as \textit{Amazon Echo} or \textit{Google Assistant}.
-
-% lol stay humble david ;)
-% \paragraph{Personal motivation}
-% We have a combined experience of 17 years working in the IT sector together,
-% for our bachelor thesis we wanted to do something more challenging than
-% developing a simple application.
+This would open up use cases with smart speakers such as \textit{Amazon Echo} or \textit{Google Assistant}.
