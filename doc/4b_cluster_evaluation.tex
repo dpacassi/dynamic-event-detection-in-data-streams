@@ -4,11 +4,23 @@
 \subsubsection{Design}
 \label{subsubsec:4b_design}
 
+The clustering evaluation will focus on HDBSCAN as the main clustering method. 
+The properties of HDBSCAN are a good fit for our use case of clustering news articles in an online setting.
+It is able to work with clusters of varying densities, 
+does not require to know the number of clusters in advance 
+and is efficient with a time complexity of $O(nlog(n))$.
+The density requirement is based on our test data, which contains clusters with sizes ranging from 2 to over 400. 
+In addition, we do not know the number of clusters in the data stream and therefore can not provide an approximation
+beforehand. This already disqualifies a wide range of clustering methods such as \textit{k}-means. 
+Another feature of HDBSCAN is its ability to discard samples as noise. 
+This can be a useful feature once applied to an online setting, 
+since noisy data is to be expected in a data stream from external sources. 
+
 The goal of the clustering evaluation is to find the optimal parameters and preprocessing methods
-for applying HDBSCAN in an online setting.
-Therefore the clustering evaluation is designed to run HDBSCAN on our test data,
+for running HDBSCAN on our test data and to measure the overall performance.
+Therefore the clustering evaluation is designed to run HDBSCAN,
 using a combination of different text processing methods, vector space models and parameters.
-\textit{k}-means is used to provide a benchmark for HDBSCAN evaluation.
+\textit{k}-means is used to provide a benchmark for the HDBSCAN evaluation.
 Once a clustering has been performed,
 the result is measured based on the ground truth and stored in a database for later analysis.
 
