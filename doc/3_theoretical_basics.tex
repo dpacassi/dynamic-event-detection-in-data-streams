@@ -63,12 +63,12 @@ Two of the most well-known tagging methods in social media
 are tagging content with Keyphrases marked with hash tags and user names marked with at signs.
 Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
-\begin{quotation}
+\begin{quote}
     This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
     at our \textbf{\detokenize{@ESA_Tech}} centre in the Netherlands.
     SpaceBok is a quadruped robot designed by a Swiss student team from \textbf{\detokenize{@ETH}}
     and \textbf{\detokenize{@ZHAW}}.
-\end{quotation}
+\end{quote}
 
 If we only read the hash tags and user names \textit{\#robot}, \textit{\detokenize{@ESA_Tech}},
 \textit{\detokenize{@ETH}} and \textit{\detokenize{@ZHAW}},
@@ -92,9 +92,9 @@ Similar to \textit{Keyphrase Extraction}, \Gls{ner} extracts relevant terms from
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
 
-\begin{quotation}
+\begin{quote}
     CERN in Geneva pays tribute to Murray Gell-Mann, who won the Nobel Prize in Physics in 1969.
-\end{quotation}
+\end{quote}
 
 When using spaCy's \gls{ner} model, which is based on a transition-based \gls{cnn}\cite{LampleBSKD16},
 we retrieve following entities:
