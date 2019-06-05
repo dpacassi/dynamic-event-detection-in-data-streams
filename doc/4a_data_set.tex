@@ -54,23 +54,22 @@ The extracted events could be as follows:
         \end{itemize}
 \end{itemize}
 
-However, from above data sets only two contained prelabeled events:
+However, from above data sets only two contained prelabeled clusters:
 
 \begin{enumerate}
     \item Dodgers Loop Sensor Data Set
         \begin{itemize}
-            \item 81 labeled events. % Todo: x events in y clusters
+            \item 50,400 sensor activities belonging to 81 games.
         \end{itemize}
     \item News Aggregator Data Set
         \begin{itemize}
-            \item 422,937 labeled events. % Todo: x events in y clusters
+            \item 422,937 news articles belonging to 7,231 news stories.
         \end{itemize}
 \end{enumerate}
 
-As we did not want to lose too much time in manually clustering data,
-we have decided to go with one of these two.
+As we did not want to lose too much time in manually labeling data, we decided to go with one of these two.
 Regarding our two options, our choice was simple:\\
-We went for the \textbf{The News Aggregator Dataset} since it not only provided more data,
+We went for the \textbf{The News Aggregator Data Set} since it not only provided more data,
 but our work built on the news articles use case could later be continued with real live data.
 The \textbf{GDELT 2.0} data set for example, provides around 1,000 to 2,000 new news articles every 15 minutes.
 
@@ -79,14 +78,13 @@ The \textbf{GDELT 2.0} data set for example, provides around 1,000 to 2,000 new 
 
 Unfortunately the data set did not contain the news articles themselves but rather only the URL's to the news articles.
 This was done so due to copyright restrictions on the content.
-Fortunately there are web scraping tools designed to retrieve the content from news articles specifically.
+Fortunately there are web scraping tools designed to retrieve the content from news portals specifically.
 We decided to use Newspaper3k\cite{newspaper3k},
-a Python3 library that allows us to retrieve the text from news articles easily.
+a Python3 library that allows us to retrieve the news article texts from the news portals easily.
 
-The library only requires an URL to download and extract the news article from a website, see following example:
+The library only requires an URL to download and extract the news article from a website,
+see \lstref{lst:newspaper3k_code}.
 
-% Todo: Hyphen gets converted inside "lstlisting".
-% Copy & paste the URL from the PDF into a browser -> it won't work.
 \begin{lstlisting}[language=Python, caption=Retrieve the news article from an URL., label={lst:newspaper3k_code}]
     from newspaper import Article
 
@@ -96,16 +94,16 @@ The library only requires an URL to download and extract the news article from a
     article.text # Contains the article's text.
 \end{lstlisting}
 
-All we had to do now is to run this code for all news articles.
-To speed this process up, we have loaded the data set into a database and run 8 concurrent processes which
-retrieved the news articles content from the web in different batches.
+All we had to do now, is to run this code for all news articles.
+To speed this process up, we loaded the data set into a database and ran 8 concurrent processes which
+retrieved the news articles content from the web portals in different batches.
 
 \subsubsection{Data Cleansing}
 \label{subsubsec:4a_data_cleansing}
 
-The data set contains news articles collected from March 10th to August 10th of 2014.
-Five years later, many resources are not online anymore or are not accessible from Europe due to GDPR.
-We have used following SQL query to filter out news articles that were most likely corrupt:
+The data set contains news articles collected from March 10th to August 10th 2014.
+Five years later, many resources are not online anymore or are not accessible from Europe due to Europe's \Gls{gdpr}.
+We have used the SQL query in \lstref{lst:valid_news_articles_sql} to filter out news articles that were most likely corrupt.
 
 \begin{lstlisting}[language=SQL, caption=Retrieve valid news articles., label={lst:valid_news_articles_sql}]
     SELECT *
