@@ -249,7 +249,7 @@ while an adjusted measure such as the \gls{ari} would be 0 in such a case.
     7 & $C = \{\{1,2,3,4,5,6,7,8,9\}\}$ & 0.0 & 0 & 0.321 \\ \hline
     8 & $C = \{\{7,2,4\},\{8,9,6,3\},\{1,5\}\}$ & 0.219 & -0.108 & 0.392 \\ \hline
     \end{tabular}
-    \caption{Direct comparison of different scoring functions}
+    \caption{Direct comparison of different scoring functions.}
     \label{tab:score_scenarios}
 \end{table}
 
@@ -311,7 +311,7 @@ since there are 2 different metrics and 8 different options for $min\_cluster\_s
 This is important to consider for running clustering methods with long processing times
 or running evaluations on large sample sizes.
 
-\begin{lstlisting}[language=Python, caption=Predefined parameters for different clustering methods,label={lst:cluster_method_parameters}]
+\begin{lstlisting}[language=Python, caption=Predefined parameters for different clustering methods.,label={lst:cluster_method_parameters}]
 parameters_by_method = {
     self.kmeans: {
         "n_cluster": ["n_square", "n_true"]
@@ -342,7 +342,7 @@ parameters_by_method = {
 The evaluation framework provides a command line interface to start evaluation runs and specify relevant settings.
 \lstref{lst:cluster_evaluation_framework} shows the full interface.
 
-\begin{lstlisting}[caption=Command line interface for the evaluation framework, label={lst:cluster_evaluation_framework}]
+\begin{lstlisting}[caption=Command line interface for the evaluation framework., label={lst:cluster_evaluation_framework}]
 usage: cluster_evaluation_framework.py [-h] [--rows ROWS] 
                                     [--stories STORIES]
                                     [--methods METHODS]

@@ -73,7 +73,7 @@ Lovins' stemming algorithm was very successful but got mostly replaced by
 M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
 In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6,370 out of 10,000 words and thereby
 reducing the vocabulary size by \textbf{one third}.
-The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
+The algorithm simply follows 5 steps with replacement and/or removal rules and is therefore very easy and efficient.
 
 M.F. Porter improved his stemming algorithm even further
 by publishing the Porter2 stemming algorithm in 2002
@@ -127,7 +127,7 @@ See \tabref{tab:comparison_stemming_lemmatization} for a comparison.
 When having to describe data, one common approach is to tag the data with Keyphrases.
 Two of the most well-known tagging methods in social media
 are tagging content with Keyphrases marked with hash tags and user names marked with at signs.
-Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
+Let us check the following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
 \begin{quote}
     This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
@@ -249,7 +249,7 @@ Relying on the Term Frequency alone is a good start but can surely be improved.
 Consider following scenario:
 We have a document \textit{d1} with 100 terms, 10 of them (10\%) belong to one specific term \textit{t1}.
 In a second document \textit{d2} with 1,000 terms, 10 of them (1\%) belong to the same term \textit{t1}.
-When using Term Frequency as a Vectorizer, both documents will receive for the term \textit{t1} a value of 10.
+When using Term Frequency as a vectorizer, both documents will receive for the term \textit{t1} a value of 10.
 However, in the first document \textit{d1} the term should have received a higher value
 than in document \textit{d2} as it covered a bigger percentage of the document.
 
@@ -286,7 +286,7 @@ What scikit-learn now does is to normalize this value using the Euclidean norm:
     \label{equ:euclidean}
 \end{equation}
 
-This results in following values in our \Gls{vsm}:
+The resulting \Gls{vsm} is shown in \tabref{tab:tfidf_vsm}.
 
 \begin{table}[h]
     \centering
@@ -312,7 +312,7 @@ twice in document \textit{d3}.
 We can also observe that the term \textbf{rosetta} has slightly different values for the
 documents \textit{d1} and \textit{d2}.
 The reason for this is that document \textit{d2} has one term less than document \textit{d1},
-therefor the significance of one term is weighted heavier in document \textit{d2}.
+therefore the significance of one term is weighted heavier in document \textit{d2}.
 
 \subsection{Clustering}
 \label{subsec:3_clustering}
@@ -333,21 +333,21 @@ At the very beginning, \textit{k}-means creates k centroids at random locations.
 It then repeats following instructions until reaching convergence:
 
 \begin{itemize}
-    \item For each data point: Find the nearest centroid
-    \item Assign the data point to the nearest centroid (cluster)
-    \item For each cluster: Compute a new cluster centroid with all assigned data points
+    \item For each data point: Find the nearest centroid.
+    \item Assign the data point to the nearest centroid (cluster).
+    \item For each cluster: Compute a new cluster centroid with all assigned data points.
 \end{itemize}
 
 \paragraph{Advantages}
 \begin{itemize}
-    \item Very simple and easy to understand algorithm
+    \item Very simple and easy to understand algorithm.
 \end{itemize}
 
 \paragraph{Disadvantages}
 \begin{itemize}
-    \item Initial (random) centroids have a strong impact on the results
-    \item The number of clusters (k) has to be known beforehand
-    \item Unable to handle noise (all data points will be assigned to a cluster)
+    \item Initial (random) centroids have a strong impact on the results.
+    \item The number of clusters (k) has to be known beforehand.
+    \item Unable to handle noise (all data points will be assigned to a cluster).
 \end{itemize}
 
 \subsubsection{DBSCAN}
