@@ -63,14 +63,16 @@ As we can see in \tabref{tab:preprocessing_times}, Text Stemming is by far the f
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|r|r|r|r|}
-    \hline
-     & \textbf{Minimum time (s)} & \textbf{Average time (s)} & \textbf{Maximum time (s)} \\ \hline
-    \textbf{Text Stemming} & 0.1 & 2.3 & 4.0 \\ \hline
-    \textbf{Text Lemmatization} & 113.0 & 172.3 & 1414.1 \\ \hline
-    \textbf{Keyphrase extraction} & 8.5 & 83.5 & 954.3 \\ \hline
-    \textbf{\Gls{ner}} & 8.7 & 58.2 & 469.3 \\ \hline
-    \end{tabular}
+    \scalebox{0.85}{
+        \begin{tabular}{|r|r|r|r|}
+        \hline
+         & \textbf{Minimum time (s)} & \textbf{Average time (s)} & \textbf{Maximum time (s)} \\ \hline
+        \textbf{Text Stemming} & 0.1 & 2.3 & 4.0 \\ \hline
+        \textbf{Text Lemmatization} & 113.0 & 172.3 & 1414.1 \\ \hline
+        \textbf{Keyphrase extraction} & 8.5 & 83.5 & 954.3 \\ \hline
+        \textbf{\Gls{ner}} & 8.7 & 58.2 & 469.3 \\ \hline
+        \end{tabular}
+    }
     \caption{Comparison of text preprocessing times.}
     \label{tab:preprocessing_times}
 \end{table}
