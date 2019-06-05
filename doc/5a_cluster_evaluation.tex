@@ -2,8 +2,8 @@
 \label{subsec:5a_clustering_evaluation}
 
 The goal of this evaluation is to measure the precision of HDBSCAN, with different parameters and preprocessing methods.
-The most suitable settings will then be used for the online clustering approach to detect events in a news stream.
-The precision is be measured with the MP-Score.
+The most suitable settings will then be used for the online clustering approach to detect events in a stream of news articles.
+The precision is measured with the MP-Score.
 
 \subsubsection{Setup}
 \label{subsubsec:5a_setup}
@@ -11,7 +11,7 @@ The precision is be measured with the MP-Score.
 \paragraph{Text preprocessing}
 The first step in working with text is to apply preprocessing techniques
 for improving the quality of the data before clustering it.
-We look the five different preprocessing methods as described in \subsecref{subsec:3_text_preprocessing}
+We look at five different preprocessing methods as described in \subsecref{subsec:3_text_preprocessing}
 and evaluate each.
 The methods are:
 
@@ -38,7 +38,7 @@ We focus on the two primary ones:
 
 \begin{itemize}
     \item Min cluster size: The minimum size of a cluster.
-          We run the evaluation with a range from two to nine as the $min\_cluster\_size$.
+          We run the evaluation with a range from 2 to 9 as the $min\_cluster\_size$.
     \item Metric: The distance measure between points.
           We apply the metrics "cosine" and "euclidean".
 \end{itemize}
@@ -58,22 +58,22 @@ Lower numbers of stories allow for more repetitions due to lower processing time
 \subsubsection{Evaluation}
 \label{subsubsec:5a_evaluation}
 
-The first run is done with 60 stories, which results in approximately 2000 news articles, over 20 repetitions.
+The first run is done with 60 stories and 20 repetitions, which results in approximately 2000 news articles per run.
 \tabref{tab:cluster_parameters} shows the resulting MP-Score for each parameter
 in combination with each preprocessing method and vector space model.
-The highest score per parameter is highlighted as bold and the best score overall is underlined.
-The first insight we get is the variety of scores for different min cluster sizes.
-The lowest min cluster size results in the lowest score,
+The highest score per parameter is highlighted as bold and the highest score overall is underlined.
+The first insight we get is the variety of scores for different minimum cluster sizes.
+The lowest minimum cluster size results in the lowest score,
 while increasing this parameter leads to an increasingly better score.
-The highest score is reached with a min cluster size of six, while increasing it further reduces the score again.
-The large difference in scores between different min cluster sizes,
+The highest score is reached with a minimum cluster size of 6, while increasing it further reduces the score again.
+The large difference in scores between different minimum cluster sizes,
 shows the importance this parameters has on the quality of the clustering
 and requires some knowledge of the data beforehand.
 In our case we have a wide range of different cluster sizes as shown in \figref{fig:articles_per_story_distribution},
 with clusters containing as few as two news articles.
-Based on this distribution we expected the ideal min size cluster size to be in a range from two to nine,
-which is why we chose this range.
-The distribution also explains the drop in the scores after a min cluster size of 6,
+Based on this distribution we expected the ideal minimum size cluster size to be in a range from 2 to 9,
+which is why we chose this range initially.
+The distribution further explains the decrease in the scores after a minimum cluster size of 6,
 since an increasingly number of clusters are being ignored.
 
 \begin{table}[h]
@@ -111,7 +111,7 @@ since an increasingly number of clusters are being ignored.
     \end{tabular}   
     }
     \caption{
-        The average MP-Score for combinations of parameter and preprocessing methods
+        The average MP-Score for combinations of parameters and preprocessing methods
         with a sample size of 60 stories (approx. 2,000 articles)
     }
     \label{tab:cluster_parameters}
@@ -126,52 +126,52 @@ since an increasingly number of clusters are being ignored.
 
 Focusing on the two vector space models,
 shows that all of the best scores per parameter have been achieved by using tf-idf.
-Additionally the different metrics show a big difference when combined with word frequency.
+Furthermore the different metrics show a considerable difference when combined with word frequency.
 The best scores using the word frequency are 0.071 for the euclidean metric and 0.695 for the cosine metric.
 With tf-idf the difference between both metrics is still notable, but far less drastic than based on word frequency.
-This can be explained by considering that the word frequency model will weigh every word equally
+This can be explained by considering that the word frequency model will count every word equally
 and therefore common words will have higher weights than less common ones.
 Based on these weights, the distance calculated by the euclidean metric does not correspond well
 with the actual similarity between documents.
-The cosine metric is less effected by these weights,
-since it already calculates the similarity of two vectors instead of their distance.
+The cosine metric is less affected by these weights,
+because it considers the direction of vectors instead of the distance.
 Tf-idf balances out the term frequency with its inverse document frequency
 and therefore less common words are weighted higher than less common ones.
-As a result the euclidean distance is more effected by infrequent terms,
-which are similar for similar documents and hence better scores.
+As a result the euclidean distance is more affected by infrequent terms,
+which are similar for similar documents and hence results in better scores.
 Although the cosine similarity is still superior in this case.
 This behaviour has already been studied in the past\cite{Strehl00impactof, similarity_measures}
 and is one of the reasons, why the cosine similarity is often preferred over the euclidean distance
 as a similarity measure in the field of text mining.
 
-As for the optimal preprocessing, text lemmatization provides the highest overall mp-score with 0.738,
-although closely followed by text stemming.
-This is to be expected, since both lemmatization and stemming reduce the dimensions
+As for the optimal preprocessing, Text Lemmatization provides the highest overall mp-score with 0.738,
+although closely followed by Text Stemming.
+This is to be expected, since both reduce the dimensions
 by grouping words into their base form, while still retaining most of the text.
 In contrast to Keyphrase Extraction and \Gls{ner}, which both result in a drastic reduction of the dimensions,
 and therefore less detail.
-It is also interesting to see how close the score from using the full text is compared to the best score per row.
-The difference between the overall best score of 0.738 achieved by Lemmatization
-and the score provided by the full text of 0.731 is only 0.007.
+It is also interesting to see how close the score using the full text is compared to the best score per row.
+The difference between the overall best score of 0.738 achieved by Text Lemmatization
+and the score provided by using the full text of 0.731 is only 0.007.
 This means text preprocessing has a lesser impact than initially expected.
 However it is important to note, that we used pretrained models for Keyphrase Extraction and \Gls{ner}.
 Specifically training on a news corpus might improve the performance of both methods,
-but it was decided as to be out of scope for this thesis.
+but it was decided to be out of scope for this thesis.
 
 After determining the optimal settings for text preprocessing and vectorization,
 we increase the sample sizes for our evaluation runs,
 to get a deeper insight into the behaviour of HDBSCAN with larger data sets.
 \figref{fig:hdbscan_parameters} shows the scores achieved with different parameters
 over an increasingly large set of samples.
-Based on this Figure we see the metric \textit{cosine} to be generally better than $euclidean$
-and significantly more stable based on the range of the score
-and the quality of the clustering seems to decrease with larger sample sizes.
+Based on this Figure we see the metric \textit{cosine} to be generally better than \textit{euclidean}
+and significantly more stable based on the range of the score.
+Although the quality of the clustering seems to decrease with larger sample sizes.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{hdbscan_parameters}
     \caption{
-        MP-Score for different parameters, where min stands for the min cluster size.
+        MP-Score for different parameters, where min stands for the minimum cluster size.
         The marker represents the median, while the vertical line indicates the range between the min and max values.
         Each run contains at least five repetitions.
     }
@@ -179,24 +179,24 @@ and the quality of the clustering seems to decrease with larger sample sizes.
 \end{figure}
 
 Furthermore, the variance with smaller sample sizes can partially be explained
-through differences in the number of detected clusters,
-since missing a few clusters has a bigger impact if the overall number of clusters is small.
+with differences in the number of detected clusters,
+because missing a few clusters has a bigger impact if the overall number of clusters is small.
 Figure \label{fig:cluster_difference_samples} shows the difference between the number of predicted clusters
 and the number of true clusters.
 The Figure provides us with an interesting observation:
-While so far the minimum cluster size of six has given the best scores,
-the difference in the number of clusters is much smaller with a minimum cluster size of four.
+While so far the minimum cluster size of 6 has given the best scores,
+the difference in the number of clusters is much smaller with a minimum cluster size of 4.
 The MP-Score weights the similarity of a pair of clusters with their number of elements.
 This means ignoring smaller clusters has a lesser impact than ignoring larger clusters.
-We know our data set contains stories with news articles ranging from one up to 400.
+We know our data set contains stories with news articles ranging from 2 up to 400.
 Based on this knowledge and the workings of the score,
-we can conclude that using a minimum cluster size of four gives us more clusters,
+we can conclude that using a minimum cluster size of 4 gives us more clusters,
 which are ignored by using a larger minimum cluster size, but at the same time fragmenting larger clusters.
 Therefore resulting in a lower score, while having a better difference in the number of cluster predictions.
 This can be validated by analysing our data directly,
 where we observe the number of predicted cluster to be higher the lower the minimum cluster size is.
-Using $min\_cluster\_size=6$ tends to give a lower number compared the the true amount,
-while $min\_cluster\_size=3$ gives usually a higher number than there are actual clusters.
+Using a minimum cluster size of 6 tends to give a lower number compared with the true number of clusters,
+while a minimum cluster size of 3 gives usually a higher number than there are actual clusters.
 
 \begin{figure}[h]
     \centering
@@ -212,7 +212,7 @@ At the same time, the number of articles classified as noise should be kept to a
 However the noise ratio shown in \figref{fig:noise_ratio_samples} is significantly higher,
 than we would expect it to be based on our test data.
 A variety of factors play into the high noise ratio.
-One influence is due to the $min\_cluster\_size$.
+One factor is based on the minimum cluster size.
 Each news article belonging to a cluster,
 which has less articles than the minimum cluster size, will be counted as noise.
 \tabref{tab:expected_noise} lists the calculated percentage of news articles,
@@ -233,7 +233,7 @@ Decreasing the noise ratio is certainly an important part in future improvements
     \centering
     \begin{tabular}{|r|r|}
         \hline
-        \textbf{min cluster size} & \textbf{Ignored articles} \\
+        \textbf{Min cluster size} & \textbf{Ignored articles} \\
         \hline
         2 & 0.032\% \\ \hline
         3 & 0.126\% \\ \hline
@@ -256,7 +256,7 @@ The first story we focus on is about the hacking of U.S firms by chinese militar
 \tabref{tab:clustering_example} shows a number of detected and missed news articles.
 Based on the text length, we see that the missed articles are generally shorter
 compared with detected articles with one major exception.
-Nr. 18 with a length of 13980 is nearly twice as long compared with the second longest article.
+Nr. 18 with a character length of 13,980 is nearly twice as the second longest article.
 The content of Nr. 18 is a collection of different stories, only the first being about the chinese hackers.
 It seems reasonable for this article to be missed in the clustering.
 Articles Nr. 17, 19 and 20 all have a significantly lower length than the others,
@@ -313,7 +313,7 @@ and do not provide any obvious reasons for why they were regarded as noise durin
 \end{table}
 
 To find a possible explanation for the remaining new articles, we take a look at their tf-idf model.
-\tabref{tab:clustering_example_features} lists the top 10 keywords per news article, based on the tf-idf model.
+\tabref{tab:clustering_example_features} lists the top 10 keywords per news article based on the tf-idf model.
 There we see how the keywords from the detected news articles are quite similar,
 while the keywords from the missing news articles appear to be more varied
 with minimal overlap to the keywords from detected articles.
@@ -363,17 +363,18 @@ to lead to considerable improvements in the quality of the clustering.
 \end{table}
 
 So far we focused on HDBSCAN to determine the optimal settings to run it with.
-As a next step we can start comparing the overall performance with \textit{k}-means.
-We use the follwing settings: Text Lemmatization with tf-idf,
-cosine as the similarity measure and six as the minimum size of clusters.
+As a next step we start comparing the overall performance with \textit{k}-means.
+We use the following settings: Text Lemmatization with tf-idf,
+cosine as the similarity measure and 6 as the minimum size of clusters.
 \figref{fig:precision_and_processing_time_kmeans_hdbscan} shows a similar behaviour
 for both clustering methods in value and variance of the precision.
 Although HDBSCAN is generally more accurate than \textit{k}-means,
 the difference gets smaller with an increase in the sample size.
-Additionally the increase in the number of samples results for both HDBSCAN
-and \textit{k}-means in a small loss regarding the precision
-as can be seen in \figref{fig:precision_and_processing_time_kmeans_hdbscan}
-and which we have already observed when analysing HDBSCAN parameters.
+Additionally an increase in the number of samples results for both HDBSCAN
+and \textit{k}-means in a decrease of the precision
+as can be seen in \figref{fig:precision_and_processing_time_kmeans_hdbscan}.
+This has already been observed when analysing HDBSCAN parameters, 
+and it is interesting to \textit{k}-means behave in the same way.
 
 \begin{figure}[h]
     \centering
@@ -388,7 +389,7 @@ the biggest difference can be noted in the processing time in relation to the nu
 which is illustrated by \figref{fig:precision_and_processing_time_kmeans_hdbscan}.
 Although running the evaluation has also shown the space complexity for HDBSCAN
 to be substantially higher for larger amounts of samples than with \textit{k}-means.
-Trying to run HDBSCAN with 100'000 news articles caused in a memory error,
+Trying to run HDBSCAN with 100,000 news articles caused in a memory error,
 even with 64GB of RAM, while \textit{k}-means was able to complete the clustering.
 The memory issue with large data sets is known and according to the author the current implementation of HDBSCAN
 is not optimised for memory\cite{hdbscan_memory_issue}.
@@ -412,8 +413,8 @@ but it is still interesting to see how well it compares with other clustering me
 \label{subsubsec:5a_conclusion}
 
 The evaluation has shown HDBSCAN to be a good candidate to use for text based clustering.
-It provides an better precision than \textit{k}-means, while being significantly faster to process.
-The predicted number of clusters is consistent with an increasing number of samples and fairly close the truth.
+It provides a better precision than \textit{k}-means, while being significantly faster to process.
+The predicted number of clusters is consistent with an increasing number of samples and fairly close to the truth.
 Additionally we have shown the required preprocessing and vectorization steps with the ideal parameters
 to achieve the most accurate results for our data set.
 However there is a substantial noise ratio,
