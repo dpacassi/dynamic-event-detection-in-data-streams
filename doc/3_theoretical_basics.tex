@@ -9,8 +9,8 @@ In this chapter we will explain how the most important techniques used in our th
 \label{subsec:3_text_preprocessing}
 
 When working with text data, many algorithms and methods will need to distinguish words from another.
-In most cases this is done by creating a dictionary of all known words and \textit{vectorizing} the text data
-according to the dictionary.
+In most cases this is done by creating a dictionary of all known words and \textit{vectorizing}
+(see \subsecref{subsec:3_vector_space_model}) the text data according to the dictionary.
 
 While this works well in theory, we deal with tremendous amount of data in real world applications.
 This results in huge directories with many vector dimensions and does not only take up more disk space
@@ -19,11 +19,11 @@ but also more text processing \textit{(computation and comparison)} time.
 What does that mean?
 Consider the following words:
 
-\begin{itemize}
+\begin{enumerate}
     \item switzerland
     \item Switzerland
     \item SWITZERLAND
-\end{itemize}
+\end{enumerate}
 
 Anyone of us will be able to extract the same information out of these three words:
 The country \textit{Switzerland}.
@@ -35,7 +35,7 @@ for a machine and thus reduce the dictionary size.
 \paragraph{Exceptions}
 There are a few use cases where lowercasing a text is not desired.
 For example, when trying to detect the writer's sentiment.
-Someone who would write a few or all words of a sentence in all uppercase
+Someone who would write a few or all words of a sentence in all uppercase,
 might be angrier than someone who does not.
 
 \paragraph{Reducing the dictionary size}
@@ -46,7 +46,7 @@ Vectorizing books would take too much computational power and time to process.
 In such cases, the dictionary size needs to be reduced.
 This can be accomplished by processing a summary of the book instead of the book itself
 or by extracting the most relevant words from the whole book.
-Later can be done with Keyphrase Extraction or with \Gls{ner}.
+The latter can be done with Keyphrase Extraction or with \Gls{ner}.
 
 \paragraph{Normalizing text}
 If we are not dealing with books but with articles or papers,
@@ -54,6 +54,72 @@ there are also other alternatives to Keyphrase Extraction and \Gls{ner}.
 Using Text Stemming (\subsubsecref{subsubsec:3_text_stemming})
 or Text Lemmatization (\subsubsecref{subsubsec:3_text_lemmatization}),
 we can simplify terms and group them together to reduce the dictionary size.
+
+\subsubsection{Text Stemming}
+\label{subsubsec:3_text_stemming}
+
+Text Stemming is a form of Text Normalization which aims to simplify words
+by reducing the inflectional forms of each word into their word stems.
+For example, the words \textit{connected}, \textit{connecting} and \textit{connection} share a similar meaning and could
+therefore be simplified to the base term \textbf{connect}.
+
+The first paper describing a stemming algorithm was written by Julie Beth Lovins\cite{LovinsStemmer}
+as early as in 1968.
+In her algorithm she used an ordered list of 294 suffixes to strip them out and then applies one of
+29 associated application rules followed by a set of 35 rules to check if the remaining stem has to be
+modified further.
+
+Lovins' stemming algorithm was very successful but got mostly replaced by
+M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
+In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6,370 out of 10,000 words and thereby
+reducing the vocabulary size by \textbf{one third}.
+The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
+
+M.F. Porter improved his stemming algorithm even further
+by publishing the Porter2 stemming algorithm in 2002
+which is widely known as the \textit{Snowball stemming algorithm}\cite{SnowballStemmerAlgorithm}.
+
+There are even more stemming algoriths.
+Very well known are the Lancester stemming algorithm\cite{LancesterStemmer}
+and the WordNet stemming algorithm\cite{WordNetStemmer}.
+Since M.F. Porter's snowball stemming algorithm is the most widely used one,
+we decided to go with his stemming algorithm.
+
+\subsubsection{Text Lemmatization}
+\label{subsubsec:3_text_lemmatization}
+
+Similar to \textit{Text Stemming}, Text Lemmatization has the same goal to group together the inflected forms of a word
+but follows a different approach to do so.
+Instead of processing terms with fixed steps and defined rules,
+Text Lemmatization normally includes a dictionary lookup for the words
+and also takes in consideration to which part of a sentence a term belongs to.
+This results in more accurate root terms but also asks for more computational power than Text Stemming.
+See \tabref{tab:comparison_stemming_lemmatization} for a comparison.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|r|r|r|r|}
+    \hline
+    \textbf{\#} & \textbf{Original word} & \textbf{Stemmed} & \textbf{Lemmatized} \\ \hline
+    1 & written & written & write \\ \hline
+    2 & greatest & greatest & great \\ \hline
+    3 & best & best & best \\ \hline
+    4 & fastest & fastest & fastest \\ \hline
+    5 & highest & highest & high \\ \hline
+    6 & compute & comput & compute \\ \hline
+    7 & computer & comput & computer \\ \hline
+    8 & computed & comput & compute \\ \hline
+    9 & computing & comput & compute \\ \hline
+    10 & studies & studi & study \\ \hline
+    11 & studying & studi & study \\ \hline
+    12 & university & univers & university \\ \hline
+    13 & universities & univers & university \\ \hline
+    14 & universe & univers & universe \\ \hline
+    15 & universal & univers & universal \\ \hline
+    \end{tabular}
+    \caption{Comparison of Text Stemming and Text Lemmatization.}
+    \label{tab:comparison_stemming_lemmatization}
+\end{table}
 
 \subsubsection{Keyphrase Extraction}
 \label{subsubsec:3_keyphrase_extraction}
@@ -63,12 +129,12 @@ Two of the most well-known tagging methods in social media
 are tagging content with Keyphrases marked with hash tags and user names marked with at signs.
 Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
-\begin{quotation}
+\begin{quote}
     This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
     at our \textbf{\detokenize{@ESA_Tech}} centre in the Netherlands.
     SpaceBok is a quadruped robot designed by a Swiss student team from \textbf{\detokenize{@ETH}}
     and \textbf{\detokenize{@ZHAW}}.
-\end{quotation}
+\end{quote}
 
 If we only read the hash tags and user names \textit{\#robot}, \textit{\detokenize{@ESA_Tech}},
 \textit{\detokenize{@ETH}} and \textit{\detokenize{@ZHAW}},
@@ -83,8 +149,6 @@ We are using SGRank\cite{SGRank} in our thesis as it is currently one of the mos
 Our goal is to check if working with Keyphrases alone is more, less or equal accurate
 than with working the whole text.
 
-Since the dictionary size would be smaller, the data processing time could be improved.
-
 \subsubsection{Named Entity Recognition}
 \label{subsubsec:3_named_entity_recognition}
 
@@ -92,9 +156,9 @@ Similar to \textit{Keyphrase Extraction}, \Gls{ner} extracts relevant terms from
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
 
-\begin{quotation}
+\begin{quote}
     CERN in Geneva pays tribute to Murray Gell-Mann, who won the Nobel Prize in Physics in 1969.
-\end{quotation}
+\end{quote}
 
 When using spaCy's \gls{ner} model, which is based on a transition-based \gls{cnn}\cite{LampleBSKD16},
 we retrieve following entities:
@@ -124,74 +188,6 @@ However, when evaluating the results, we can see that \Gls{ner} \textit{understo
 relations better.
 
 Not only was it able to correctly keep the subject's name, \textit{Murray Gell-Mann}, but also the type of Nobel prize.
-
-% TODO: Talk about time.
-
-\subsubsection{Text Stemming}
-\label{subsubsec:3_text_stemming}
-
-Text Stemming is a form of Text Normalization which aims to simplify words
-by reducing the inflectional forms of each word into their word stems.
-For example, the words \textit{connected}, \textit{connecting}, \textit{connection} share a similar meaning and could
-therefor be simplified to the base term \textbf{connect}.
-
-The first paper describing a stemming algorithm was written by Julie Beth Lovins\cite{LovinsStemmer}
-as early as in 1968.
-In her algorithm she used an ordered list of 294 suffixes to strip them out and then applies one of
-29 associated application rules followed by a set of 35 rules to check if the remaining stem has to be
-modified further.
-
-Lovins' stemming algorithm was very successful but got mostly replaced by
-M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
-In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6,370 out of 10,000 words and thereby
-reducing the vocabulary size by \textbf{one third}.
-The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
-
-M.F. Porter improved his stemming algorithm even further
-by publishing the Porter2 stemming algorithm\cite{SnowballStemmerAlgorithm} in 2002
-which is widely known as the \textit{Snowball stemming algorithm}.
-
-There are even more stemming algoriths, very well known are the Lancester stemming algorithm\cite{LancesterStemmer}
-and the WordNet stemming algorithm\cite{WordNetStemmer}.
-Since M.F. Porter's snowball stemming algorithm is the most widely used one, we decided to go with his algorithm.
-
-\subsubsection{Text Lemmatization}
-\label{subsubsec:3_text_lemmatization}
-
-Similar to \textit{Text Stemming}, Text Lemmatization has the same goal to group together the inflected forms of a word
-but follows a different approach to do so.
-Instead of processing terms with fixed steps and defined rules,
-Text Lemmatization normally includes a dictionary lookup for the words
-and also takes in consideration to which part of a sentence a term belongs to.
-This results in more accurate root terms but also asks for more computational power than Text Stemming.
-See following table for a comparison:
-
-\begin{table}[h]
-    \centering
-    \begin{tabular}{|l|l|r|r|}
-    \hline
-    \textbf{\#} & \textbf{Original word} & \textbf{Stemmed} & \textbf{Lemmatized} \\ \hline
-    1 & written & written & write \\ \hline
-    2 & greatest & greatest & great \\ \hline
-    3 & best & best & best \\ \hline
-    4 & fastest & fastest & fastest \\ \hline
-    5 & highest & highest & high \\ \hline
-    6 & compute & comput & compute \\ \hline
-    7 & computer & comput & computer \\ \hline
-    8 & computed & comput & compute \\ \hline
-    9 & computing & comput & compute \\ \hline
-    10 & studies & studi & study \\ \hline
-    11 & studying & studi & study \\ \hline
-    12 & university & univers & university \\ \hline
-    13 & universities & univers & university \\ \hline
-    14 & universe & univers & universe \\ \hline
-    15 & universal & univers & universal \\ \hline
-    \end{tabular}
-    \caption{Comparison of Text Stemming and Text Lemmatization.}
-    \label{tab:comparison_stemming_lemmatization}
-\end{table}
-
-% TODO: Talk about time.
 
 \subsection{Vector Space Model}
 \label{subsec:3_vector_space_model}
