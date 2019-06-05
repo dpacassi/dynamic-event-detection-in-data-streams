@@ -24,7 +24,7 @@ The time delta, which is the amount of time between two batches, is set to one h
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{news_articles_over_time}
-    \caption{Incoming news articles over 30 days}
+    \caption{Incoming news articles over 30 days.}
     \label{fig:news_articles_over_time}
 \end{figure}
 
@@ -34,6 +34,7 @@ The time delta, which is the amount of time between two batches, is set to one h
 The goal of the online clustering is to detect new events in an incoming stream
 of news articles and changes in existing events.
 
+\paragraph{Static batch sizes}
 We start the evaluation with static batch sizes.
 \figref{fig:event_detection_differences} shows the differences between the number of detected events
 and the number of true events for both new and existing topics.
@@ -79,7 +80,7 @@ Meaning that there are still many false positives and false negatives.
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_mp_score_1000}
-    \caption{MP-Scores for clusterings using batch size of 1000}
+    \caption{MP-Scores for clusterings using batch size of 1000.}
     \label{fig:event_detection_mp_score_1000}
 \end{figure}
 
@@ -94,7 +95,7 @@ with a median between 0.5 and 0.8 using n=5000, but there is still are wide vari
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_mp_score_5000}
-    \caption{MP-Scores for clusterings using batch size of 5000}
+    \caption{MP-Scores for clusterings using batch size of 5000.}
     \label{fig:event_detection_mp_score_5000}
 \end{figure}
 
@@ -130,7 +131,7 @@ validates this assumption.
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_by_date_3000}
-    \caption{Number of events with a batch size of 3000}
+    \caption{Number of events with a batch size of 3000.}
     \label{fig:event_detection_by_date_3000}
 \end{figure}
 
@@ -151,10 +152,11 @@ we run the online clustering again with a batch size of n=3000 and different thr
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_differences_threshold}
-    \caption{Differences in detected over true events with different thresholds and a batch size of 3000}
+    \caption{Differences in detected over true events with different thresholds and a batch size of 3000.}
     \label{fig:event_detection_differences_threshold}
 \end{figure}
 
+\paragraph{Similarity threshold}
 \figref{fig:event_detection_differences_threshold}
 shows the effect of the threshold on the difference between detected and true events.
 We see how the initial threshold of 0.75 was set too high,
@@ -177,10 +179,11 @@ while detecting one event, when there is none, leads to a score of 0.
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{event_detection_mp_score_3000_0_1}
-    \caption{MP-Scores for online clustering with batch size n=3000 and threshold=0.1}
+    \caption{MP-Scores for online clustering with batch size n=3000 and threshold=0.1.}
     \label{fig:event_detection_mp_score_3000_0_1}
 \end{figure}
 
+\paragraph{Dynamic batch sizes}
 After having analysed the impact of different batch sizes in detail and the similarity threshold,
 we want to explore the result of using a dynamic batch size.
 The first dynamic method loads the number of samples over $n$ hours.
@@ -278,6 +281,7 @@ since the dynamic methods for determining the batch size only show limited impac
     \label{tab:batch_size_methods}
 \end{table}
 
+\paragraph{Noise rate}
 One of the major factors in the lower precision of event detection
 compared with the overall clustering is the noise rate.
 To demonstrate this let us look at an online clustering over a simulated time period of five days.

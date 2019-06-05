@@ -2,8 +2,8 @@
 \label{sec:3_theoretical_basics}
 
 In order to fully understand our work,
-it is important to ensure a few basics in the area of \Gls{nlp}.
-In this chapter we will explain how the most important techniques used in our thesis work.
+it is important to ensure a few basics in the area of \Gls{nlp} and clustering methods.
+In this section we will explain how the most important techniques used in our thesis work.
 
 \subsection{Text Preprocessing}
 \label{subsec:3_text_preprocessing}
@@ -29,7 +29,7 @@ Anyone of us will be able to extract the same information out of these three wor
 The country \textit{Switzerland}.
 However, for machines the terms are different to another because they are written differently.
 That is why in most cases it makes sense to lowercase all text data before processing it.
-That way we can ensure that the above words also share the same meaning
+That way we can ensure that the above words all share the same meaning
 for a machine and thus reduce the dictionary size.
 
 \paragraph{Exceptions}
@@ -46,11 +46,11 @@ Vectorizing books would take too much computational power and time to process.
 In such cases, the dictionary size needs to be reduced.
 This can be accomplished by processing a summary of the book instead of the book itself
 or by extracting the most relevant words from the whole book.
-The latter can be done with Keyphrase Extraction or with \Gls{ner}.
+The latter can be done with keyphrase extraction or with \Gls{ner}.
 
 \paragraph{Normalizing text}
 If we are not dealing with books but with articles or papers,
-there are also other alternatives to Keyphrase Extraction and \Gls{ner}.
+there are also other alternatives to keyphrase extraction and \Gls{ner}.
 Using Text Stemming (\subsubsecref{subsubsec:3_text_stemming})
 or Text Lemmatization (\subsubsecref{subsubsec:3_text_lemmatization}),
 we can simplify terms and group them together to reduce the dictionary size.
@@ -73,7 +73,7 @@ Lovins' stemming algorithm was very successful but got mostly replaced by
 M.F. Porters stemming algorithm\cite{PorterStemmerAlgorithm} published in 1980.
 In his paper, M.F. Porter was able to process his suffix stripping algorithm in 6,370 out of 10,000 words and thereby
 reducing the vocabulary size by \textbf{one third}.
-The algorithm simply follows 5 steps with replacement and/or removal rules and is therefor very easy and efficient.
+The algorithm simply follows 5 steps with replacement and removal rules and is therefore very easy and efficient.
 
 M.F. Porter improved his stemming algorithm even further
 by publishing the Porter2 stemming algorithm in 2002
@@ -89,11 +89,11 @@ we decided to go with his stemming algorithm.
 \label{subsubsec:3_text_lemmatization}
 
 Similar to \textit{Text Stemming}, Text Lemmatization has the same goal to group together the inflected forms of a word
-but follows a different approach to do so.
+but follows a different approach.
 Instead of processing terms with fixed steps and defined rules,
 Text Lemmatization normally includes a dictionary lookup for the words
 and also takes in consideration to which part of a sentence a term belongs to.
-This results in more accurate root terms but also asks for more computational power than Text Stemming.
+This results in more accurate root terms but also requires for more computational power than Text Stemming.
 See \tabref{tab:comparison_stemming_lemmatization} for a comparison.
 
 \begin{table}[h]
@@ -124,10 +124,10 @@ See \tabref{tab:comparison_stemming_lemmatization} for a comparison.
 \subsubsection{Keyphrase Extraction}
 \label{subsubsec:3_keyphrase_extraction}
 
-When having to describe data, one common approach is to tag the data with Keyphrases.
+When having to describe data, one common approach is to tag the data with keyphrases.
 Two of the most well-known tagging methods in social media
-are tagging content with Keyphrases marked with hash tags and user names marked with at signs.
-Let us check following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
+are tagging content with keyphrases marked with hash tags and user names marked with at signs.
+Let us check the following Tweet from the \textit{European Space Agency}\cite{ESATweet}:
 
 \begin{quote}
     This walking and hopping \textbf{\#robot} is currently being tested in ESA’s Mars Yard
@@ -139,20 +139,20 @@ Let us check following Tweet from the \textit{European Space Agency}\cite{ESATwe
 If we only read the hash tags and user names \textit{\#robot}, \textit{\detokenize{@ESA_Tech}},
 \textit{\detokenize{@ETH}} and \textit{\detokenize{@ZHAW}},
 we do not retrieve all information but we can already think of what the Tweet is about.
-These words would be our \textit{Keyphrases}.
+These words would be our \textit{keyphrases}.
 
-Now, in above example the Keyphrases were defined manually by a user.
-But in our data set (and most data sources), there are no Keyphrases defined.
-Luckily there are different approaches on how to extract Keyphrases from text data automatically.
+Now, in above example the keyphrases were defined manually by a user.
+But in our data set (and most data sources), there are no keyphrases defined.
+Luckily there are different approaches on how to extract keyphrases from text data automatically.
 
-We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used Keyphrase Extraction algorithms.
-Our goal is to check if working with Keyphrases alone is more, less or equal accurate
+We are using SGRank\cite{SGRank} in our thesis as it is currently one of the most used keyphrase extraction algorithms.
+Our goal is to check if working with keyphrases alone is more, less or equally accurate
 than with working the whole text.
 
 \subsubsection{Named Entity Recognition}
 \label{subsubsec:3_named_entity_recognition}
 
-Similar to \textit{Keyphrase Extraction}, \Gls{ner} extracts relevant terms from a given text.
+Similar to keyphrase extraction, \Gls{ner} extracts relevant terms from a given text.
 However, it does not only extract terms but also states what kind of term it is.
 Consider following sentence:
 
@@ -171,7 +171,7 @@ we retrieve following entities:
     \item 1969 (Date)
 \end{itemize}
 
-For comparison, when extracting the \textit{Keyphrases} automatically, we receive following terms:
+For comparison, when extracting the keyphrases automatically, we receive following terms:
 
 \begin{itemize}
     \item Nobel Prize
@@ -183,7 +183,7 @@ For comparison, when extracting the \textit{Keyphrases} automatically, we receiv
     \item CERN
 \end{itemize}
 
-Comparing the numbers of the extracted terms solely, Keyphrase Extraction seems to have delivered a better job.
+Comparing the numbers of the extracted terms solely, keyphrase extraction seems to have delivered a better job.
 However, when evaluating the results, we can see that \Gls{ner} \textit{understood} the terms and their
 relations better.
 
@@ -192,22 +192,17 @@ Not only was it able to correctly keep the subject's name, \textit{Murray Gell-M
 \subsection{Vector Space Model}
 \label{subsec:3_vector_space_model}
 
-Comparing text documents with each other is not a straightforward task to do.
+Comparing text documents with each other is not a straightforward task.
 This is the reason why the \gls{vsm} was developed.
 
-When working with a \gls{vsm}, text documents get vectorized.
-This is succeeded by assigning each unique term over all documents to one dimension.
-
-If we now want to compare two documents with each other,
-we simply compare their vectors with each other.
-
-But how do we vectorize each term of each document to a numerical value?
-Let us have a look at the two most used text vectorizers.
+The \Gls{vsm} transforms text data to a numerical vector.
+This makes it possible to calculate the distances between different documents,
+which is essential for clustering.
 
 \subsubsection{Term Frequency}
 \label{subsubsec:3_term_frequency}
 
-The easiest vectorizer is the Term Frequency Vectorizer.
+The most basic vectorizer is the Term Frequency Vectorizer.
 After creating the dictionary of all used terms, it simply sums up the occurrences for each term.
 Consider following three sentences:
 
@@ -217,30 +212,30 @@ Consider following three sentences:
     \item Major Bank Shake-up At Bank of England.
 \end{itemize}
 
-After removing \Glspl{stop_word}, we receive 13 unique terms over all documents.
-As the Term Frequency Vectorizer simply sums the occurences of each term up,
-the \Gls{vsm} looks as in \tabref{tab:tf_vsm}.
+After removing \glspl{stop_word}, we receive 13 unique terms over all sentences.
+As the Term Frequency Vectorizer simply sums the occurrences of each term up,
+the \Gls{vsm} appears as in \tabref{tab:tf_vsm}.
 
 \begin{table}[h]
     \centering
-    \scalebox{0.85}{
-        \begin{tabular}{rrrrrrrrrrrrr}
+    \scalebox{0.8}{
+        \begin{tabular}{r|rrrrrrrrrrrrr}
         \hline
-           bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
+          Sentence & bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
         \hline
-          0.000 &     0.000 &     1.000 &   0.000 &     0.000 &   1.000 &     1.000 &    1.000 &    0.000 &   0.000 &  0.000 &   1.000 &  1.000 \\
-          0.000 &     0.000 &     1.000 &   0.000 &     1.000 &   0.000 &     1.000 &    0.000 &    1.000 &   0.000 &  1.000 &   0.000 &  0.000 \\
-          2.000 &     1.000 &     0.000 &   1.000 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   1.000 &  0.000 &   0.000 &  0.000 \\
+          1 & 0.000 &     0.000 &     1.000 &   0.000 &     0.000 &   1.000 &     1.000 &    1.000 &    0.000 &   0.000 &  0.000 &   1.000 &  1.000 \\
+          2 & 0.000 &     0.000 &     1.000 &   0.000 &     1.000 &   0.000 &     1.000 &    0.000 &    1.000 &   0.000 &  1.000 &   0.000 &  0.000 \\
+          3 & 2.000 &     1.000 &     0.000 &   1.000 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   1.000 &  0.000 &   0.000 &  0.000 \\
         \hline
         \end{tabular}
     }
-    \caption{Term Frequency \Gls{vsm}.}
+    \caption{Term frequency \Gls{vsm}.}
     \label{tab:tf_vsm}
 \end{table}
 
 We can quickly see that the first two sentences share a few terms
 while they do not share any terms with the third sentence.
-At the same time we see that the term bank has been used twice in the third sentence.
+At the same time we see that the term \textit{bank} has been used twice in the third sentence.
 
 \subsubsection{tf-idf}
 \label{subsubsec:3_tf_idf}
@@ -249,7 +244,7 @@ Relying on the Term Frequency alone is a good start but can surely be improved.
 Consider following scenario:
 We have a document \textit{d1} with 100 terms, 10 of them (10\%) belong to one specific term \textit{t1}.
 In a second document \textit{d2} with 1,000 terms, 10 of them (1\%) belong to the same term \textit{t1}.
-When using Term Frequency as a Vectorizer, both documents will receive for the term \textit{t1} a value of 10.
+When using term frequency as a vectorizer, both documents will receive for the term \textit{t1} a value of 10.
 However, in the first document \textit{d1} the term should have received a higher value
 than in document \textit{d2} as it covered a bigger percentage of the document.
 
@@ -262,7 +257,7 @@ and defines the equation as displayed in \equref{equ:tfidf}.
     \label{equ:tfidf}
 \end{equation}
 
-where $tf_{x,y}$ is the Term Frequency of $x$ in $y$, $N$ the total number of documents
+where $tf_{x,y}$ is the term frequency of $x$ in $y$, $N$ the total number of documents
 and $df_x$ the documents containing $x$.
 
 However, it is important to note that nowadays there are different tf-idf implementations.
@@ -277,27 +272,27 @@ see \equref{equ:scikit_tfidf}.
 
 where $tf_{x,y}$ is defined as the equal number of times that term ${_x}$ occurs in document ${_y}$.
 
-If we now calculate the tf-idf value for the term \textit{bank} inside the third document (sentence),
+If we now calculate the tf-idf value for the term \textit{bank} inside the third sentence,
 we receive following value: $3.386$.
-What scikit-learn now does is to normalize this value using the Euclidean norm:
+What scikit-learn now does, is to normalize this value using the Euclidean norm:
 
 \begin{equation}
     v_{norm} = \frac{v}{||v||_2} = \frac{v}{\sqrt{v_1{^2}+v_2{^2}+\ldots+v_n{^2}}}
     \label{equ:euclidean}
 \end{equation}
 
-This results in following values in our \Gls{vsm}:
+The resulting \Gls{vsm} is shown in \tabref{tab:tfidf_vsm}.
 
 \begin{table}[h]
     \centering
-    \scalebox{0.85}{
-        \begin{tabular}{rrrrrrrrrrrrr}
+    \scalebox{0.8}{
+        \begin{tabular}{r|rrrrrrrrrrrrr}
         \hline
-           bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
+           Sentence & bank &   england &   landing &   major &   narrows &   probe &   rosetta &   scopes &   search &   shake &   site &   space &   zone \\
         \hline
-          0.000 &     0.000 &     0.335 &   0.000 &     0.000 &   0.440 &     0.335 &    0.440 &    0.000 &   0.000 &  0.000 &   0.440 &  0.440 \\
-          0.000 &     0.000 &     0.373 &   0.000 &     0.490 &   0.000 &     0.373 &    0.000 &    0.490 &   0.000 &  0.490 &   0.000 &  0.000 \\
-          0.756 &     0.378 &     0.000 &   0.378 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   0.378 &  0.000 &   0.000 &  0.000 \\
+          1 & 0.000 &     0.000 &     0.335 &   0.000 &     0.000 &   0.440 &     0.335 &    0.440 &    0.000 &   0.000 &  0.000 &   0.440 &  0.440 \\
+          2 & 0.000 &     0.000 &     0.373 &   0.000 &     0.490 &   0.000 &     0.373 &    0.000 &    0.490 &   0.000 &  0.490 &   0.000 &  0.000 \\
+          3 & 0.756 &     0.378 &     0.000 &   0.378 &     0.000 &   0.000 &     0.000 &    0.000 &    0.000 &   0.378 &  0.000 &   0.000 &  0.000 \\
         \hline
         \end{tabular}
     }
@@ -305,49 +300,47 @@ This results in following values in our \Gls{vsm}:
     \label{tab:tfidf_vsm}
 \end{table}
 
-As we can see in \tabref{tab:tfidf_vsm}, the term \textbf{bank} has in document \textit{d3}
-a rather high value.
-This is because the term is not present in documents \textit{d1} or \textit{d2} but appears
-twice in document \textit{d3}.
-We can also observe that the term \textbf{rosetta} has slightly different values for the
-documents \textit{d1} and \textit{d2}.
-The reason for this is that document \textit{d2} has one term less than document \textit{d1},
-therefor the significance of one term is weighted heavier in document \textit{d2}.
+As we can see in \tabref{tab:tfidf_vsm}, the term \textit{bank} has a rather high value in \textit{sentence 3}.
+This is because the term is not present in \textit{sentence 1} or \textit{sentence 2} but appears
+twice in \textit{sentence 3}.
+We can also observe that the term \textit{rosetta} has slightly different values for
+\textit{sentence 1} and \textit{sentence 2}.
+The reason for this is that \textit{sentence 2} has one term less than \textit{sentence 1},
+therefore the significance of one term is weighted heavier in \textit{sentence 2}.
 
 \subsection{Clustering}
 \label{subsec:3_clustering}
 
-Clustering finds similarities in different news articles based on their content and groups them together,
-while unrelated news are regarded as noise.
+Clustering finds similarities in different documents based on their content and groups them together.
 The challenge now arises to find an appropriate clustering method,
-which is able to work with data of varying densities and of high dimensionality.
+which is able to work with data of varying densities, high dimensionality and data noise.
 
-\subsubsection{\textit{k}-means clustering}
+\subsubsection{\textit{k}-means Clustering}
 \label{subsubsec:3_kmeans_clustering}
 
 \textit{k}-means clustering is an iterative clustering method which assigns all data points in a given data set
-into k clusters, where k is a predefined number of clusters in the data set.
+into \textit{k} clusters, where \textit{k} is a predefined number of clusters in the data set.
 
 \paragraph{How does \textit{k}-means clustering work}
-At the very beginning, \textit{k}-means creates k centroids at random locations.
+At the very beginning, \textit{k}-means creates \textit{k} centroids at random locations.
 It then repeats following instructions until reaching convergence:
 
 \begin{itemize}
-    \item For each data point: Find the nearest centroid
-    \item Assign the data point to the nearest centroid (cluster)
-    \item For each cluster: Compute a new cluster centroid with all assigned data points
+    \item For each data point: Find the nearest centroid.
+    \item Assign the data point to the nearest centroid (cluster).
+    \item For each cluster: Compute a new cluster centroid with all assigned data points.
 \end{itemize}
 
 \paragraph{Advantages}
 \begin{itemize}
-    \item Very simple and easy to understand algorithm
+    \item Very simple and easy to understand algorithm.
 \end{itemize}
 
 \paragraph{Disadvantages}
 \begin{itemize}
-    \item Initial (random) centroids have a strong impact on the results
-    \item The number of clusters (k) has to be known beforehand
-    \item Unable to handle noise (all data points will be assigned to a cluster)
+    \item Initial (random) centroids have a strong impact on the results.
+    \item The number of clusters (\textit{k}) has to be known beforehand.
+    \item Unable to handle noise (all data points will be assigned to a cluster).
 \end{itemize}
 
 \subsubsection{DBSCAN}
@@ -356,20 +349,17 @@ It then repeats following instructions until reaching convergence:
 DBSCAN stands for \textit{Density-Based Spatial Clustering of Applications with Noise}
 and is a density based clustering algorithm.
 
-A big advantage of DBSCAN is that it is able to sort data into clusters
-of different shapes.
-
 \paragraph{How DBSCAN works}
 DBSCAN requires two parameters in order to work:
 
 \begin{enumerate}
-    \item epsilon - The maximum distance between two data points for them to be considered as in the same cluster.
-    \item min samples - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
+    \item \textit{epsilon} - The maximum distance between two data points for them to be considered as in the same cluster.
+    \item \textit{min samples} - The number of data points a neighbourhood has to contain in order to be considered as a cluster.
 \end{enumerate}
 
 Having these two parameters defined, DBSCAN will iterate through the data points
 and try to assign them to clusters if the provided parameters match.
-If a data point can not be assigned to a cluster, it will be marked as noise point.
+If a data point can not be assigned to a cluster, it will be marked as a noise point.
 
 Data points that belong to a cluster but do not dense themselves are known as \textbf{border points}.
 Some border points could theoretically belong to two or more clusters
@@ -394,11 +384,11 @@ if the distance from the point to the clusters do not differ.
 
 HDBSCAN is a hierarchical density-based clustering algorithm\cite{McInnes2017},
 based on DBSCAN and improves its sensitivity for clusters of varying densities.
-Therefore defining an epsilon parameter, which acts as a threshold for finding clusters, is no longer necessary.
+Defining an epsilon parameter, which acts as a threshold for finding clusters, is therefore no longer necessary.
 This makes the algorithm more stable and flexible for different applications.
 
 \paragraph{How HDBSCAN works}
-Since HDBSCAN is the focus for this thesis, we want to give a more detailed explanation of its inner workings,
+Since HDBSCAN is the focus of this thesis, we want to deliver a more detailed explanation of its inner workings,
 than for the previous clustering methods. 
 The explanation is based on the documentation of the library providing the implementation for HDBSCAN\cite{how_hdbscan_works}.
 
@@ -412,7 +402,7 @@ The algorithm consists of five steps, which are as follows:
 
 \subparagraph{1. Transforming the space}
 At its core HDBSCAN is a single linkage clustering, which is typically rather sensitive to noise.
-A single noise point between clusters could act a bridge, which would result in separate clusters to be seen as one.
+A single noise point between clusters could act as a bridge, which would result in separate clusters to be seen as one.
 To reduce this issue, the first step is to increase the distances of lower density points. 
 Points with lower densities are therefore spread further apart and points with higher densities remain close to each other.
 This is achieved by to comparing the core distances between two points with the original distance
@@ -438,7 +428,7 @@ Once the core distances are known, the mutual reachability distance between two 
 \end{equation*}
 
 where $d(a, b)$ is the original distance between $a$ and $b$.
-Therefore if two points are close together, but the density around one point is rather low,
+If two points are close together, but the density around one point is rather low,
 the core distance will be greater than the original distance and thus the two points appear to be less close together
 when considering the mutual reachability distance. 
 Considering the example from \figref{fig:hdbscan_1},
@@ -496,12 +486,11 @@ for each split the two resulting clusters are compared against a predefined mini
 If the size of a cluster is below the minimum,
 its points will be discarded, while the other cluster remains in the parent cluster.
 If both cluster sizes are above or equal the minimum, the clusters are considered as true clusters and remain in the tree.
-This is repeated until no more splits can be made. 
-Points discard by this process are regarded as noise. 
+This is repeated until no more splits can be made.
+Points discarded by this process are regarded as noise.
 
 \subparagraph{5. Extract the clusters}
 The extraction of the final clusters from the condensed tree is based on the stability per cluster.
-Once it is selected, none of its subclusters can be chosen.
 The stability is based on the persistence of a cluster, which is measured by $\lambda = \frac{1}{distance}$.
 The stability for a cluster $C$ is defined as
 
@@ -513,6 +502,7 @@ where ${\lambda}_{p}$ describes when point $p$ fell out of the cluster and $ {\l
 describes when the cluster was created.
 Calculating the stability for each cluster starts at the leaf nodes and ends when the root is reached.
 A cluster is selected if its stability is larger than the sum of stabilities of its children.
+Once it is selected, none of its subclusters can be chosen.
 If the sum of child stabilities is larger than that of its parent,
 the parent stability will be set to the value of the sum of its children,
 but no selection will be done.

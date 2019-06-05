@@ -2,14 +2,14 @@
 \label{sec:4_design_and_implementation}
 
 The methodology consist of three parts, where each part builds upon the results from the previous one.
-Initially the test data is created, which will be used for all evaluations.
-Secondly we evaluate HDBSCAN and determine the optimal settings for our use case.
+Initially, the test data is created, which will be used for all evaluations.
+Secondly, we evaluate HDBSCAN and determine the optimal settings for our use case.
 The final part applies the results obtained from the previous evaluation in an online setting.
 
 \subsection{Dataflow}
 \label{subsec:4_dataflow}
 
-The dataflow, see \figref{fig:dataflow}, starts with receiving new news articles every hour.
+The dataflow, as shown in \figref{fig:dataflow}, starts by receiving new news articles.
 The articles content will then be preprocessed (see \subsecref{subsec:3_text_preprocessing})
 and vectorized.
 With the computed vectors, the articles will then be clustered to existing or new news stories.
@@ -35,7 +35,7 @@ The cluster changes represent our detected events.
         \draw[->] (clustering.east) -- (event_detection.west);
     \end{tikzpicture}
 
-    \caption{Dataflow}
+    \caption{The dataflow of our application.}
     \label{fig:dataflow}
 \end{figure}
 
