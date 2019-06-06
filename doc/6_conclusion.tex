@@ -4,34 +4,34 @@
 \subsection{Summary}
 \label{subsec:6_summary}
 
-We started our work by searching for a suitable data set to create our clustering evaluations with.
+We started our work by searching a suitable data set to create our clustering evaluations with.
 The primary requirement was to have data points with corresponding cluster labels.
-Having a labelled data set allows us to apply external measures
+Having a labelled data set allowed us to apply external measures
 and evaluate a resulting clustering against the ground truth.
 After selecting a few data set for closer inspection, we settled on the News Aggregator Data Set,
-which contains 422,937 labelled news articles, where a label describes the story the news article is about.
+which contains 422,937 labelled news articles belonging to 7,231 news stories.
 Since the same story label applies to multiple news articles, we could use this as a cluster descriptor.
 Unfortunately the data set only contained headlines, which did not contain enough information for our approach.
-Therefore we collected the full text from each news article based on the provided source url.
+We therefore collected the full text from each news article based on the provided source url.
 The content retrieval process turned out to generate a significant amount of noise,
 due to expired urls, paywalls, parsing errors or wrong redirects.
 To reduce the noise, we applied different cleansing techniques
-and ended up with 235,070 usable news articles.
+and ended up with 235,070 news articles belonging to 7,183 news stories.
 
 Once the data set was ready, we designed an evaluation framework to automatically run clustering methods
 with a variety of settings.
 The focus was to find a combination of text preprocessing methods,
 vector space model and parameters for the clustering method, which would provide the best clustering.
-Furthermore we developed a custom scoring function to measure the results of a clustering,
+Furthermore, we developed a custom scoring function to measure the results of a clustering,
 since existing measures proved to be unintuitive and biased against certain results,
 such as the number of clusters.
-The analysis gave valuable insight into the behaviour of HDBSCAN with different vector space models
+The analysis gave valuable insights into the behaviour of HDBSCAN with different vector space models
 combined with different preprocessing methods and parameters.
-We noted the initial good performance and the decrease in the quality of the clustering the larger sample sets.
-However the amount of news articles proved to be substantial with up to 30\%.
+While we initially started with good performance, the quality of the clustering decreased with increasing sample sets.
+However, the amount of news articles proved to be substantial with up to 30\%.
 Possible explanations were explored,
 such as actual noisy data and different representations of articles belonging to the same cluster with tf-idf.
-Furthermore we found HDBSCAN to be both faster and more precise than \textit{k}-means.
+Furthermore, we found HDBSCAN to be both faster and more precise than \textit{k}-means.
 
 Having determined the optimal settings in the HDBSCAN evaluation,
 we applied them for the event detection using a simulated stream of news articles.
@@ -39,14 +39,13 @@ The event detection was accomplished by running the clustering in batches over t
 We explored three methods for setting the batch size and different similarity thresholds for finding pairs of clusters between batches.
 Since finding pairs of clusters, requires a large enough overlap in identical news articles,
 the batch size has to account for this factor with regards to the volume of incoming news articles
-through the data stream. 
+through the data stream.
 The best method for determining the batch size turned out to be based on a fixed time period,
-where we load samples from the past 24 hours for every batch. 
-Thus peaks in volume during this time period will be included and not cut off by a static batch size.  
-Additionally since events are represented as clusters,
+where we load samples from the past 24 hours for every batch.
+Additionally, since events are represented as clusters,
 the sum of events can be regarded as a subclustering of the overall clustering.
-Although this makes the subclustering more sensitive to the noise rate, due to the smaller size of events.
-In conclusion we found the precision of the event detection to have a high variance for new events, 
+This makes the subclustering more sensitive to the noise rate, due to the smaller size of events.
+In conclusion, we found the precision of the event detection to have a high variance for new events,
 rendering it rather unstable in its current form.
 A continuation of this work should focus on improving the overall clustering to increase the precision of the event detection.
 
@@ -54,19 +53,21 @@ A continuation of this work should focus on improving the overall clustering to 
 \label{subsec:6_future_work}
 
 The approach in its current state still leaves different areas up for improvement.
-Further work on \Gls{ner}, might help in drastically reducing the dimensionality of the vector space model
+Further work on \Gls{ner} might help in drastically reducing the the vector space model dimensions
 and condense a news article into only a few key entities.
 Using a pretrained model did not result in accurate results,
 but training a model specifically on a new corpus might improve the \Gls{ner} significantly.
 Another preprocessing technique, which we did not look at, would be word embeddings.
 Word embeddings allow for the detection of similar words and therefore reduce the dimensionality
-of the vector space model substantially more than even Text Lemmatization.
-Thus leading to a potential improved clustering and reducing the noise rate.
+of the vector space model substantially more than even Text Lemmatization,
+thus leading to a potential improved clustering and reducing the noise rate.
 
-During our evaluation we did not explore using a dynamic time interval for running the batchwise online clustering. 
-One example could be instead of using a fixed interval of one hour, a clustering would start as soon enough news articles have been collected.
-Although we do not assume any considerably improvements in the precision of the event detection, 
-since it would still be affected by the high noise rate. Nonetheless once the issue with the noise rate has been solved, 
+During our evaluation we did not explore using a dynamic time interval for running the batchwise online clustering.
+This would start the clustering as soon as enough news articles were retrieved
+and not by using a fixed time interval.
+However, we do not assume any considerable improvements in the precision of the event detection,
+as it would still be affected by the high noise rate.
+Nonetheless, once the issue with the noise rate has been solved,
 this might be an interesting alternative to the dynamic batch sizes.
 
 As we have shown, the current implementation of HDBSCAN
@@ -78,34 +79,31 @@ but might be a valuable contribution to the community and enable future work wit
 We focused mainly on HDBSCAN in our analysis, but the evaluation framework allows for many different clustering methods.
 Finding different methods suitable for text clustering
 or even a combination of different algorithms might lead to better results.
-Although we did try out some different variations such as HDBSCAN with LDA,
-but without any notable results.
+However, we did explore some different variations such as HDBSCAN with LDA, but without any notable results.
 
-Furthermore it would be interesting to see how HDBSCAN would perform
+Furthermore, it would be interesting to see how HDBSCAN would perform
 using a data set based on a different kind of textual data.
 A possible alternative data set could be based on computer logs,
 which would also provide a source for data streams.
-Improvements in the overall performance of HDBSCAN will also significantly improve the event detection in data streams.
+Improvements in the overall performance of HDBSCAN would also significantly improve the event detection in data streams.
 
 \subsection{Lessons Learned}
 \label{subsec:6_lessons_learned}
 
-% State the 3 biggest lessons learned.
-% E.g. HDBSCAN is slightly better than sklearn but way faster.
-
-We learned that HDBSCAN is quite a versatile and efficient clustering algorithm
-and at the same time experienced the challenges in text mining. 
+We have learned that HDBSCAN is quite a versatile and efficient clustering algorithm
+and experienced at the same time the challenges in text mining.
 The wide variety in types of articles and the noisy data caused the noise rate to be quite high.
-We underestimated at the beginning the effect this would have on the quality of the clustering 
+We underestimated the effect this would have on the quality of the clustering
 and moreover on the precision of the event detection.
+We also learned that the current implementation of HDBSCAN is not optimized for memory consumption,
+which we found out by looking through the project issues on GitHub.
 
-Another lesson we learned was the importance of understanding and exploring the scoring function in more detail.
-We did not research the scoring function we used in the beginning enough to be aware of their biases.
-As a result we had to restart our evaluations, once we found these anomalies in our results and 
-ultimately developed our own function.  
+Another lesson we have learned is the importance of understanding and exploring a scoring function in detail.
+We did not research scoring functions in the beginning enough to be aware of their biases.
+As a result, we had to restart our evaluations once we found these anomalies in our results and
+ultimately developed our own function.
 
-Further we learned to question our third-party libraries even well established ones such as scikit-learn.
-While researching the theory for tf-idf, we could not reproduce the results produced by scikit-learns tf-idf.
-It turned out scikit-learn uses a slightly different formula from the official theory. 
-Additionally the implementation of HDBSCAN is not optimized for memory consumption, 
-which we found out by looking through the issues on github. 
+Furthermore, we have learned that well established libraries and frameworks such as \textit{scikit-learn},
+do not necessarily implement algorithms as described in their official form.
+When we could not reproduce the tf-idf results provided by \textit{scikit-learn},
+we saw that \textit{scikit-learn} uses a slightly different formula than the official one.
