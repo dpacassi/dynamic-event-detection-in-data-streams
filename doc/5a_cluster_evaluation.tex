@@ -155,7 +155,7 @@ Furthermore, the different metrics show a considerable difference when combined 
 The best scores using term frequency are 0.071 for the euclidean metric and 0.695 for the cosine metric.
 With tf-idf, the difference between both metrics is still notable, but far less drastic than the one based on term frequency.
 This can be explained by considering that the term frequency model will count every term equally
-and therefore common terms will have higher weights than more common ones.
+and therefore common terms will have higher weights than less common ones.
 Based on these weights, the distance calculated by the euclidean metric does not correspond well
 with the actual similarity between documents.
 The cosine metric is less affected by these weights,
