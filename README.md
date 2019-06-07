@@ -32,5 +32,6 @@ A continuation of this work should focus on improving the overall clustering to 
 - [David Pacassi Torrico](https://pacassi.ch/)
 
 ## Supervisors
-- [Andreas Weiler, wele](https://www.zhaw.ch/de/ueber-uns/person/wele/)
-- [Kurt Stockinger, stog](https://www.zhaw.ch/de/ueber-uns/person/stog/)
+- [Dr. Andreas Weiler](https://www.zhaw.ch/de/ueber-uns/person/wele/)
+- [Prof. Dr. Kurt Stockinger](https://www.zhaw.ch/de/ueber-uns/person/stog/)
+
