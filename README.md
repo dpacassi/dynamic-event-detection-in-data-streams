@@ -26,6 +26,8 @@ The precision for detecting new events results in 62% with a standard deviation 
 Detecting changes in existing events results in a precision 69% with a standard deviation of 16%.
 A continuation of this work should focus on improving the overall clustering to increase the precision of the event detection.
 
+## Thesis
+See [doc/thesis.pdf](doc/thesis.pdf).
 
 ## Authors
 - [Daniel Milenkovic](http://danielmilenkovic.me/)
